@@ -16,3 +16,6 @@
 | Q13 | Local PostgreSQL: not installed [V]. Install natively or use Docker? | Stage 1 (M2) | None; decide at M2 | You |
 | Q14 | Docker: not installed [V]. Dockerfile written, unbuilt. Install before M11? | Stage 5 (M11) | Build in CI only | You |
 | Q12 | Command runner for `AGENTS.md` §7 (`make` not installed locally) | Stage 1 (M0) | **Answered:** stdlib `tasks.py` + thin Makefile (D29) | You |
+| Q18 | Tamil generic/street lexicon in `src/matching/normalise.py` (`TAMIL_LEXICON`) and the transliteration fixes: correct for real Tamil listings? | Stage 5 (Tamil review) | Machine-written, flagged needs review (D46) | You (Q3 reviewer) |
+| Q19 | "TN" in addresses: Tamil Nadu or "Town"? Resolver tries "Town" only when the text fails to resolve as written (D47). Real listings may differ | M4/M5 | Keep D47 behaviour | You |
+| Q20 | Gazetteer location in deployment: `Gazetteer.load()` reads `data/synthetic/*.csv` relative to the repo; Docker image must include `data/synthetic/` (check `.dockerignore` at M11) or the gazetteer moves to a DB table | M11 | Copy the CSVs into the image | Me |
