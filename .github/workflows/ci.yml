@@ -38,7 +38,9 @@ jobs:
       # M2 done-criterion on a real PostgreSQL: migrate, load M1 output, row counts match CSVs.
       - run: make migrate
       - run: make load
-      # Eval gate: added in M5 (`make eval` is not implemented before then).
+      # Eval gate (M5, D55): DEV-set metrics vs floors in src/evaluation/gate.py; synthetic only.
+      # Never runs the test set (that run is single, guarded and already recorded, D56).
+      - run: make eval
       - run: python -m pip_audit -r requirements.txt
       - uses: gitleaks/gitleaks-action@v2
         env:

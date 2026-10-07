@@ -89,32 +89,33 @@ def seed() -> int:
     return _run(str(ROOT / "data" / "synthetic" / "generator.py"))
 
 
-def _not_yet(target: str, module: str) -> Callable[[], int]:
-    def command() -> int:
-        print(f"'{target}' is not implemented until {module}.")
-        return 2
+def evaluate(*options: str) -> int:
+    """Matching evaluation on the synthetic DEV set + CI floors (M5, DB-free). Options pass
+    through to ``python -m evaluation``, e.g. ``--set test --final-test-run`` for the single,
+    guarded test-set run (AGENTS.md rule 9)."""
+    return subprocess.call([sys.executable, "-m", "evaluation", *options], cwd=ROOT / "src")
 
-    return command
 
-
-TARGETS: dict[str, Callable[[], int]] = {
+TARGETS: dict[str, Callable[..., int]] = {
     "setup": setup,
     "run": run,
     "test": test,
     "lint": lint,
-    "eval": _not_yet("eval", "M5"),
+    "eval": evaluate,
     "seed": seed,
     "migrate": migrate,
     "load": load,
 }
+# Targets that accept extra command-line options.
+PASS_THROUGH = {"eval"}
 
 
 def main(argv: list[str]) -> int:
-    if len(argv) != 2 or argv[1] not in TARGETS:
-        print(f"Usage: python tasks.py <{'|'.join(TARGETS)}>")
+    if len(argv) < 2 or argv[1] not in TARGETS or (len(argv) > 2 and argv[1] not in PASS_THROUGH):
+        print(f"Usage: python tasks.py <{'|'.join(TARGETS)}>  (eval also takes --help)")
         return 2
     _load_env()
-    return TARGETS[argv[1]]()
+    return TARGETS[argv[1]](*argv[2:])
 
 
 if __name__ == "__main__":

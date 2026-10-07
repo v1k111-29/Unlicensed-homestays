@@ -13,9 +13,17 @@ def test_missing_target_rejected() -> None:
     assert tasks.main(["tasks.py"]) == 2
 
 
-def test_unimplemented_target_fails_loudly(capsys) -> None:
-    assert tasks.main(["tasks.py", "eval"]) == 2
-    assert "M5" in capsys.readouterr().out
+def test_eval_passes_options_through(monkeypatch) -> None:
+    calls: list[tuple] = []
+    monkeypatch.setattr(tasks.subprocess, "call", lambda cmd, cwd: calls.append((cmd, cwd)) or 0)
+    assert tasks.main(["tasks.py", "eval", "--no-gate"]) == 0
+    (cmd, cwd), *_ = calls
+    assert cmd[1:] == ["-m", "evaluation", "--no-gate"]
+    assert cwd == tasks.ROOT / "src"
+
+
+def test_only_eval_takes_extra_options() -> None:
+    assert tasks.main(["tasks.py", "test", "--anything"]) == 2
 
 
 def test_db_targets_need_database_url(monkeypatch, capsys) -> None:

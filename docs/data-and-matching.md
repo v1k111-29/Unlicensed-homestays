@@ -55,6 +55,8 @@ Queue priority: licence mismatch → no candidate → ambiguous; ties by lower s
 
 **Implemented in M4** (`src/matching/engine.py`, params version `m4-initial-1`): blocking per D52, features and missing-feature handling per D51, band keys, extra gates (name ≥ 0.85 for score-path "Matched", ambiguity margin 0.05) and initial T_low 0.75 / T_high 0.90 per D53 [A: chosen on dev only; M5 tunes]. Run linkage and validity date per D54.
 
+**Tuned in M5** (params `m5-tuned-1`, current; tuned on dev only, D55): weights licence 0.30, name 0.40, address 0.10, distance 0.10, pincode 0.05, category 0.05; T_low 0.75, T_high 0.89; licence-path name gate 0.75; score-path name gate 0.85 and ambiguity margin 0.05 unchanged. The §6 table above holds the initial values. Evaluation results: `testing-and-evaluation.md` §3.2 (synthetic only).
+
 ## 8. Human review and evidence
 Side-by-side listing vs top-3 candidates with feature breakdown. Decisions per `essentialfeatures.md` O4. Evidence page per O5. Confirmed pairs are suppressed from future flags.
 

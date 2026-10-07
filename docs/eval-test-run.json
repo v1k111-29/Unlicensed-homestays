@@ -1,0 +1,60 @@
+{
+  "set": "test",
+  "synthetic": true,
+  "caveat": "SYNTHETIC DATA ONLY. These numbers show the method behaves as designed on fictional data; they do not predict real-world accuracy. Dev and test share districts and gazetteer, so the test set is not fully independent (D22).",
+  "params_version": "m5-tuned-1",
+  "params_fingerprint": "1c56a640c4809d09",
+  "as_of": "2026-04-01",
+  "run_at_utc": "2026-10-07T20:01:03+00:00",
+  "metrics": {
+    "matched_precision": {
+      "num": 95,
+      "den": 95,
+      "value": 1.0
+    },
+    "match_recall": {
+      "num": 95,
+      "den": 110,
+      "value": 0.8636363636363636
+    },
+    "no_counterpart_in_queue": {
+      "num": 36,
+      "den": 36,
+      "value": 1.0
+    },
+    "hard_negative_not_matched": {
+      "num": 28,
+      "den": 28,
+      "value": 1.0
+    },
+    "wrong_licence_high_priority": {
+      "num": 26,
+      "den": 26,
+      "value": 1.0
+    },
+    "positive_top_candidate": {
+      "num": 110,
+      "den": 110,
+      "value": 1.0
+    },
+    "blocking_recall": {
+      "num": 136,
+      "den": 136,
+      "value": 1.0
+    },
+    "review_queue_share": {
+      "num": 105,
+      "den": 200,
+      "value": 0.525
+    }
+  },
+  "workload": {
+    "listings": 200,
+    "queue": 105,
+    "queue_true_counterpart": 15,
+    "queue_other": 90,
+    "matched": 95,
+    "matched_wrong_entry": 0,
+    "positive_no_candidate": 0
+  }
+}
