@@ -1,7 +1,8 @@
 """Append-only audit log (AGENTS.md rule 6).
 
-Two layers: (1) this model refuses updates and deletes in Python (instance and queryset);
-(2) a PostgreSQL trigger (migration 0002) rejects UPDATE and DELETE at the database level.
+Two layers: (1) this model refuses updates and deletes in Python (instance, queryset, base
+manager and Django's internal `_update` / `_raw_delete`); (2) PostgreSQL triggers (migration
+0002) reject UPDATE, DELETE and TRUNCATE at the database level.
 `actor` is plain text (username or "system:<tool>") so no foreign-key cascade can ever touch
 an audit row.
 """
@@ -23,6 +24,13 @@ class AuditQuerySet(models.QuerySet):
     def bulk_update(self, *args, **kwargs):
         raise AppendOnlyError("audit_log is append-only: bulk_update is not allowed")
 
+    # Internal paths used by Django itself (deletion collector, related updates, save()).
+    def _update(self, values):
+        raise AppendOnlyError("audit_log is append-only: update is not allowed")
+
+    def _raw_delete(self, using):
+        raise AppendOnlyError("audit_log is append-only: delete is not allowed")
+
 
 class AuditLog(models.Model):
     actor = models.CharField(max_length=150)
@@ -36,6 +44,9 @@ class AuditLog(models.Model):
 
     class Meta:
         db_table = "audit_log"
+        # Django uses the base manager internally (related access, deletion collector); make it
+        # the guarded manager too, so no internal path gets a plain QuerySet.
+        base_manager_name = "objects"
         ordering = ["-ts", "-id"]
 
     def save(self, *args, **kwargs) -> None:

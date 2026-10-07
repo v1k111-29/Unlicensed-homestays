@@ -56,7 +56,9 @@ def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item
 
 
 # --- M6 shared fixtures (auth, roles, district scoping). Tests using them must carry the
-# `django_db` marker so they skip cleanly without a database. ---
+# `django_db` marker so they skip cleanly without a database. The login address throttle uses
+# the database cache, so its entries roll back with each test. Do not use `transactional_db`:
+# the audit_log TRUNCATE trigger makes its teardown fail on PostgreSQL. ---
 
 PASSWORD = "synthetic-test-pass-91"  # test-only value, not a real credential
 
@@ -64,14 +66,6 @@ PASSWORD = "synthetic-test-pass-91"  # test-only value, not a real credential
 @pytest.fixture
 def password() -> str:
     return PASSWORD
-
-
-@pytest.fixture(autouse=True)
-def _clear_cache() -> None:
-    """The login IP throttle lives in the cache; start every test from zero."""
-    from django.core.cache import cache
-
-    cache.clear()
 
 
 @pytest.fixture
@@ -146,7 +140,9 @@ def district_data(users, districts) -> dict:
             batch=lst_batch,
             district=district,
         )
-        run = MatchRun.objects.create(params_version="m6-test", created_by=officer)
+        run = MatchRun.objects.create(
+            district=district, params_version="m6-test", created_by=officer
+        )
         rows[key] = {
             "District": district,
             "User": officer,

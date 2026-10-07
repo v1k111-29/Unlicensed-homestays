@@ -14,6 +14,7 @@ from enum import StrEnum
 from functools import wraps
 from typing import Any
 
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import redirect_to_login
 from django.core.exceptions import PermissionDenied
 from django.http import HttpRequest, HttpResponse
@@ -113,9 +114,18 @@ def require_capability(capability: Capability) -> Callable:
                 return response
             return view(request, *args, **kwargs)
 
+        wrapped.access_guard = f"capability:{capability}"  # type: ignore[attr-defined]
         return wrapped
 
     return decorator
+
+
+def authenticated_only(view: Callable[..., HttpResponse]) -> Callable[..., HttpResponse]:
+    """For pages any signed-in user may see (no district data). Anonymous -> login redirect.
+    Marked so the URL-guard test can tell it is protected."""
+    wrapped = login_required(view)
+    wrapped.access_guard = "authenticated"  # type: ignore[attr-defined]
+    return wrapped
 
 
 class CapabilityRequiredMixin:

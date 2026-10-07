@@ -3,6 +3,7 @@
 import pytest
 from django.conf import settings
 
+from accounts.throttle import username_digest
 from audit.models import AppendOnlyError, AuditLog
 
 pytestmark = [pytest.mark.django_db, pytest.mark.urls("tests.m6_urls")]
@@ -74,7 +75,7 @@ def test_login_success_is_audited(client, users, password) -> None:
         "user",
         str(users["off_nil"].pk),
     )
-    assert row.meta == {"role": "officer"}
+    assert row.meta == {"role": "officer", "username_hmac": username_digest("officer_nil")}
 
 
 def test_logout_is_audited(client, users, password) -> None:
@@ -82,19 +83,29 @@ def test_logout_is_audited(client, users, password) -> None:
     client.post("/logout/")
     row = AuditLog.objects.get(action="logout")
     assert row.actor == "officer_nil" and row.entity_id == str(users["off_nil"].pk)
+    assert row.meta == {"reason": "user"}
 
 
-def test_failed_login_is_audited_without_ip_or_password(client, users) -> None:
+def test_logout_ignores_offsite_next(client, users) -> None:
+    client.force_login(users["off_nil"])
+    response = client.post("/logout/?next=https://evil.example/", {"next": "https://evil.example/"})
+    assert response.status_code == 302 and response["Location"] == "/login/"
+
+
+def test_failed_login_is_audited_without_ip_password_or_username(client, users) -> None:
     _login(client, "Officer_NIL", "wrong-password", ip="10.9.8.7")
     row = AuditLog.objects.get(action="login_failed")
-    assert (row.actor, row.entity, row.entity_id) == ("anonymous", "username", "officer_nil")
-    stored = f"{row.actor} {row.entity_id} {row.meta}"
-    assert "10.9.8.7" not in stored and "wrong-password" not in stored
+    assert (row.actor, row.entity) == ("system:anonymous", "username_hmac")
+    assert row.entity_id == username_digest("officer_nil") and len(row.entity_id) == 64
+    stored = f"{row.actor} {row.entity_id} {row.meta}".lower()
+    for secret in ("10.9.8.7", "wrong-password", "officer_nil"):
+        assert secret not in stored
 
 
 def test_failed_login_for_unknown_user_is_audited(client, users) -> None:
     _login(client, "nobody_here", "whatever-pass")
-    assert AuditLog.objects.filter(action="login_failed", entity_id="nobody_here").count() == 1
+    digest = username_digest("nobody_here")
+    assert AuditLog.objects.filter(action="login_failed", entity_id=digest).count() == 1
 
 
 def test_auth_audit_rows_cannot_be_updated_or_deleted(client, users, password) -> None:
@@ -130,7 +141,8 @@ def test_account_locked_after_five_failures(client, users, password) -> None:
     assert not _signed_in(client)
     assert "Please wait and try again." in response.content.decode()
     row = AuditLog.objects.get(action="login_throttled")
-    assert row.entity_id == "officer_nil" and row.meta == {"scope": "account"}
+    assert row.entity_id == username_digest("officer_nil") and row.meta == {"scope": "account"}
+    assert row.actor == "system:anonymous"
     # A throttled attempt is not counted as a failed password check.
     assert AuditLog.objects.filter(action="login_failed").count() == MAX
 
@@ -146,6 +158,20 @@ def test_account_lock_is_case_insensitive(client, users, password) -> None:
     for i, name in enumerate(names):
         _login(client, name, "wrong-password", ip=f"10.0.3.{i}")
     assert _login(client, "officer_nil", password, ip="10.0.4.1").status_code == 429
+
+
+def test_account_lock_covers_unicode_lookalikes(client, users, password) -> None:
+    """Full-width and other NFKC-equivalent spellings count against the same account."""
+    names = [
+        "ｏｆｆｉｃｅｒ_ｎｉｌ",  # full-width
+        "OFFICER_NIL",
+        "oﬃcer_nil",  # "ffi" ligature
+        "ＯＦＦＩＣＥＲ_ＮＩＬ",  # full-width capitals
+        "officer_nil",
+    ]
+    for i, name in enumerate(names):
+        _login(client, name, "wrong-password", ip=f"10.0.11.{i}")
+    assert _login(client, "officer_nil", password, ip="10.0.12.1").status_code == 429
 
 
 def test_four_failures_do_not_lock(client, users, password) -> None:

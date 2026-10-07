@@ -4,11 +4,12 @@ through the shared helper, through a view that uses it, or by naming another dis
 import pytest
 from django.apps import apps
 from django.contrib.auth.models import AnonymousUser
-from django.core.exceptions import ImproperlyConfigured
+from django.core.exceptions import ImproperlyConfigured, ValidationError
 
 from accounts.scoping import DISTRICT_PATHS, can_act_in_district, district_path, scoped
 from audit.models import AuditLog
 from listings.models import Listing
+from matching.models import MatchRun
 from reviews.models import Review
 
 DATA_APPS = ["accounts", "registry", "listings", "matching", "reviews"]
@@ -76,23 +77,43 @@ def test_scoping_narrows_a_given_queryset(users, district_data) -> None:
 
 
 @pytest.mark.django_db
-def test_match_run_spanning_districts_is_not_duplicated(users, district_data) -> None:
+def test_relation_traversal_cannot_leak_other_district(users, district_data) -> None:
+    """Rows reached through a visible object's reverse relation are scoped again. A result that
+    slipped past validation (bulk_create skips save()) into the officer's own run, but belongs to
+    another district's listing, is still filtered out."""
     from matching.models import MatchResult
 
-    run = district_data["nil"]["MatchRun"]
-    MatchResult.objects.create(
-        run=run,
-        listing=Listing.objects.create(
-            platform="synthetic",
-            title="extra",
-            locality_text="x",
-            district=district_data["nil"]["District"],
-        ),
-        status="no_match",
+    own_run = district_data["nil"]["MatchRun"]
+    foreign_listing = district_data["mad"]["Listing"]
+    MatchResult.objects.bulk_create(
+        [MatchResult(run=own_run, listing=foreign_listing, status="no_match")]
     )
-    from matching.models import MatchRun
+    officer = users["off_nil"]
+    visible = scoped(own_run.results.all(), officer)
+    assert foreign_listing.pk not in set(visible.values_list("listing_id", flat=True))
+    assert visible.count() == 1
+    # The other district's run is not reachable at all.
+    assert not scoped(MatchRun, officer).filter(pk=district_data["mad"]["MatchRun"].pk).exists()
 
-    assert scoped(MatchRun, users["off_nil"]).filter(pk=run.pk).count() == 1
+
+@pytest.mark.django_db
+def test_cross_district_match_rows_are_refused(district_data) -> None:
+    from matching.models import MatchCandidate, MatchResult
+    from reviews.models import ConfirmedPair
+
+    nil, mad = district_data["nil"], district_data["mad"]
+    with pytest.raises(ValidationError):  # listing outside the run's district
+        MatchResult(run=nil["MatchRun"], listing=mad["Listing"], status="no_match").save()
+    with pytest.raises(ValidationError):  # candidate entry from another district
+        MatchCandidate(
+            run=nil["MatchRun"],
+            listing=nil["Listing"],
+            registry_entry=mad["RegistryEntry"],
+            score=0.1,
+            rank=2,
+        ).save()
+    with pytest.raises(ValidationError):
+        ConfirmedPair(listing=nil["Listing"], registry_entry=mad["RegistryEntry"]).save()
 
 
 @pytest.mark.django_db

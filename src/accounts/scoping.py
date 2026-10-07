@@ -24,8 +24,9 @@ from accounts.permissions import is_admin, is_officer
 M = TypeVar("M", bound=Model)
 
 # "app_label.ModelName" -> ORM lookup path from that model to accounts.District.
-# Lookups that go through a reverse relation (one-to-many) can return duplicates, so they
-# are marked as needing distinct().
+# Paths follow forward foreign keys only (no reverse relations, so no duplicates).
+# UploadBatch: registry batches have no district and are admin-only; listings batches are
+# scoped by their district (D52).
 DISTRICT_PATHS: dict[str, str] = {
     "accounts.District": "pk",
     "accounts.User": "district",
@@ -35,12 +36,11 @@ DISTRICT_PATHS: dict[str, str] = {
     "matching.MatchCandidate": "listing__district",
     "matching.MatchResult": "listing__district",
     "matching.GroundTruth": "listing__district",
-    "matching.MatchRun": "results__listing__district",
+    "matching.MatchRun": "district",
     "reviews.Review": "listing__district",
     "reviews.ConfirmedPair": "listing__district",
     "reviews.EvidencePack": "listing__district",
 }
-NEEDS_DISTINCT = {"matching.MatchRun"}
 
 
 def _key(model: type[Model]) -> str:
@@ -64,8 +64,7 @@ def scoped(source: type[M] | QuerySet[M], user: Any) -> QuerySet[M]:
         return qs
     if not is_officer(user):
         return qs.none()
-    filtered = qs.filter(**{path: user.district_id})
-    return filtered.distinct() if _key(qs.model) in NEEDS_DISTINCT else filtered
+    return qs.filter(**{path: user.district_id})
 
 
 def get_scoped_or_404(source: type[M] | QuerySet[M], request: HttpRequest, **lookup: Any) -> M:

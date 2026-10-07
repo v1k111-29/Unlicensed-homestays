@@ -29,14 +29,14 @@ Uptime monitor → /healthz
 - `upload_batches(id, type[registry|listings], uploader_id, district_id, dataset, source_name, file_sha256, row_count, created_at)` — `dataset` labels synthetic sets (D40); unique (type, dataset, file_sha256)
 - `registry_entries(id, licence_no, name, address_en, address_ta, locality, pincode, lat, lng, category, valid_from, valid_to, status, batch_id, district_id)` — unique (batch, licence_no)
 - `listings(id, source[officer_csv|tourist_report], external_id, platform, ref_url, title, locality_text, pincode, lat, lng, claimed_licence_no, raw jsonb, batch_id, district_id)` — `external_id` = file row id (synthetic `listing_id`, D35)
-- `match_runs(id, params_version, thresholds jsonb, created_by, created_at)`
+- `match_runs(id, district_id, params_version, thresholds jsonb, created_by, created_at)` — one district per run (D51)
 - `match_candidates(id, run_id, listing_id, registry_id, score, features jsonb, rank)`
 - `match_results(id, run_id, listing_id, status, top_registry_id, score, priority)`
 - `reviews(id, listing_id, reviewer_id, decision, reason, created_at)` — DB check: `suspected_unlicensed` needs a non-empty reason
 - `confirmed_pairs(listing_id, registry_id)`
 - `evidence_packs(id, listing_id, snapshot jsonb, sha256, generated_by, created_at)`
 - `ground_truth(listing_id, true_registry_id, type, noise)` — synthetic eval labels only; never read by the matcher (D35, D40)
-- `audit_log(id, actor, action, entity, entity_id, meta jsonb, ts)` — append-only (DB trigger blocks UPDATE/DELETE; model refuses update/delete; `actor` is text; restrict privileges where the host allows [A]) (D42)
+- `audit_log(id, actor, action, entity, entity_id, meta jsonb, ts)` — append-only (DB triggers block UPDATE/DELETE/TRUNCATE, D53; model refuses update/delete; `actor` is text; restrict privileges where the host allows [A]) (D42)
 
 Implemented in M2 (Django models + migrations under `src/<app>/`). Names above are logical; Django table names are `<app>_<model>` (e.g. `registry_registryentry`), except `audit_log`. CSV parsing and loading live in `src/ingest/` (D41).
 
