@@ -2,6 +2,13 @@
 
 Append newest entries at the top. Each entry: module · done · partial · decisions · problems · next step · stage definition-of-done status.
 
+## UI design system (before M8/M9)
+- Branch `ui-design-brief`, based on `m6-auth-roles-audit`.
+- Done: `docs/ui-design-brief.md` (audience, tone, anti-patterns, type/spacing/colour tokens, contrast table, six band badges, tourist result states with the verbatim disclaimer, forms, tables, empty/error/loading, evidence print, HTMX conventions, Tamil). `src/static/css/app.css` replaces `base.css`. M6 templates (`base.html`, login, dashboard, 403, 404) moved to the new classes; all gettext strings unchanged; `base.html` gains blocks `extra_head`, `nav`, `main_class`. `tests/test_ui_stylesheet.py` checks tokens, no external assets, and recomputes every contrast pair listed in the brief.
+- Verified: `tasks.py lint` clean; `tasks.py test` 153 passed, 114 skipped (no DB here) [V]. Templates rendered outside the DB tests [V]. Not checked in a browser or with a screen reader [A].
+- Decisions: D56.
+- Next: M8/M9 build their screens from the brief's component list.
+
 ## M6 — Auth, roles, district scoping, audit (done locally; DB tests verified on SQLite only, PostgreSQL run pending)
 - Branch `m6-auth-roles-audit`, based on `m2-schema-loaders` (not on M3-M5).
 - Done: `accounts/permissions.py` (role → capability matrix per security-and-privacy.md §1; `require_capability` decorator, `CapabilityRequiredMixin`, `deny()` writes a `permission_denied` audit row then 403). `accounts/scoping.py` (single district helper: `scoped()`, `get_scoped_or_404()`, `can_act_in_district()`; fail-closed `DISTRICT_PATHS` for all 12 data models). `accounts/throttle.py` (5 failures / 15 min per account and per client address; account count read from the audit log; address count in cache under an HMAC, IP never stored). `accounts/signals.py` audits `login`, `logout`, `login_failed`; the view audits `login_throttled`. Views: `/login/`, `/logout/` (POST), `/dashboard/` placeholder. Templates `base.html` (skip link, landmarks, `lang`, synthetic-data notice, sign-out form), `registration/login.html`, `accounts/dashboard.html`, `403.html`, `404.html`; `static/css/base.css` (system font stack + Noto Sans Tamil fallback, fluid widths, 44px targets, visible focus). Settings: login URLs, 30-min idle sessions, expire at browser close, CSRF/cookie flags, nosniff, `X-Frame-Options: DENY`, `LOGIN_THROTTLE`, `DJANGO_CLIENT_IP_HEADER`, explicit `CACHES`. Command `create_account` (admin/officer; password from prompt or env var; audited).

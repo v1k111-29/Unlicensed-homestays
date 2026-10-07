@@ -2,6 +2,10 @@
 {% load i18n %}
 {% block title %}{% translate "Access denied" %} · {% translate "Verified Stays" %}{% endblock %}
 {% block content %}
-<h1>{% translate "Access denied" %}</h1>
-<p>{% translate "Your account does not have access to this page. Access attempts are logged." %}</p>
+<div class="page-head">
+  <h1>{% translate "Access denied" %}</h1>
+</div>
+<div class="alert alert--info">
+  <p>{% translate "Your account does not have access to this page. Access attempts are logged." %}</p>
+</div>
 {% endblock %}

@@ -2,7 +2,9 @@
 {% load i18n %}
 {% block title %}{% translate "Dashboard" %} · {% translate "Verified Stays" %}{% endblock %}
 {% block content %}
-<h1>{% translate "Dashboard" %}</h1>
+<div class="page-head">
+  <h1>{% translate "Dashboard" %}</h1>
+</div>
 <dl class="facts">
   <dt>{% translate "Signed in as" %}</dt>
   <dd>{{ user.get_username }}</dd>
@@ -11,5 +13,5 @@
   <dt>{% translate "District" %}</dt>
   <dd>{% if is_admin %}{% translate "All districts" %}{% elif district %}{{ district.name_en }}{% if district.name_ta %} <span lang="ta">({{ district.name_ta }})</span>{% endif %}{% else %}{% translate "None assigned. Ask an administrator." %}{% endif %}</dd>
 </dl>
-<p>{% translate "Uploads, matching runs and the review queue will appear here." %}</p>
+<p class="empty-state">{% translate "Uploads, matching runs and the review queue will appear here." %}</p>
 {% endblock %}
