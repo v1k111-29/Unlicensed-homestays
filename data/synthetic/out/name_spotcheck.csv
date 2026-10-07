@@ -1,0 +1,434 @@
+set,district,kind,name
+dev,Chennai,listing_only,Cedar Meadow Guest House
+dev,Chennai,listing_only,Eucalyptus Grove Lodge
+dev,Chennai,listing_only,Fern Terrace Cottage
+dev,Chennai,listing_only,Marigold Garden Inn
+dev,Chennai,listing_only,Marigold Hollow Lodge
+dev,Chennai,listing_only,Moonbeam Haven Guest House
+dev,Chennai,listing_only,Neem Bough Lodge
+dev,Chennai,listing_only,Plum Ridge Residency
+dev,Chennai,listing_only,Saffron Loft Homestay
+dev,Chennai,listing_only,Sparrow Court Homestay
+dev,Chennai,listing_only,Tamarind Porch Guest House
+dev,Chennai,registry,Bamboo Court Cottage
+dev,Chennai,registry,Birch Porch Residency
+dev,Chennai,registry,Coral Bough Homestay
+dev,Chennai,registry,Coral Glade Lodge
+dev,Chennai,registry,Cypress Nook Guest House
+dev,Chennai,registry,Hazel Knoll Lodge
+dev,Chennai,registry,Hornbill Hollow Cottages
+dev,Chennai,registry,Indigo Haven Homestay
+dev,Chennai,registry,Jacaranda Nest Cottage
+dev,Chennai,registry,Magnolia Nook Guest House
+dev,Chennai,registry,Maple Nook Homestay
+dev,Chennai,registry,Moonbeam Terrace Residency
+dev,Chennai,registry,Neem Haven Residency
+dev,Chennai,registry,Plum Porch Homestay
+dev,Chennai,registry,Quill Hollow Homestay
+dev,Chennai,registry,Rosewood Hollow Residency
+dev,Chennai,registry,Rosewood Perch Residency
+dev,Chennai,registry,Tamarind Garden Inn
+dev,Coimbatore,listing_only,Banyan Bough Residency
+dev,Coimbatore,listing_only,Hazel Loft Guest House
+dev,Coimbatore,listing_only,Jacaranda Arbour Stay
+dev,Coimbatore,listing_only,Jacaranda Den Homestay
+dev,Coimbatore,listing_only,Lotus Nest Cottages
+dev,Coimbatore,listing_only,Marigold Retreat Stay
+dev,Coimbatore,listing_only,Nutmeg Loft Stay
+dev,Coimbatore,listing_only,Orchid Meadow Cottage
+dev,Coimbatore,listing_only,Pepper Grove Homestay
+dev,Coimbatore,listing_only,Saffron Haven Residency
+dev,Coimbatore,listing_only,Skylark Loft Guest House
+dev,Coimbatore,registry,Amber Retreat Inn
+dev,Coimbatore,registry,Birch Hollow Homestay
+dev,Coimbatore,registry,Cardamom Bough Inn
+dev,Coimbatore,registry,Fern Glade Residency
+dev,Coimbatore,registry,Indigo Bough Inn
+dev,Coimbatore,registry,Ivory Den Guest House
+dev,Coimbatore,registry,Lantern Garden Cottage
+dev,Coimbatore,registry,Lantern Nest Lodge
+dev,Coimbatore,registry,Laurel Den Residency
+dev,Coimbatore,registry,Lotus Arbour Homestay
+dev,Coimbatore,registry,Mango Grove Homestay
+dev,Coimbatore,registry,Maple Ridge Homestay
+dev,Coimbatore,registry,Orchid Den Inn
+dev,Coimbatore,registry,Pepper Retreat Guest House
+dev,Coimbatore,registry,Silver Ridge Homestay
+dev,Coimbatore,registry,Skylark Ridge Homestay
+dev,Coimbatore,registry,Velvet Crest Residency
+dev,Coimbatore,registry,Wildflower Nest Cottages
+dev,Dindigul,listing_only,Banyan Porch Cottage
+dev,Dindigul,listing_only,Driftwood Corner Homestay
+dev,Dindigul,listing_only,Driftwood Den Lodge
+dev,Dindigul,listing_only,Hazel Bough Residency
+dev,Dindigul,listing_only,Magnolia Arbour Guest House
+dev,Dindigul,listing_only,Neem Nook Homestay
+dev,Dindigul,listing_only,Nutmeg Crest Stay
+dev,Dindigul,listing_only,Nutmeg Nest Inn
+dev,Dindigul,listing_only,Orchid Knoll Homestay
+dev,Dindigul,listing_only,Sandal Loft Lodge
+dev,Dindigul,listing_only,Willow Bower Stay
+dev,Dindigul,registry,Bamboo Ridge Residency
+dev,Dindigul,registry,Banyan Meadow Homestay
+dev,Dindigul,registry,Banyan Perch Guest House
+dev,Dindigul,registry,Birch Nest Lodge
+dev,Dindigul,registry,Hazel Hollow Homestay
+dev,Dindigul,registry,Juniper Arbour Homestay
+dev,Dindigul,registry,Lantern Knoll Residency
+dev,Dindigul,registry,Laurel Haven Homestay
+dev,Dindigul,registry,Maple Nest Stay
+dev,Dindigul,registry,Marigold Bough Cottages
+dev,Dindigul,registry,Nutmeg Bower Guest House
+dev,Dindigul,registry,Nutmeg Den Lodge
+dev,Dindigul,registry,Rosewood Loft Cottage
+dev,Dindigul,registry,Sandal Hollow Cottages
+dev,Dindigul,registry,Skylark Crest Homestay
+dev,Dindigul,registry,Sparrow Grove Stay
+dev,Dindigul,registry,Thistle Corner Guest House
+dev,Dindigul,registry,Velvet Corner Lodge
+dev,Kanyakumari,listing_only,Driftwood Nook Inn
+dev,Kanyakumari,listing_only,Ivory Ridge Homestay
+dev,Kanyakumari,listing_only,Jacaranda Retreat Cottages
+dev,Kanyakumari,listing_only,Jasmine Bough Residency
+dev,Kanyakumari,listing_only,Lantern Loft Lodge
+dev,Kanyakumari,listing_only,Marigold Meadow Homestay
+dev,Kanyakumari,listing_only,Pepper Corner Guest House
+dev,Kanyakumari,listing_only,Silver Acre Guest House
+dev,Kanyakumari,listing_only,Tamarind Court Inn
+dev,Kanyakumari,listing_only,Thistle Haven Lodge
+dev,Kanyakumari,listing_only,Thistle Hollow Residency
+dev,Kanyakumari,registry,Amber Crest Lodge
+dev,Kanyakumari,registry,Bluebell Corner Homestay
+dev,Kanyakumari,registry,Cypress Crest Guest House
+dev,Kanyakumari,registry,Hornbill Nest Inn
+dev,Kanyakumari,registry,Ivory Porch Cottages
+dev,Kanyakumari,registry,Juniper Acre Guest House
+dev,Kanyakumari,registry,Juniper Nest Residency
+dev,Kanyakumari,registry,Kingfisher Haven Homestay
+dev,Kanyakumari,registry,Lantern Glade Residency
+dev,Kanyakumari,registry,Mango Garden Guest House
+dev,Kanyakumari,registry,Mango Nook Inn
+dev,Kanyakumari,registry,Myna Haven Cottages
+dev,Kanyakumari,registry,Pepper Burrow Residency
+dev,Kanyakumari,registry,Sparrow Haven Inn
+dev,Kanyakumari,registry,Sparrow Meadow Stay
+dev,Kanyakumari,registry,Teak Ridge Cottage
+dev,Kanyakumari,registry,Velvet Acre Cottage
+dev,Kanyakumari,registry,Velvet Knoll Residency
+dev,Madurai,listing_only,Bluebell Porch Homestay
+dev,Madurai,listing_only,Clover Retreat Residency
+dev,Madurai,listing_only,Coral Haven Homestay
+dev,Madurai,listing_only,Eucalyptus Ridge Residency
+dev,Madurai,listing_only,Firefly Acre Inn
+dev,Madurai,listing_only,Maple Burrow Guest House
+dev,Madurai,listing_only,Marigold Nook Lodge
+dev,Madurai,listing_only,Nutmeg Terrace Cottages
+dev,Madurai,listing_only,Pepper Loft Residency
+dev,Madurai,listing_only,Sapphire Perch Homestay
+dev,Madurai,listing_only,Velvet Glade Homestay
+dev,Madurai,registry,Birch Acre Cottages
+dev,Madurai,registry,Bluebell Glade Cottages
+dev,Madurai,registry,Eucalyptus Court Homestay
+dev,Madurai,registry,Eucalyptus Loft Inn
+dev,Madurai,registry,Hornbill Arbour Homestay
+dev,Madurai,registry,Hornbill Corner Cottages
+dev,Madurai,registry,Indigo Glade Stay
+dev,Madurai,registry,Myna Hollow Lodge
+dev,Madurai,registry,Saffron Meadow Guest House
+dev,Madurai,registry,Sandal Bower Stay
+dev,Madurai,registry,Sandal Haven Guest House
+dev,Madurai,registry,Sparrow Burrow Residency
+dev,Madurai,registry,Tamarind Grove Guest House
+dev,Madurai,registry,Teak Knoll Guest House
+dev,Madurai,registry,Thistle Retreat Cottages
+dev,Madurai,registry,Wildflower Hollow Guest House
+dev,Madurai,registry,Wildflower Retreat Homestay
+dev,Madurai,registry,Wren Nest Homestay
+dev,Nilgiris,listing_only,Amber Bough Residency
+dev,Nilgiris,listing_only,Clover Den Homestay
+dev,Nilgiris,listing_only,Clover Grove Homestay
+dev,Nilgiris,listing_only,Coral Nook Homestay
+dev,Nilgiris,listing_only,Eucalyptus Porch Homestay
+dev,Nilgiris,listing_only,Jasmine Meadow Residency
+dev,Nilgiris,listing_only,Kingfisher Arbour Stay
+dev,Nilgiris,listing_only,Kingfisher Loft Cottages
+dev,Nilgiris,listing_only,Laurel Knoll Guest House
+dev,Nilgiris,listing_only,Maple Glade Inn
+dev,Nilgiris,listing_only,Marigold Ridge Lodge
+dev,Nilgiris,listing_only,Marigold Terrace Cottage
+dev,Nilgiris,listing_only,Myna Crest Lodge
+dev,Nilgiris,listing_only,Nutmeg Arbour Stay
+dev,Nilgiris,listing_only,Nutmeg Corner Stay
+dev,Nilgiris,listing_only,Plum Nook Homestay
+dev,Nilgiris,listing_only,Saffron Porch Homestay
+dev,Nilgiris,listing_only,Sandal Corner Residency
+dev,Nilgiris,listing_only,Skylark Meadow Residency
+dev,Nilgiris,listing_only,Sparrow Arbour Homestay
+dev,Nilgiris,listing_only,Sparrow Porch Residency
+dev,Nilgiris,listing_only,Wren Porch Homestay
+dev,Nilgiris,registry,Amber Court Cottage
+dev,Nilgiris,registry,Bamboo Corner Lodge
+dev,Nilgiris,registry,Birch Bough Cottages
+dev,Nilgiris,registry,Cardamom Ridge Guest House
+dev,Nilgiris,registry,Cedar Bower Cottage
+dev,Nilgiris,registry,Clover Loft Inn
+dev,Nilgiris,registry,Coral Hollow Cottage
+dev,Nilgiris,registry,Eucalyptus Garden Guest House
+dev,Nilgiris,registry,Firefly Court Cottages
+dev,Nilgiris,registry,Firefly Grove Homestay
+dev,Nilgiris,registry,Hazel Corner Guest House
+dev,Nilgiris,registry,Indigo Garden Lodge
+dev,Nilgiris,registry,Ivory Arbour Stay
+dev,Nilgiris,registry,Ivory Bower Homestay
+dev,Nilgiris,registry,Ivory Terrace Homestay
+dev,Nilgiris,registry,Jasmine Ridge Cottage
+dev,Nilgiris,registry,Kingfisher Acre Homestay
+dev,Nilgiris,registry,Kingfisher Nest Guest House
+dev,Nilgiris,registry,Lantern Bough Lodge
+dev,Nilgiris,registry,Lotus Grove Homestay
+dev,Nilgiris,registry,Marigold Grove Lodge
+dev,Nilgiris,registry,Myna Glade Lodge
+dev,Nilgiris,registry,Nutmeg Porch Guest House
+dev,Nilgiris,registry,Orchid Nook Homestay
+dev,Nilgiris,registry,Pepper Den Lodge
+dev,Nilgiris,registry,Plum Knoll Homestay
+dev,Nilgiris,registry,Quill Porch Residency
+dev,Nilgiris,registry,Saffron Perch Guest House
+dev,Nilgiris,registry,Sapphire Den Cottage
+dev,Nilgiris,registry,Skylark Garden Homestay
+dev,Nilgiris,registry,Sparrow Hollow Homestay
+dev,Nilgiris,registry,Teak Corner Lodge
+dev,Nilgiris,registry,Teak Terrace Inn
+dev,Nilgiris,registry,Velvet Bough Homestay
+dev,Nilgiris,registry,Velvet Garden Inn
+dev,Nilgiris,registry,Wildflower Burrow Guest House
+dev,Ramanathapuram,listing_only,Bamboo Porch Stay
+dev,Ramanathapuram,listing_only,Coral Bower Homestay
+dev,Ramanathapuram,listing_only,Eucalyptus Knoll Homestay
+dev,Ramanathapuram,listing_only,Hazel Meadow Homestay
+dev,Ramanathapuram,listing_only,Hornbill Den Residency
+dev,Ramanathapuram,listing_only,Jacaranda Meadow Homestay
+dev,Ramanathapuram,listing_only,Lotus Glade Lodge
+dev,Ramanathapuram,listing_only,Myna Retreat Inn
+dev,Ramanathapuram,listing_only,Sandal Grove Lodge
+dev,Ramanathapuram,listing_only,Sapphire Glade Inn
+dev,Ramanathapuram,listing_only,Silver Court Residency
+dev,Ramanathapuram,registry,Banyan Glade Stay
+dev,Ramanathapuram,registry,Cardamom Terrace Cottages
+dev,Ramanathapuram,registry,Clover Meadow Inn
+dev,Ramanathapuram,registry,Indigo Grove Homestay
+dev,Ramanathapuram,registry,Jacaranda Hollow Guest House
+dev,Ramanathapuram,registry,Jacaranda Ridge Cottages
+dev,Ramanathapuram,registry,Lotus Ridge Residency
+dev,Ramanathapuram,registry,Marigold Den Inn
+dev,Ramanathapuram,registry,Moonbeam Nest Stay
+dev,Ramanathapuram,registry,Myna Terrace Inn
+dev,Ramanathapuram,registry,Neem Glade Inn
+dev,Ramanathapuram,registry,Nutmeg Retreat Lodge
+dev,Ramanathapuram,registry,Peacock Court Homestay
+dev,Ramanathapuram,registry,Peacock Retreat Cottages
+dev,Ramanathapuram,registry,Plum Grove Guest House
+dev,Ramanathapuram,registry,Sapphire Bower Cottage
+dev,Ramanathapuram,registry,Wildflower Loft Homestay
+dev,Ramanathapuram,registry,Willow Retreat Guest House
+dev,Thanjavur,listing_only,Banyan Crest Homestay
+dev,Thanjavur,listing_only,Bluebell Acre Stay
+dev,Thanjavur,listing_only,Clover Bower Stay
+dev,Thanjavur,listing_only,Cypress Porch Stay
+dev,Thanjavur,listing_only,Firefly Corner Homestay
+dev,Thanjavur,listing_only,Hazel Ridge Stay
+dev,Thanjavur,listing_only,Jacaranda Haven Inn
+dev,Thanjavur,listing_only,Lantern Burrow Cottage
+dev,Thanjavur,listing_only,Quill Bough Cottage
+dev,Thanjavur,listing_only,Wildflower Grove Guest House
+dev,Thanjavur,listing_only,Wildflower Knoll Homestay
+dev,Thanjavur,registry,Cedar Haven Guest House
+dev,Thanjavur,registry,Cypress Glade Residency
+dev,Thanjavur,registry,Firefly Ridge Guest House
+dev,Thanjavur,registry,Hornbill Crest Guest House
+dev,Thanjavur,registry,Indigo Den Residency
+dev,Thanjavur,registry,Ivory Nest Cottages
+dev,Thanjavur,registry,Jacaranda Glade Inn
+dev,Thanjavur,registry,Juniper Garden Lodge
+dev,Thanjavur,registry,Lantern Crest Residency
+dev,Thanjavur,registry,Lantern Ridge Cottages
+dev,Thanjavur,registry,Laurel Perch Guest House
+dev,Thanjavur,registry,Lotus Porch Cottages
+dev,Thanjavur,registry,Mango Bough Homestay
+dev,Thanjavur,registry,Myna Grove Guest House
+dev,Thanjavur,registry,Saffron Den Lodge
+dev,Thanjavur,registry,Thistle Bough Guest House
+dev,Thanjavur,registry,Wildflower Crest Cottages
+dev,Thanjavur,registry,Willow Nest Residency
+test,Chennai,listing_only,Eucalyptus Bough Guest House
+test,Chennai,listing_only,Jasmine Retreat Guest House
+test,Chennai,listing_only,Lantern Hollow Cottages
+test,Chennai,listing_only,Sandal Court Inn
+test,Chennai,listing_only,Thistle Arbour Stay
+test,Chennai,listing_only,Thistle Den Homestay
+test,Chennai,listing_only,Wren Retreat Cottages
+test,Chennai,registry,Clover Nook Homestay
+test,Chennai,registry,Cypress Knoll Lodge
+test,Chennai,registry,Eucalyptus Nest Residency
+test,Chennai,registry,Kingfisher Meadow Guest House
+test,Chennai,registry,Lantern Perch Cottages
+test,Chennai,registry,Laurel Court Guest House
+test,Chennai,registry,Marigold Acre Homestay
+test,Chennai,registry,Moonbeam Knoll Inn
+test,Chennai,registry,Neem Acre Residency
+test,Chennai,registry,Orchid Bower Cottage
+test,Chennai,registry,Skylark Knoll Residency
+test,Chennai,registry,Willow Den Residency
+test,Coimbatore,listing_only,Cardamom Porch Guest House
+test,Coimbatore,listing_only,Cedar Perch Homestay
+test,Coimbatore,listing_only,Driftwood Garden Lodge
+test,Coimbatore,listing_only,Juniper Nook Cottages
+test,Coimbatore,listing_only,Magnolia Loft Residency
+test,Coimbatore,listing_only,Sapphire Terrace Homestay
+test,Coimbatore,listing_only,Willow Acre Homestay
+test,Coimbatore,registry,Clover Acre Cottages
+test,Coimbatore,registry,Coral Terrace Inn
+test,Coimbatore,registry,Fern Arbour Inn
+test,Coimbatore,registry,Hazel Acre Homestay
+test,Coimbatore,registry,Hornbill Terrace Cottage
+test,Coimbatore,registry,Indigo Porch Cottages
+test,Coimbatore,registry,Lantern Porch Homestay
+test,Coimbatore,registry,Lantern Retreat Lodge
+test,Coimbatore,registry,Magnolia Bower Guest House
+test,Coimbatore,registry,Pepper Crest Guest House
+test,Coimbatore,registry,Tamarind Perch Cottages
+test,Coimbatore,registry,Wren Hollow Inn
+test,Dindigul,listing_only,Amber Perch Guest House
+test,Dindigul,listing_only,Bamboo Nook Guest House
+test,Dindigul,listing_only,Cedar Court Stay
+test,Dindigul,listing_only,Magnolia Hollow Homestay
+test,Dindigul,listing_only,Peacock Hollow Guest House
+test,Dindigul,listing_only,Teak Haven Residency
+test,Dindigul,listing_only,Velvet Meadow Residency
+test,Dindigul,registry,Bluebell Court Residency
+test,Dindigul,registry,Laurel Hollow Guest House
+test,Dindigul,registry,Magnolia Haven Cottages
+test,Dindigul,registry,Maple Knoll Homestay
+test,Dindigul,registry,Moonbeam Court Lodge
+test,Dindigul,registry,Peacock Burrow Guest House
+test,Dindigul,registry,Quill Glade Cottage
+test,Dindigul,registry,Quill Retreat Stay
+test,Dindigul,registry,Teak Bough Stay
+test,Dindigul,registry,Teak Garden Inn
+test,Dindigul,registry,Wildflower Terrace Cottages
+test,Dindigul,registry,Wren Ridge Residency
+test,Kanyakumari,listing_only,Driftwood Hollow Guest House
+test,Kanyakumari,listing_only,Jacaranda Grove Cottages
+test,Kanyakumari,listing_only,Juniper Crest Homestay
+test,Kanyakumari,listing_only,Lantern Grove Homestay
+test,Kanyakumari,listing_only,Mango Terrace Inn
+test,Kanyakumari,listing_only,Plum Nest Cottages
+test,Kanyakumari,listing_only,Thistle Garden Guest House
+test,Kanyakumari,registry,Amber Corner Inn
+test,Kanyakumari,registry,Firefly Arbour Guest House
+test,Kanyakumari,registry,Hazel Bower Lodge
+test,Kanyakumari,registry,Hornbill Grove Residency
+test,Kanyakumari,registry,Jacaranda Burrow Residency
+test,Kanyakumari,registry,Juniper Retreat Inn
+test,Kanyakumari,registry,Mango Glade Stay
+test,Kanyakumari,registry,Neem Garden Guest House
+test,Kanyakumari,registry,Peacock Glade Homestay
+test,Kanyakumari,registry,Sapphire Crest Guest House
+test,Kanyakumari,registry,Tamarind Nest Homestay
+test,Kanyakumari,registry,Willow Knoll Guest House
+test,Madurai,listing_only,Cypress Burrow Residency
+test,Madurai,listing_only,Indigo Nest Homestay
+test,Madurai,listing_only,Plum Court Homestay
+test,Madurai,listing_only,Sapphire Garden Homestay
+test,Madurai,listing_only,Sapphire Grove Inn
+test,Madurai,listing_only,Sparrow Corner Homestay
+test,Madurai,listing_only,Willow Terrace Residency
+test,Madurai,registry,Driftwood Porch Homestay
+test,Madurai,registry,Fern Bower Homestay
+test,Madurai,registry,Indigo Retreat Homestay
+test,Madurai,registry,Plum Loft Cottage
+test,Madurai,registry,Sandal Den Homestay
+test,Madurai,registry,Sapphire Hollow Lodge
+test,Madurai,registry,Sapphire Nook Guest House
+test,Madurai,registry,Silver Crest Stay
+test,Madurai,registry,Sparrow Crest Stay
+test,Madurai,registry,Tamarind Burrow Inn
+test,Madurai,registry,Velvet Terrace Homestay
+test,Madurai,registry,Wildflower Bower Residency
+test,Nilgiris,listing_only,Cardamom Corner Homestay
+test,Nilgiris,listing_only,Cardamom Haven Lodge
+test,Nilgiris,listing_only,Indigo Arbour Guest House
+test,Nilgiris,listing_only,Jacaranda Garden Stay
+test,Nilgiris,listing_only,Juniper Perch Lodge
+test,Nilgiris,listing_only,Kingfisher Terrace Lodge
+test,Nilgiris,listing_only,Maple Bower Homestay
+test,Nilgiris,listing_only,Orchid Acre Cottage
+test,Nilgiris,listing_only,Quill Garden Lodge
+test,Nilgiris,listing_only,Rosewood Grove Homestay
+test,Nilgiris,listing_only,Saffron Retreat Lodge
+test,Nilgiris,listing_only,Saffron Ridge Inn
+test,Nilgiris,listing_only,Sapphire Bough Guest House
+test,Nilgiris,listing_only,Teak Meadow Residency
+test,Nilgiris,listing_only,Thistle Terrace Lodge
+test,Nilgiris,registry,Amber Arbour Cottage
+test,Nilgiris,registry,Banyan Haven Inn
+test,Nilgiris,registry,Cardamom Bower Lodge
+test,Nilgiris,registry,Cardamom Retreat Homestay
+test,Nilgiris,registry,Cedar Bough Stay
+test,Nilgiris,registry,Clover Arbour Lodge
+test,Nilgiris,registry,Coral Court Cottage
+test,Nilgiris,registry,Fern Perch Residency
+test,Nilgiris,registry,Fern Ridge Residency
+test,Nilgiris,registry,Hornbill Loft Guest House
+test,Nilgiris,registry,Indigo Burrow Stay
+test,Nilgiris,registry,Ivory Haven Cottage
+test,Nilgiris,registry,Kingfisher Glade Lodge
+test,Nilgiris,registry,Kingfisher Perch Lodge
+test,Nilgiris,registry,Lantern Corner Cottage
+test,Nilgiris,registry,Laurel Porch Cottage
+test,Nilgiris,registry,Magnolia Den Cottages
+test,Nilgiris,registry,Mango Porch Inn
+test,Nilgiris,registry,Moonbeam Meadow Stay
+test,Nilgiris,registry,Neem Terrace Stay
+test,Nilgiris,registry,Quill Knoll Stay
+test,Nilgiris,registry,Saffron Garden Homestay
+test,Nilgiris,registry,Silver Garden Lodge
+test,Nilgiris,registry,Tamarind Bough Cottage
+test,Ramanathapuram,listing_only,Birch Terrace Residency
+test,Ramanathapuram,listing_only,Cardamom Hollow Residency
+test,Ramanathapuram,listing_only,Kingfisher Burrow Cottage
+test,Ramanathapuram,listing_only,Rosewood Haven Homestay
+test,Ramanathapuram,listing_only,Sapphire Haven Stay
+test,Ramanathapuram,listing_only,Sapphire Loft Cottages
+test,Ramanathapuram,listing_only,Teak Nest Guest House
+test,Ramanathapuram,registry,Birch Knoll Stay
+test,Ramanathapuram,registry,Cardamom Acre Cottage
+test,Ramanathapuram,registry,Cardamom Glade Homestay
+test,Ramanathapuram,registry,Driftwood Arbour Lodge
+test,Ramanathapuram,registry,Laurel Corner Homestay
+test,Ramanathapuram,registry,Moonbeam Nook Lodge
+test,Ramanathapuram,registry,Orchid Hollow Lodge
+test,Ramanathapuram,registry,Orchid Retreat Stay
+test,Ramanathapuram,registry,Peacock Meadow Homestay
+test,Ramanathapuram,registry,Sapphire Arbour Homestay
+test,Ramanathapuram,registry,Willow Burrow Cottage
+test,Ramanathapuram,registry,Wren Loft Homestay
+test,Thanjavur,listing_only,Bamboo Garden Homestay
+test,Thanjavur,listing_only,Bluebell Bower Cottages
+test,Thanjavur,listing_only,Cardamom Nook Residency
+test,Thanjavur,listing_only,Juniper Corner Cottage
+test,Thanjavur,listing_only,Laurel Bough Residency
+test,Thanjavur,listing_only,Tamarind Terrace Residency
+test,Thanjavur,listing_only,Wren Acre Residency
+test,Thanjavur,registry,Bamboo Burrow Homestay
+test,Thanjavur,registry,Bamboo Knoll Residency
+test,Thanjavur,registry,Eucalyptus Acre Homestay
+test,Thanjavur,registry,Eucalyptus Terrace Homestay
+test,Thanjavur,registry,Ivory Grove Lodge
+test,Thanjavur,registry,Juniper Bough Homestay
+test,Thanjavur,registry,Moonbeam Crest Stay
+test,Thanjavur,registry,Moonbeam Ridge Stay
+test,Thanjavur,registry,Sandal Nest Residency
+test,Thanjavur,registry,Sparrow Loft Lodge
+test,Thanjavur,registry,Velvet Ridge Homestay
+test,Thanjavur,registry,Willow Glade Lodge

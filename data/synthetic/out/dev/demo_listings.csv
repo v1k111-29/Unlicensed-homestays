@@ -1,0 +1,26 @@
+listing_id,platform,ref_url,title,locality_text,pincode,lat,lng,claimed_licence_no,notes,district
+DEV-L0001,platform_b,https://platform-b.example/rooms/dev-l0001,Kingfisher Arbour Stay,Lovedale,643003,11.38518,76.70867,,,Nilgiris
+DEV-L0002,platform_a,https://platform-a.example/listing/dev-l0002,Nutmeg Corner Stay,Coonoor,643101,11.35566,76.80653,,,Nilgiris
+DEV-L0003,platform_b,https://platform-b.example/rooms/dev-l0003,Cardamom Ridge Guest House,Kotagiri,643217,11.42747,76.85135,SYN-NLG-18974-F,,Nilgiris
+DEV-L0004,platform_a,https://platform-a.example/listing/dev-l0004,Coral Nook Homestay,Ketti,643215,11.38194,76.73681,,,Nilgiris
+DEV-L0006,platform_a,https://platform-a.example/listing/dev-l0006,Myna Glade Lodge,Coonoor,643101,,,SYN-NLG-63822-J,,Nilgiris
+DEV-L0008,platform_a,https://platform-a.example/listing/dev-l0008,Nutmeg Prch Guest House,Lovedale,643003,,,SYN-NLG-88592-A,,Nilgiris
+DEV-L0010,platform_b,https://platform-b.example/rooms/dev-l0010,Ivory Terrace Homestay,Ketti,643215,,,SYN-NLG-08103-K,,Nilgiris
+DEV-L0014,direct,https://direct.example/stay/dev-l0014,Tak Corner Lodge,Masinagudi,643223,11.57353,76.65114,,,Nilgiris
+DEV-L0015,direct,https://direct.example/stay/dev-l0015,Quill Porch Residency,Coonoor,643101,,,,,Nilgiris
+DEV-L0016,platform_b,https://platform-b.example/rooms/dev-l0016,Coral Hollow Cottage,Aruvankadu,643202,11.35789,76.76834,SYN-NLG-78273-W,,Nilgiris
+DEV-L0017,direct,https://direct.example/stay/dev-l0017,Maple Glade Inn,Coonoor,643101,,,,,Nilgiris
+DEV-L0022,platform_a,https://platform-a.example/listing/dev-l0022,Ctgs Court Firefly,Coonoor,,,,,,Nilgiris
+DEV-L0025,platform_a,https://platform-a.example/listing/dev-l0025,Amber Bough Residency,Ooty,643001,11.40666,76.70375,,,Nilgiris
+DEV-L0029,platform_b,https://platform-b.example/rooms/dev-l0029,Birch Bough Cottages,Masinagudi,643223,11.56583,76.64882,SYN-NLG-20191-A,,Nilgiris
+DEV-L0032,platform_b,https://platform-b.example/rooms/dev-l0032,Orchid Nook Homestay,Ooty,643001,11.40954,76.69067,,,Nilgiris
+DEV-L0033,platform_b,https://platform-b.example/rooms/dev-l0033,Hazel Corner Guest House,Ketti,643215,11.38108,76.74404,,,Nilgiris
+DEV-L0038,platform_a,https://platform-a.example/listing/dev-l0038,Pepper Den Ldge,Lovedale,643003,,,,,Nilgiris
+DEV-L0043,platform_b,https://platform-b.example/rooms/dev-l0043,Marigold Grove Loodge,Ketti,643215,,,SYN-NLG-29726-A,,Nilgiris
+DEV-L0045,platform_b,https://platform-b.example/rooms/dev-l0045,Skylark Gdn Homestay,Kotagiri,,,,SYN-NLG-26328-B,,Nilgiris
+DEV-L0047,platform_a,https://platform-a.example/listing/dev-l0047,Jasmine Meadow Residency,Coonoor,643101,11.35417,76.80563,,,Nilgiris
+DEV-L0050,platform_a,https://platform-a.example/listing/dev-l0050,Looft Clover Inn,Kotagiri,643217,11.43109,76.85077,SYN-NLG-49713-B,,Nilgiris
+DEV-L0053,platform_a,https://platform-a.example/listing/dev-l0053,Plum Nook Homestay,Aruvankadu,643202,11.36712,76.76306,,,Nilgiris
+DEV-L0061,platform_b,https://platform-b.example/rooms/dev-l0061,Ldg Grove Marigold,Ketti,643215,11.38897,76.73302,SYN-NLG-29726-A,,Nilgiris
+DEV-L0064,platform_a,https://platform-a.example/listing/dev-l0064,Marigold Ridge Lodge,Kotagiri,643217,11.42572,76.85146,,,Nilgiris
+DEV-L0065,direct,https://direct.example/stay/dev-l0065,Amber Court Cottage,Udhagamandalam,643001,,,SYN-NLG-92353-Q,,Nilgiris

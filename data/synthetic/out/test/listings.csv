@@ -1,0 +1,201 @@
+listing_id,platform,ref_url,title,locality_text,pincode,lat,lng,claimed_licence_no,notes,district
+TST-L0001,platform_b,https://platform-b.example/rooms/tst-l0001,Teak Meadow Residency,Kotagiri,,,,,,Nilgiris
+TST-L0002,platform_b,https://platform-b.example/rooms/tst-l0002,Sapphire Bough Guest House,Ketti,643215,11.37207,76.74766,,,Nilgiris
+TST-L0003,platform_b,https://platform-b.example/rooms/tst-l0003,Indigo Arbour Guest House,Ootacamund,643001,,,,,Nilgiris
+TST-L0004,platform_b,https://platform-b.example/rooms/tst-l0004,Cardamom Retreat Homestay,Ooty,643001,11.41594,76.68139,,,Nilgiris
+TST-L0005,direct,https://direct.example/stay/tst-l0005,Nim Terrace Stay,Gudalur,643212,,,,,Nilgiris
+TST-L0006,direct,https://direct.example/stay/tst-l0006,Cardamom Corner Homestay,Udhagamandalam,643001,11.41698,76.68281,,,Nilgiris
+TST-L0007,platform_b,https://platform-b.example/rooms/tst-l0007,Moonbeam Meadow Stay,Kotagiri,,,,,,Nilgiris
+TST-L0008,platform_a,https://platform-a.example/listing/tst-l0008,Magnolia Den Cottages,Aruvankadu,643202,,,SYN-NLG-13119-V,,Nilgiris
+TST-L0009,platform_b,https://platform-b.example/rooms/tst-l0009,Ivory Haven Cottage,Kotagiri,,11.42417,76.84830,SYN-NLG-34172-U,,Nilgiris
+TST-L0010,platform_a,https://platform-a.example/listing/tst-l0010,Fern Ridge Residency,Wellington,,11.37254,76.78624,,,Nilgiris
+TST-L0011,platform_a,https://platform-a.example/listing/tst-l0011,Clover Arbourlodge,Ooty,643001,11.40810,76.68345,,,Nilgiris
+TST-L0012,platform_b,https://platform-b.example/rooms/tst-l0012,Cardamom Bower Lodge,Kotagiri,643217,,,,,Nilgiris
+TST-L0013,platform_a,https://platform-a.example/listing/tst-l0013,Cardamom Haven Lodge,Kotagiri,643217,11.41958,76.85973,,,Nilgiris
+TST-L0014,platform_a,https://platform-a.example/listing/tst-l0014,Laurel Porch Cottage,Ooty,643001,11.40790,76.70859,SYN-NLG-22671-C,,Nilgiris
+TST-L0015,platform_a,https://platform-a.example/listing/tst-l0015,Cedar Bough Stay,Ooty,,11.39978,76.68652,,,Nilgiris
+TST-L0016,platform_a,https://platform-a.example/listing/tst-l0016,Maple Bower Homestay,Lovedale,,11.38575,76.71473,,,Nilgiris
+TST-L0017,direct,https://direct.example/stay/tst-l0017,Mango Porch Inn,Nilgiris district,,11.34679,76.79055,SYN-NLG-26410-J,,Nilgiris
+TST-L0018,platform_b,https://platform-b.example/rooms/tst-l0018,Kingfisher Perch Lodge,Lovedale,643003,,,SYN-NLG-54358-A,,Nilgiris
+TST-L0019,platform_b,https://platform-b.example/rooms/tst-l0019,Juniper Perch Lodge,Coonoor,643101,11.36518,76.79283,,,Nilgiris
+TST-L0020,platform_b,https://platform-b.example/rooms/tst-l0020,குஇல்ல் க்நோல் ஸ்டே,வெலிங்டன்,643231,11.37986,76.79465,SYN-NLG-29047-E,,Nilgiris
+TST-L0021,direct,https://direct.example/stay/tst-l0021,ஹோர்ந்பில்ல் லோஃப்ட் கெஸ்ட் ஹவுஸ்,ஊட்டி,643001,11.42089,76.69078,,,Nilgiris
+TST-L0022,direct,https://direct.example/stay/tst-l0022,Kingfisher Glade Lodge,Masinagudi,643223,,,SYN-NLG-72469-C,,Nilgiris
+TST-L0023,platform_b,https://platform-b.example/rooms/tst-l0023,Saffrongarden Homestay,Gudalur,,11.49419,76.50476,,,Nilgiris
+TST-L0024,platform_a,https://platform-a.example/listing/tst-l0024,Rosewood Grove Homestay,Coonoor,643101,11.35460,76.78246,,,Nilgiris
+TST-L0025,platform_a,https://platform-a.example/listing/tst-l0025,Thistle Terrace Lodge,Aruvankadu,,,,,,Nilgiris
+TST-L0026,platform_a,https://platform-a.example/listing/tst-l0026,Lanternkorner Cottage,Wellington,,11.37304,76.78361,,,Nilgiris
+TST-L0027,direct,https://direct.example/stay/tst-l0027,Silver Garden Lodge,Nilgiris district,,11.56996,76.62672,SYN-NLG-33936-T,,Nilgiris
+TST-L0028,platform_b,https://platform-b.example/rooms/tst-l0028,Indigo Burrov Stay,Nilgiris district,,,,,,Nilgiris
+TST-L0029,direct,https://direct.example/stay/tst-l0029,Fern Perchresidency,Nilgiris district,,11.35494,76.75712,SYN-NLG-07522-L,,Nilgiris
+TST-L0030,platform_b,https://platform-b.example/rooms/tst-l0030,Coral Court Cottage,Ketti,,11.38831,76.75142,,,Nilgiris
+TST-L0031,platform_a,https://platform-a.example/listing/tst-l0031,Tamarind Bough Cottage,Nilgiris district,,11.37245,76.74990,,,Nilgiris
+TST-L0032,platform_a,https://platform-a.example/listing/tst-l0032,Saffron Ridge Inn,Wellington,,,,,,Nilgiris
+TST-L0033,platform_b,https://platform-b.example/rooms/tst-l0033,Lantern Korner Cottage,Wellington,643231,11.37654,76.78297,,,Nilgiris
+TST-L0034,platform_b,https://platform-b.example/rooms/tst-l0034,Quil Knoll Stay,Wellington,643231,11.37957,76.79289,,,Nilgiris
+TST-L0035,platform_a,https://platform-a.example/listing/tst-l0035,கிந்க்ஃபிஶேர் பேர்க் லாட்ஜ்,Love Dale,643003,,,,,Nilgiris
+TST-L0036,platform_b,https://platform-b.example/rooms/tst-l0036,ஸில்வேர் கர்டேந்லோட்க்,மசினகுடி,643223,11.56961,76.62764,,,Nilgiris
+TST-L0037,platform_b,https://platform-b.example/rooms/tst-l0037,Amber Arbour Cottage,Udhagamandalam,643001,11.40575,76.68364,SYN-NLG-54028-K,,Nilgiris
+TST-L0038,platform_b,https://platform-b.example/rooms/tst-l0038,Mango Porch Inn,Coonoor,643101,11.34577,76.78860,,,Nilgiris
+TST-L0039,platform_b,https://platform-b.example/rooms/tst-l0039,Saffron Retreat Lodge,Gudalur,,11.49550,76.50244,,,Nilgiris
+TST-L0040,platform_a,https://platform-a.example/listing/tst-l0040,Jacaranda Garden Stay,Masinagudi,643223,11.56367,76.63351,,,Nilgiris
+TST-L0041,direct,https://direct.example/stay/tst-l0041,Cloverarbour Lodge,Nilgiris district,,11.40673,76.68484,SYN-NLG-57111-R,,Nilgiris
+TST-L0042,direct,https://direct.example/stay/tst-l0042,Indigo Burrow Stay,Ooty,643001,,,SYN-NLG-16889-F,,Nilgiris
+TST-L0043,platform_a,https://platform-a.example/listing/tst-l0043,Kingfisher Terrace Lodge,Kotagiri,643217,,,,,Nilgiris
+TST-L0044,platform_b,https://platform-b.example/rooms/tst-l0044,Quill Garden Lodge,Masinagudi,643223,,,,,Nilgiris
+TST-L0045,direct,https://direct.example/stay/tst-l0045,Orchid Acre Cottage,Masinagudi,643223,11.57669,76.63750,,,Nilgiris
+TST-L0046,platform_b,https://platform-b.example/rooms/tst-l0046,கோரல் டேர்ரஸ் இன்,காந்திபுரம்,641012,11.02247,76.96002,,,Coimbatore
+TST-L0047,platform_a,https://platform-a.example/listing/tst-l0047,Cardamom Porch Guest House,Gandhipuram,641012,,,,,Coimbatore
+TST-L0048,direct,https://direct.example/stay/tst-l0048,Fern Arbur Inn,Gandhipuram,641012,11.01981,76.96898,,,Coimbatore
+TST-L0049,platform_a,https://platform-a.example/listing/tst-l0049,Juniper Nook Cottages,Gandhipuram,641012,,,,,Coimbatore
+TST-L0050,direct,https://direct.example/stay/tst-l0050,Indigo Porch Cottages,Valparai,642127,,,SYN-CBE-43487-X,,Coimbatore
+TST-L0051,direct,https://direct.example/stay/tst-l0051,Cedar Perch Homestay,R.S. Puram,641002,11.01910,76.95204,,,Coimbatore
+TST-L0052,direct,https://direct.example/stay/tst-l0052,Willow Acre Homestay,RS Puram,641002,,,,,Coimbatore
+TST-L0053,direct,https://direct.example/stay/tst-l0053,Magnolia Bower Guest House,Coimbatore district,,11.00006,76.96183,,,Coimbatore
+TST-L0054,platform_a,https://platform-a.example/listing/tst-l0054,Driftwood Garden Lodge,RS Puram,641002,11.01365,76.93979,,,Coimbatore
+TST-L0055,platform_b,https://platform-b.example/rooms/tst-l0055,Hornbill Terrace Cottage,RS Puram,641002,11.00452,76.94729,,,Coimbatore
+TST-L0056,platform_b,https://platform-b.example/rooms/tst-l0056,Hazel Acre Homestay,RS Puram,641002,11.01296,76.94669,SYN-CBE-10226-E,,Coimbatore
+TST-L0057,platform_a,https://platform-a.example/listing/tst-l0057,Lantern Porch Homestay,Coimbatore district,,11.00913,76.94669,SYN-CBE-19218-L,,Coimbatore
+TST-L0058,platform_a,https://platform-a.example/listing/tst-l0058,Clover Acre Cottages,Coimbatore district,,11.01115,76.94954,SYN-CBE-35580-B,,Coimbatore
+TST-L0059,platform_b,https://platform-b.example/rooms/tst-l0059,Wren Hollow Inn,R.S. Puram,641002,11.00174,76.96017,SYN-CBE-71751-W,,Coimbatore
+TST-L0060,platform_a,https://platform-a.example/listing/tst-l0060,Pepper Krest Guesthouse,R.S. Puram,641002,11.00570,76.94157,SYN-CBE-78814-K,,Coimbatore
+TST-L0061,platform_a,https://platform-a.example/listing/tst-l0061,Lantern Retreat Lodge,Valparai,,10.33372,76.95127,SYN-CBE-35802-L,,Coimbatore
+TST-L0062,platform_a,https://platform-a.example/listing/tst-l0062,Pepper Crest Guest House,RS Puram,,11.00226,76.93893,,,Coimbatore
+TST-L0063,platform_a,https://platform-a.example/listing/tst-l0063,Sapphire Terrace Homestay,RS Puram,,11.00321,76.94699,,,Coimbatore
+TST-L0064,direct,https://direct.example/stay/tst-l0064,Fern Arbour Inn,Gandhipuram,,,,SYN-CBE-80813-P,,Coimbatore
+TST-L0065,platform_a,https://platform-a.example/listing/tst-l0065,Indigo Porkh Cottages,Valparai,642127,,,SYN-CBE-43487-X,,Coimbatore
+TST-L0066,platform_a,https://platform-a.example/listing/tst-l0066,Magnolia Loft Residency,R.S. Puram,,11.01909,76.95415,,,Coimbatore
+TST-L0067,platform_a,https://platform-a.example/listing/tst-l0067,Coral Terrace Inn,Gandhipuram,641012,11.02413,76.96263,,,Coimbatore
+TST-L0068,platform_b,https://platform-b.example/rooms/tst-l0068,Lantern Porch Homestay,Coimbatore district,,11.00606,76.95044,,,Coimbatore
+TST-L0069,platform_a,https://platform-a.example/listing/tst-l0069,Driftwood Porch Homestay,Anna Nagar,625020,9.92072,78.16174,SYN-MDU-04700-C,,Madurai
+TST-L0070,platform_a,https://platform-a.example/listing/tst-l0070,Silver Crest Stay,Simmakkal,625001,9.91705,78.10998,,,Madurai
+TST-L0071,platform_a,https://platform-a.example/listing/tst-l0071,Plum Loft Cottage,Simmakkal,625001,9.91309,78.12464,SYN-MDU-75113-G,,Madurai
+TST-L0072,direct,https://direct.example/stay/tst-l0072,Sapphire Garden Homestay,Tallakulam,625002,9.94570,78.13298,,,Madurai
+TST-L0073,platform_a,https://platform-a.example/listing/tst-l0073,Wildflower Bover Residency,Tallakulam,625002,9.94423,78.14103,,,Madurai
+TST-L0074,direct,https://direct.example/stay/tst-l0074,Tamarind Burrowinn,Madurai district,,9.94557,78.12253,,,Madurai
+TST-L0075,platform_b,https://platform-b.example/rooms/tst-l0075,Sapphire Nuk Guest House,Simmakkal,625001,9.92543,78.12594,,,Madurai
+TST-L0076,direct,https://direct.example/stay/tst-l0076,Plum Court Homestay,Simmakkal,625001,9.91334,78.12388,,,Madurai
+TST-L0077,direct,https://direct.example/stay/tst-l0077,Willow Terrace Residency,Tallakulam,625002,9.93375,78.13672,,,Madurai
+TST-L0078,platform_b,https://platform-b.example/rooms/tst-l0078,Cypress Burrow Residency,Tallakulam,,9.93023,78.12789,,,Madurai
+TST-L0079,platform_a,https://platform-a.example/listing/tst-l0079,Sparrow Corner Homestay,Tallakulam,625002,9.94700,78.12479,,,Madurai
+TST-L0080,platform_b,https://platform-b.example/rooms/tst-l0080,Fern Bower Homestay,Tallakulam,625002,9.94014,78.12969,,,Madurai
+TST-L0081,platform_a,https://platform-a.example/listing/tst-l0081,ஸப்ஃபிர் ஹோல்லோவ்லோட்க்,தல்லாகுளம்,625002,9.94734,78.13335,,,Madurai
+TST-L0082,platform_b,https://platform-b.example/rooms/tst-l0082,Indigo Retreat Homestay,Anna Nagar,625020,9.90970,78.14757,SYN-MDU-50920-E,,Madurai
+TST-L0083,platform_a,https://platform-a.example/listing/tst-l0083,வேல்வேட் டேர்ரஸேஹோமேஸ்டை,அண்ணா நகர்,625020,9.92523,78.15745,,,Madurai
+TST-L0084,direct,https://direct.example/stay/tst-l0084,Sapphire Grove Inn,Simmakkal,625001,9.92981,78.12436,,,Madurai
+TST-L0085,platform_a,https://platform-a.example/listing/tst-l0085,Fern Bower Homestay,Tallakulam,625002,,,,,Madurai
+TST-L0086,platform_b,https://platform-b.example/rooms/tst-l0086,Sparrow Crest Stay,Tallakulam,625002,9.94992,78.12557,SYN-MDU-32101-A,,Madurai
+TST-L0087,platform_b,https://platform-b.example/rooms/tst-l0087,Indigo Nest Homestay,Simmakkal,625001,9.92369,78.10763,,,Madurai
+TST-L0088,platform_b,https://platform-b.example/rooms/tst-l0088,Sapphire Hollow Lodge,Madurai district,,9.94918,78.13514,SYN-MDU-30205-E,,Madurai
+TST-L0089,platform_a,https://platform-a.example/listing/tst-l0089,Silverkrest Stay,Simmakal,625001,9.91559,78.11068,,,Madurai
+TST-L0090,direct,https://direct.example/stay/tst-l0090,Vildflowerbower Residency,Tallakulam,625002,9.94248,78.14013,,,Madurai
+TST-L0091,platform_a,https://platform-a.example/listing/tst-l0091,Amber Perch Guest House,Dindigul,624001,10.37124,77.96123,,,Dindigul
+TST-L0092,direct,https://direct.example/stay/tst-l0092,பீகோக் புர்ரோ கெஸ்ட் ஹவுஸ்,திண்டுக்கல்,624001,10.36287,77.97004,SYN-DGL-82307-C,,Dindigul
+TST-L0093,platform_a,https://platform-a.example/listing/tst-l0093,Maple Knoll Homestay,Dindigul Town,624001,10.34709,77.96999,SYN-DGL-33401-T,,Dindigul
+TST-L0094,direct,https://direct.example/stay/tst-l0094,Teak Bough Stay,Dindigul Town,624001,,,,,Dindigul
+TST-L0095,direct,https://direct.example/stay/tst-l0095,Bamboo Nook Guest House,Dindigul Town,624001,10.36728,77.98043,,,Dindigul
+TST-L0096,platform_b,https://platform-b.example/rooms/tst-l0096,Velvet Meadow Residency,Dindigul Town,624001,,,,,Dindigul
+TST-L0097,direct,https://direct.example/stay/tst-l0097,Wren Ridge Residency,Kodaikanal,624101,10.24004,77.48576,,,Dindigul
+TST-L0098,platform_a,https://platform-a.example/listing/tst-l0098,Cedar Court Stay,Palani,624601,10.45141,77.51037,,,Dindigul
+TST-L0099,direct,https://direct.example/stay/tst-l0099,Bluebell Court Residency,Palani,624601,,,SYN-DGL-77922-K,,Dindigul
+TST-L0100,platform_a,https://platform-a.example/listing/tst-l0100,டீக் கர்டேந் இன்,Dindigul district,,10.23457,77.49198,,,Dindigul
+TST-L0101,platform_a,https://platform-a.example/listing/tst-l0101,Wildflower Terrace Cottages,Dindigul district,,10.36320,77.97294,SYN-DGL-68260-E,,Dindigul
+TST-L0102,direct,https://direct.example/stay/tst-l0102,Magnolia Haven Cottages,Pazhani,624601,,,,,Dindigul
+TST-L0103,platform_a,https://platform-a.example/listing/tst-l0103,மூந்பீம் கௌர்ட் லாட்ஜ்,Dindigul district,,10.45135,77.50876,SYN-DGL-87759-G,,Dindigul
+TST-L0104,platform_b,https://platform-b.example/rooms/tst-l0104,Magnolia Hollow Homestay,Palani,,10.45276,77.51704,,,Dindigul
+TST-L0105,platform_a,https://platform-a.example/listing/tst-l0105,Peacock Hollow Guest House,Dindigul Town,624001,,,,,Dindigul
+TST-L0106,platform_b,https://platform-b.example/rooms/tst-l0106,Teak Haven Residency,Dindigul,624001,,,,,Dindigul
+TST-L0107,platform_a,https://platform-a.example/listing/tst-l0107,Laurel Hollow Guest House,Dindigul Town,624001,10.35834,77.96830,SYN-DGL-21231-N,,Dindigul
+TST-L0108,platform_b,https://platform-b.example/rooms/tst-l0108,Laurel Hollow Guest House,Dindigul Town,,10.35525,77.97081,SYN-DGL-73118-G,,Dindigul
+TST-L0109,direct,https://direct.example/stay/tst-l0109,டீக் பௌக் ஸ்டே,திண்டுக்கல்,624001,10.36658,77.95853,,,Dindigul
+TST-L0110,direct,https://direct.example/stay/tst-l0110,Teak Garden Inn,Kodaikanal,624101,,,SYN-DGL-95014-L,,Dindigul
+TST-L0111,platform_a,https://platform-a.example/listing/tst-l0111,மக்நோலிஅ ஹவேந் காட்டேஜஸ்,பழனி,624601,,,,,Dindigul
+TST-L0112,platform_b,https://platform-b.example/rooms/tst-l0112,Maple Knoll Homestay,Dindigul district,,10.34706,77.97103,SYN-DGL-33401-T,,Dindigul
+TST-L0113,platform_b,https://platform-b.example/rooms/tst-l0113,Juniper Retreatinn,Colachel,629251,,,,,Kanyakumari
+TST-L0114,platform_b,https://platform-b.example/rooms/tst-l0114,Mango Gladestay,Kanyakumari district,,8.18365,77.40432,,,Kanyakumari
+TST-L0115,platform_b,https://platform-b.example/rooms/tst-l0115,Willow Knoll Guest House,Kanyakumari,629702,8.08821,77.54717,,,Kanyakumari
+TST-L0116,platform_a,https://platform-a.example/listing/tst-l0116,Jacaranda Grove Cottages,Nagercoil,629001,8.18890,77.40600,,,Kanyakumari
+TST-L0117,platform_b,https://platform-b.example/rooms/tst-l0117,ஜகரந்ட புர்ரோவ்ரேஸிடேந்ஸி,கன்னியாகுமரி,629702,,,,,Kanyakumari
+TST-L0118,platform_a,https://platform-a.example/listing/tst-l0118,Firefly Arbour Guest House,Kanyakumari,629702,8.08154,77.54532,SYN-KNK-71238-L,,Kanyakumari
+TST-L0119,platform_b,https://platform-b.example/rooms/tst-l0119,Neem Garden Guest House,Nagercoil,629001,8.18122,77.40570,SYN-KNK-54518-X,,Kanyakumari
+TST-L0120,direct,https://direct.example/stay/tst-l0120,Driftwood Hollow Guest House,Kanyakumari,,8.09080,77.55127,,,Kanyakumari
+TST-L0121,platform_a,https://platform-a.example/listing/tst-l0121,Lantern Grove Homestay,Cape Comorin,,8.09091,77.53506,,,Kanyakumari
+TST-L0122,direct,https://direct.example/stay/tst-l0122,Hornbill Grove Residency,Nagercoil,,8.18993,77.40688,SYN-KNK-49059-A,,Kanyakumari
+TST-L0123,platform_b,https://platform-b.example/rooms/tst-l0123,Peacock Gladehomestay,Nagercoil,,8.19692,77.40992,,,Kanyakumari
+TST-L0124,direct,https://direct.example/stay/tst-l0124,Hazel Bower Lodge,Colachel,629251,8.16438,77.26053,,,Kanyakumari
+TST-L0125,direct,https://direct.example/stay/tst-l0125,Plum Nest Cottages,Nagercoil,629001,,,,,Kanyakumari
+TST-L0126,platform_b,https://platform-b.example/rooms/tst-l0126,ஸப்ஃபிர் க்ரேஸ்ட் குஏஸ்தௌஸ்,நாகர்கோவில்,629001,,,SYN-KNK-59338-A,,Kanyakumari
+TST-L0127,platform_b,https://platform-b.example/rooms/tst-l0127,Mango Terrace Inn,Nagercoil,,8.18018,77.40635,,,Kanyakumari
+TST-L0128,direct,https://direct.example/stay/tst-l0128,Juniper Retreat Inn,Colachel,629251,8.18490,77.24936,SYN-KNK-38858-Q,,Kanyakumari
+TST-L0129,platform_b,https://platform-b.example/rooms/tst-l0129,Neem Garden Guest House,Nagercoil,629001,8.18262,77.40995,SYN-KNK-54518-X,,Kanyakumari
+TST-L0130,platform_a,https://platform-a.example/listing/tst-l0130,Villow Knoll Guesthouse,Cape Comorin,629702,8.09010,77.54707,SYN-KNK-59784-D,,Kanyakumari
+TST-L0131,platform_b,https://platform-b.example/rooms/tst-l0131,Juniper Crest Homestay,Colachel,629251,8.17499,77.25465,,,Kanyakumari
+TST-L0132,platform_b,https://platform-b.example/rooms/tst-l0132,மந்கோ க்லட் ஸ்டே,Nagarkoil,629001,8.18104,77.40843,,,Kanyakumari
+TST-L0133,direct,https://direct.example/stay/tst-l0133,Thistle Garden Guest House,Kanyakumari,629702,8.08683,77.53527,,,Kanyakumari
+TST-L0134,platform_a,https://platform-a.example/listing/tst-l0134,ஹஜேல் போவேர் லாட்ஜ்,Kanyakumari district,,8.16616,77.26338,,,Kanyakumari
+TST-L0135,direct,https://direct.example/stay/tst-l0135,Cardamom Nook Residency,Thanjavur Town,613001,10.78574,79.13342,,,Thanjavur
+TST-L0136,platform_a,https://platform-a.example/listing/tst-l0136,Bamboo Knoll Residency,Thanjavur Town,613001,10.79529,79.13433,SYN-TNJ-74728-G,,Thanjavur
+TST-L0137,platform_b,https://platform-b.example/rooms/tst-l0137,Laurel Bough Residency,Pattukkottai,614601,10.41027,79.31680,,,Thanjavur
+TST-L0138,platform_b,https://platform-b.example/rooms/tst-l0138,Moonbeam Crest Stay,Thanjavur district,,,,SYN-TNJ-35498-C,,Thanjavur
+TST-L0139,platform_b,https://platform-b.example/rooms/tst-l0139,Wren Acre Residency,Kumbakonam,612001,10.96946,79.39614,,,Thanjavur
+TST-L0140,direct,https://direct.example/stay/tst-l0140,Ivory Grove Lodge,Kumbakonam,612001,10.96874,79.39010,SYN-TNJ-13760-P,,Thanjavur
+TST-L0141,platform_a,https://platform-a.example/listing/tst-l0141,Sparrow Loftlodge,Kumbakonam,,10.95754,79.40215,,,Thanjavur
+TST-L0142,platform_a,https://platform-a.example/listing/tst-l0142,Juniper Corner Cottage,Thanjavur,613001,10.78482,79.12565,,,Thanjavur
+TST-L0143,platform_b,https://platform-b.example/rooms/tst-l0143,Velvet Ridge Homestay,Pattukkottai,614601,,,SYN-TNJ-14740-E,,Thanjavur
+TST-L0144,direct,https://direct.example/stay/tst-l0144,Eucalyptus Terrace Homestay,Thanjavur district,,10.96351,79.38596,SYN-TNJ-21829-K,,Thanjavur
+TST-L0145,direct,https://direct.example/stay/tst-l0145,ஜுநிபேர் பௌக் ஹோம்ஸ்டே,Thanjavur district,,10.78756,79.12623,,,Thanjavur
+TST-L0146,platform_a,https://platform-a.example/listing/tst-l0146,Bamboo Burrow Homestay,Thanjavur Town,613001,,,SYN-TNJ-66113-B,,Thanjavur
+TST-L0147,platform_b,https://platform-b.example/rooms/tst-l0147,Eucalyptus Acre Homestay,Kumbakonam,,,,,,Thanjavur
+TST-L0148,platform_b,https://platform-b.example/rooms/tst-l0148,Willowglade Lodge,Kumbakonam,,10.95167,79.39231,,,Thanjavur
+TST-L0149,platform_a,https://platform-a.example/listing/tst-l0149,ஸ்பர்ரோ லோஃப்ட் லாட்ஜ்,கும்பகோணம்,612001,10.95728,79.40047,,,Thanjavur
+TST-L0150,platform_a,https://platform-a.example/listing/tst-l0150,Sandal Nest Residency,Kumbakonam,612001,10.95127,79.38164,SYN-TNJ-48455-T,,Thanjavur
+TST-L0151,platform_a,https://platform-a.example/listing/tst-l0151,Bluebell Bower Cottages,Kumbakonam,612001,10.94908,79.38328,,,Thanjavur
+TST-L0152,platform_a,https://platform-a.example/listing/tst-l0152,ஏஉகல்ய்ப்டுஸ் டேர்ரஸேஹோமேஸ்டை,கும்பகோணம்,612001,10.96363,79.38926,SYN-TNJ-21829-K,,Thanjavur
+TST-L0153,platform_b,https://platform-b.example/rooms/tst-l0153,பம்பூ க்நோல்ல் ரெசிடென்சி,தஞ்சாவூர்,,10.79548,79.13159,,,Thanjavur
+TST-L0154,platform_b,https://platform-b.example/rooms/tst-l0154,Bamboo Burrow Homestay,Thanjavur Town,613001,,,SYN-TNJ-66113-B,,Thanjavur
+TST-L0155,direct,https://direct.example/stay/tst-l0155,Tamarind Terrace Residency,Pattukkottai,614601,,,,,Thanjavur
+TST-L0156,platform_b,https://platform-b.example/rooms/tst-l0156,Bamboo Garden Homestay,Thanjavur Town,,10.79408,79.13388,,,Thanjavur
+TST-L0157,platform_a,https://platform-a.example/listing/tst-l0157,Rosewood Haven Homestay,Mandapam,623518,,,,,Ramanathapuram
+TST-L0158,platform_b,https://platform-b.example/rooms/tst-l0158,Moonbeam Nook Lodge,Rameswaram,623526,9.29566,79.30950,SYN-RMD-08730-R,,Ramanathapuram
+TST-L0159,platform_b,https://platform-b.example/rooms/tst-l0159,Birch Terrace Residency,Rameswaram,623526,9.29626,79.32340,,,Ramanathapuram
+TST-L0160,platform_b,https://platform-b.example/rooms/tst-l0160,Sapphire Loft Cottages,Mandapam,623518,9.28075,79.11741,,,Ramanathapuram
+TST-L0161,platform_a,https://platform-a.example/listing/tst-l0161,லௌரேல் கோர்நேர் ஹோம்ஸ்டே,இராமநாதபுரம்,623501,,,,,Ramanathapuram
+TST-L0162,platform_a,https://platform-a.example/listing/tst-l0162,Sapphire Haven Stay,Ramanathapuram Town,623501,,,,,Ramanathapuram
+TST-L0163,platform_a,https://platform-a.example/listing/tst-l0163,Willow Burrow Cottage,Mandapam,623518,9.27937,79.12761,,,Ramanathapuram
+TST-L0164,platform_a,https://platform-a.example/listing/tst-l0164,Kardamom Glade Homestay,Mandapam,,,,SYN-RMD-93783-P,,Ramanathapuram
+TST-L0165,platform_b,https://platform-b.example/rooms/tst-l0165,Birch Knoll Stay,Mandapam,623518,9.28212,79.11184,SYN-RMD-51264-Z,,Ramanathapuram
+TST-L0166,platform_a,https://platform-a.example/listing/tst-l0166,Cardamom Acre Cottage,Ramanathapuram district,,,,SYN-RMD-74060-C,,Ramanathapuram
+TST-L0167,platform_b,https://platform-b.example/rooms/tst-l0167,Kingfisher Burrow Cottage,Mandapam,623518,,,,,Ramanathapuram
+TST-L0168,platform_b,https://platform-b.example/rooms/tst-l0168,ஸப்ஃபிர் அர்பௌர் ஹோம்ஸ்டே,மண்டபம்,623518,9.27843,79.11502,,,Ramanathapuram
+TST-L0169,platform_b,https://platform-b.example/rooms/tst-l0169,Orchid Retreat Stay,Rameswaram,,9.28832,79.29930,SYN-RMD-35798-Y,,Ramanathapuram
+TST-L0170,platform_a,https://platform-a.example/listing/tst-l0170,Wren Loft Homestay,Ramanathapuram Town,623501,,,SYN-RMD-96479-L,,Ramanathapuram
+TST-L0171,direct,https://direct.example/stay/tst-l0171,Cardamom Hollow Residency,Ramanathapuram Town,623501,,,,,Ramanathapuram
+TST-L0172,direct,https://direct.example/stay/tst-l0172,Peacock Meadow Homestay,Rameswaram,623526,,,SYN-RMD-94507-G,,Ramanathapuram
+TST-L0173,platform_b,https://platform-b.example/rooms/tst-l0173,Laurel Kornerhomestay,Ramnad,623501,9.35384,78.83303,SYN-RMD-87123-Z,,Ramanathapuram
+TST-L0174,platform_a,https://platform-a.example/listing/tst-l0174,Cardamom Acre Cottage,Ramanathapuram Town,623501,9.37170,78.83384,,,Ramanathapuram
+TST-L0175,platform_a,https://platform-a.example/listing/tst-l0175,Orchid Retreat Stay,Ramanathapuram district,,9.28995,79.29907,SYN-RMD-87073-E,,Ramanathapuram
+TST-L0176,direct,https://direct.example/stay/tst-l0176,Wren Lofthomestay,Ramanathapuram Town,623501,,,SYN-RMD-09116-U,,Ramanathapuram
+TST-L0177,platform_a,https://platform-a.example/listing/tst-l0177,Kardamom Glade Homestay,Mandapam,,9.27404,79.13179,SYN-RMD-93783-P,,Ramanathapuram
+TST-L0178,platform_a,https://platform-a.example/listing/tst-l0178,Teak Nest Guest House,Ramnad,623501,9.35905,78.83040,,,Ramanathapuram
+TST-L0179,platform_a,https://platform-a.example/listing/tst-l0179,Sandal Court Inn,T Nagar,600017,13.04257,80.22708,,,Chennai
+TST-L0180,platform_b,https://platform-b.example/rooms/tst-l0180,Neem Acre Residency,T Nagar,600017,,,SYN-CHN-15485-U,,Chennai
+TST-L0181,platform_a,https://platform-a.example/listing/tst-l0181,Eucalyptus Nestresidency,Chennai district,,,,,,Chennai
+TST-L0182,direct,https://direct.example/stay/tst-l0182,Willow Den Residency,Besant Nagar,600090,,,SYN-CHN-72676-S,,Chennai
+TST-L0183,platform_a,https://platform-a.example/listing/tst-l0183,Jasmine Retreat Guest House,Mylapore,600004,13.03240,80.25722,,,Chennai
+TST-L0184,platform_b,https://platform-b.example/rooms/tst-l0184,Clover Nook Homestay,Besant Nagar,600090,13.00526,80.27402,SYN-CHN-32057-G,,Chennai
+TST-L0185,platform_a,https://platform-a.example/listing/tst-l0185,லௌரேல் குர்ட் கெஸ்ட் ஹவுஸ்,பெசன்ட் நகர்,600090,13.00516,80.27207,,,Chennai
+TST-L0186,platform_a,https://platform-a.example/listing/tst-l0186,Skylark Knoll Residency,Mylapore,,,,SYN-CHN-32057-G,,Chennai
+TST-L0187,platform_a,https://platform-a.example/listing/tst-l0187,Moonbeam Knoll Inn,Besant Nagar,,12.99700,80.27672,,,Chennai
+TST-L0188,platform_b,https://platform-b.example/rooms/tst-l0188,Wren Retreat Cottages,Besant Nagar,600090,12.99670,80.25893,,,Chennai
+TST-L0189,platform_a,https://platform-a.example/listing/tst-l0189,Marigoldacre Homestay,Besant Nagar,600090,13.00003,80.26732,SYN-CHN-71988-E,,Chennai
+TST-L0190,direct,https://direct.example/stay/tst-l0190,Eucalyptus Bough Guest House,T Nagar,600017,13.04579,80.22342,,,Chennai
+TST-L0191,direct,https://direct.example/stay/tst-l0191,கிந்க்ஃபிஶேர் மீடோ கெஸ்ட் ஹவுஸ்,தி. நகர்,600017,13.04676,80.24128,SYN-CHN-41835-Z,,Chennai
+TST-L0192,platform_b,https://platform-b.example/rooms/tst-l0192,Cypress Knoll Lodge,T Nagar,600017,13.03484,80.23588,,,Chennai
+TST-L0193,direct,https://direct.example/stay/tst-l0193,ஓர்கிட் போவேர் காட்டேஜ்,Chennai district,,13.02810,80.23410,SYN-CHN-69786-N,,Chennai
+TST-L0194,platform_a,https://platform-a.example/listing/tst-l0194,Thistle Den Homestay,Besant Nagar,600090,13.00776,80.26337,,,Chennai
+TST-L0195,direct,https://direct.example/stay/tst-l0195,Orchid Bowercottage,Chennai district,,13.03074,80.23657,,,Chennai
+TST-L0196,platform_a,https://platform-a.example/listing/tst-l0196,Lantern Hollow Cottages,Besant Nagar,600090,,,,,Chennai
+TST-L0197,platform_a,https://platform-a.example/listing/tst-l0197,Wilow Denresidency,Besant Nagar,600090,13.00865,80.26393,SYN-CHN-72676-S,,Chennai
+TST-L0198,direct,https://direct.example/stay/tst-l0198,Cypressknoll Lodge,Chennai district,,,,SYN-CHN-11176-F,,Chennai
+TST-L0199,direct,https://direct.example/stay/tst-l0199,Laurel Court Guest House,Besant Nagar,600090,13.00462,80.27181,,,Chennai
+TST-L0200,platform_a,https://platform-a.example/listing/tst-l0200,Thistle Arbour Stay,Mylapore,600004,,,,,Chennai

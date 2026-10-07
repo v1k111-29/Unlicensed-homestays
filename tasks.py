@@ -38,6 +38,11 @@ def lint() -> int:
     return _run("-m", "ruff", "check", ".") or _run("-m", "ruff", "format", "--check", ".")
 
 
+def seed() -> int:
+    """Generate the synthetic dev/test data sets (deterministic; see generator docstring)."""
+    return _run(str(ROOT / "data" / "synthetic" / "generator.py"))
+
+
 def _not_yet(target: str, module: str) -> Callable[[], int]:
     def command() -> int:
         print(f"'{target}' is not implemented until {module}.")
@@ -52,7 +57,7 @@ TARGETS: dict[str, Callable[[], int]] = {
     "test": test,
     "lint": lint,
     "eval": _not_yet("eval", "M5"),
-    "seed": _not_yet("seed", "M1"),
+    "seed": seed,
     "migrate": _not_yet("migrate", "M2"),
 }
 

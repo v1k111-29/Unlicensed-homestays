@@ -67,7 +67,7 @@ python tasks.py run      # dev server
 python tasks.py test     # pytest
 python tasks.py lint     # ruff check + ruff format --check
 python tasks.py eval     # run matching evaluation on dev set (prints metrics)
-python tasks.py seed     # generate synthetic data (seeded, reproducible)
+python tasks.py seed     # generate synthetic data (seeded, reproducible) [done in M1]
 python tasks.py migrate  # apply migrations
 ```
 Every `make <target>` in other docs means `python tasks.py <target>`.
