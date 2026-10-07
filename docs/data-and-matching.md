@@ -53,6 +53,8 @@ Feature values are stored in `match_candidates.features`. Thresholds `T_low`, `T
 | No candidate ≥ T_low | **No match — needs review** |
 Queue priority: licence mismatch → no candidate → ambiguous; ties by lower score first.
 
+**Implemented in M4** (`src/matching/engine.py`, params version `m4-initial-1`): blocking per D52, features and missing-feature handling per D51, band keys, extra gates (name ≥ 0.85 for score-path "Matched", ambiguity margin 0.05) and initial T_low 0.75 / T_high 0.90 per D53 [A: chosen on dev only; M5 tunes]. Run linkage and validity date per D54.
+
 ## 8. Human review and evidence
 Side-by-side listing vs top-3 candidates with feature breakdown. Decisions per `essentialfeatures.md` O4. Evidence page per O5. Confirmed pairs are suppressed from future flags.
 
