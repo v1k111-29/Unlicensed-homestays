@@ -45,7 +45,8 @@ Implemented in M2 (Django models + migrations under `src/<app>/`). Names above a
 |---|---|---|
 | `GET/POST /{lang}/check` | Public | Tourist check (rate-limited) |
 | `POST /{lang}/report` | Public | Stretch: tourist report with consent |
-| `GET/POST /login`, `/logout` | All | Session auth |
+| `GET/POST /login/`, `POST /logout/` | All | Session auth (M6; logout is POST-only, failed logins throttled, D46-D47) |
+| `GET /dashboard/` | Officer, Admin | Signed-in landing page (M6 placeholder; M8 fills it) |
 | `POST /officer/uploads` | Officer | Preview then confirm CSV |
 | `POST /officer/runs` | Officer | Run matching on a batch |
 | `GET /officer/queue` | Officer | Prioritised queue |
@@ -56,7 +57,8 @@ Implemented in M2 (Django models + migrations under `src/<app>/`). Names above a
 | `GET /healthz` | Monitor | Health |
 
 ## 5. Cross-cutting rules
-- Every officer query is filtered by `district_id` in a shared queryset helper (never per-view ad hoc).
+- Every officer query is filtered by `district_id` in a shared queryset helper (never per-view ad hoc): `accounts.scoping.scoped()` / `get_scoped_or_404()`; writes naming a district use `can_act_in_district()` (D48).
+- Every view is guarded by a capability: `accounts.permissions.require_capability` / `CapabilityRequiredMixin` (D45).
 - Every state change calls `audit.log(...)`.
 - Matching is deterministic and versioned (`params_version`).
 - i18n via gettext; URL language prefix.

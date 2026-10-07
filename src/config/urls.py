@@ -1,3 +1,7 @@
-"""URL routes. Views arrive in M6+ (auth) and M7+ (officer, tourist)."""
+"""URL routes. Auth in M6; officer pages in M7/M8; tourist pages in M9."""
 
-urlpatterns: list = []
+from django.urls import include, path
+
+urlpatterns = [
+    path("", include("accounts.urls")),
+]

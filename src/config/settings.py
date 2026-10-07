@@ -63,6 +63,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "django.template.context_processors.i18n",
             ],
         },
     },
@@ -98,7 +99,31 @@ STATICFILES_DIRS = [SRC_DIR / "static"]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# --- Authentication and sessions (M6, docs/security-and-privacy.md §2, D45-D47) ---
+LOGIN_URL = "login"
+LOGIN_REDIRECT_URL = "dashboard"
+LOGOUT_REDIRECT_URL = "login"
+
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = "Lax"
 SESSION_COOKIE_SECURE = not DEBUG
+# Idle timeout: 30 minutes without a request ends the session; closing the browser ends it too.
+SESSION_COOKIE_AGE = 30 * 60
+SESSION_SAVE_EVERY_REQUEST = True
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 CSRF_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SAMESITE = "Lax"
+
+# Security headers (CSP is left to M11 with the deploy configuration).
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_REFERRER_POLICY = "same-origin"
+X_FRAME_OPTIONS = "DENY"
+
+# 5 failed logins within 15 minutes lock the account and the client address for the rest of
+# that window (essentialfeatures.md O1, D46).
+LOGIN_THROTTLE = {"max_failures": 5, "window_seconds": 15 * 60}
+# Leave empty unless behind a proxy that appends the real client address to this header,
+# e.g. "HTTP_X_FORWARDED_FOR" (Q18). Never trust a client-supplied header otherwise.
+CLIENT_IP_HEADER = os.environ.get("DJANGO_CLIENT_IP_HEADER", "")
+
+CACHES = {"default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}}
