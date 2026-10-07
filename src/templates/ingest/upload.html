@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{{ title }} · {% translate "Verified Stays" %}{% endblock %}
+{% block content %}
+<h1>{{ title }}</h1>
+
+{% if kind == "listings" %}
+<p>{% translate "Upload a CSV file of listings to check against the registry. Required columns: platform, title, locality_text. Optional: listing_id, ref_url, pincode, lat, lng, claimed_licence_no, notes, district." %}</p>
+{% if is_admin %}
+<p>{% translate "As an administrator, every row must name its district in the district column." %}</p>
+{% else %}
+<p>{% blocktranslate with district=own_district.name_en %}Listings are added to your district ({{ district }}). If you include a district column, every row must name {{ district }}; a file naming another district is rejected whole.{% endblocktranslate %}</p>
+{% endif %}
+{% else %}
+<p>{% translate "Upload the licence registry as a CSV file. Required columns: licence_no, name, locality, district, valid_to. Optional: address_en, address_ta, pincode, lat, lng, category, valid_from, status. The newest registry upload is the one used for matching; earlier uploads are kept." %}</p>
+{% endif %}
+<p class="hint">{% blocktranslate with size=max_bytes|filesizeformat %}UTF-8 text, at most {{ size }} and {{ max_rows }} data rows. Nothing is saved until you confirm the preview.{% endblocktranslate %}</p>
+
+{% if no_registry %}
+<div class="alert" role="note">
+  <p><strong>{% translate "No registry loaded yet." %}</strong> {% translate "You can upload listings now, but matching needs a registry. Ask an administrator to upload one." %}</p>
+</div>
+{% endif %}
+
+{% if errors %}
+<section class="alert" role="alert" aria-labelledby="errors-heading" tabindex="-1" id="errors">
+  <h2 id="errors-heading">{% translate "The file was not saved" %}</h2>
+  {% if out_of_district %}
+  <p>{% translate "The file names a district other than yours. The whole file was rejected and the attempt has been recorded in the audit log." %}</p>
+  {% endif %}
+  <p>{% blocktranslate count counter=error_count with name=source_name %}{{ name }}: {{ counter }} problem found. Nothing was saved. Correct the file and upload it again.{% plural %}{{ name }}: {{ counter }} problems found. Nothing was saved. Correct the file and upload it again.{% endblocktranslate %}</p>
+  <div class="table-scroll">
+    <table class="data">
+      <caption class="visually-hidden">{% translate "Problems by line" %}</caption>
+      <thead><tr><th scope="col">{% translate "Line" %}</th><th scope="col">{% translate "Column" %}</th><th scope="col">{% translate "Problem" %}</th></tr></thead>
+      <tbody>
+        {% for e in errors %}
+        <tr><td>{% if e.line %}{{ e.line }}{% else %}{% translate "Whole file" %}{% endif %}</td><td>{{ e.column|default:"-" }}</td><td>{{ e.message }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% if more_errors %}<p>{% blocktranslate count counter=more_errors %}And {{ counter }} more problem not shown.{% plural %}And {{ counter }} more problems not shown.{% endblocktranslate %}</p>{% endif %}
+</section>
+{% endif %}
+
+<form method="post" action="{{ page_url }}" enctype="multipart/form-data" class="panel" novalidate>
+  {% csrf_token %}
+  {% if form.non_field_errors %}<div class="alert" role="alert">{% for err in form.non_field_errors %}<p>{{ err }}</p>{% endfor %}</div>{% endif %}
+  <div class="field">
+    <label for="{{ form.file.id_for_label }}">{{ form.file.label }}</label>
+    <p class="hint" id="file-hint">{% translate "Choose a .csv file from your computer." %}</p>
+    {% if form.file.errors %}<p class="field-error" id="file-error">{% for err in form.file.errors %}{{ err }} {% endfor %}</p>{% endif %}
+    <input type="file" name="{{ form.file.html_name }}" id="{{ form.file.id_for_label }}" accept=".csv,text/csv" required aria-describedby="file-hint{% if form.file.errors %} file-error{% endif %}"{% if form.file.errors %} aria-invalid="true"{% endif %}>
+  </div>
+  {% if form.dataset %}
+  <div class="field">
+    <label for="{{ form.dataset.id_for_label }}">{{ form.dataset.label }}</label>
+    <p class="hint" id="dataset-hint">{% translate "The registry these listings will be matched against." %}</p>
+    {% if form.dataset.errors %}<p class="field-error" id="dataset-error">{% for err in form.dataset.errors %}{{ err }} {% endfor %}</p>{% endif %}
+    <select name="{{ form.dataset.html_name }}" id="{{ form.dataset.id_for_label }}" aria-describedby="dataset-hint{% if form.dataset.errors %} dataset-error{% endif %}">
+      {% for value, label in form.dataset.field.choices %}
+      <option value="{{ value }}"{% if value == form.dataset.value %} selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  {% endif %}
+  <button type="submit" class="button">{% translate "Check file" %}</button>
+</form>
+
+<h2>{% translate "Recent uploads" %}</h2>
+{% if recent %}
+<div class="table-scroll">
+  <table class="data">
+    <thead>
+      <tr>
+        <th scope="col">{% translate "Batch" %}</th>
+        <th scope="col">{% translate "File" %}</th>
+        <th scope="col">{% translate "District" %}</th>
+        <th scope="col">{% translate "Data set" %}</th>
+        <th scope="col">{% translate "Rows" %}</th>
+        <th scope="col">{% translate "Uploaded by" %}</th>
+        <th scope="col">{% translate "Uploaded" %}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for b in recent %}
+      <tr>
+        <td>{{ b.pk }}</td>
+        <td>{{ b.source_name|default:"-" }}</td>
+        <td>{% if b.district %}{{ b.district.name_en }}{% elif kind == "listings" %}{% translate "Several districts" %}{% else %}{% translate "All districts in the file" %}{% endif %}</td>
+        <td>{{ b.dataset|default:_("Uploaded") }}</td>
+        <td>{{ b.row_count }}</td>
+        <td>{% if b.uploader %}{{ b.uploader.get_username }}{% else %}{% translate "System load" %}{% endif %}</td>
+        <td>{{ b.created_at|date:"Y-m-d H:i" }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<p class="empty">{% translate "No files uploaded yet." %}</p>
+{% endif %}
+{% endblock %}

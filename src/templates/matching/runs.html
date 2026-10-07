@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% translate "Matching runs" %} · {% translate "Verified Stays" %}{% endblock %}
+{% block content %}
+<h1>{% translate "Matching runs" %}</h1>
+<p>{% translate "Matching compares each listing with the registry of its district and sorts it for review. It never decides that a stay is without a licence; an officer reviews every case." %}</p>
+
+<h2>{% translate "Listing batches" %}</h2>
+{% if batches %}
+<div class="table-scroll">
+  <table class="data">
+    <thead>
+      <tr>
+        <th scope="col">{% translate "Batch" %}</th>
+        <th scope="col">{% translate "File" %}</th>
+        <th scope="col">{% translate "District" %}</th>
+        <th scope="col">{% translate "Data set" %}</th>
+        <th scope="col">{% translate "Rows" %}</th>
+        <th scope="col">{% translate "Runs so far" %}</th>
+        <th scope="col"><span class="visually-hidden">{% translate "Action" %}</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for b in batches %}
+      <tr>
+        <td>{{ b.pk }}</td>
+        <td>{{ b.source_name|default:"-" }}</td>
+        <td>{% if b.district %}{{ b.district.name_en }}{% else %}{% translate "Several districts" %}{% endif %}</td>
+        <td>{{ b.dataset|default:_("Uploaded") }}</td>
+        <td>{{ b.row_count }}</td>
+        <td>{{ b.run_count }}</td>
+        <td>
+          <form method="post" action="{% url 'run_create' %}" class="inline">
+            {% csrf_token %}
+            <input type="hidden" name="batch" value="{{ b.pk }}">
+            <button type="submit" class="button small">{% blocktranslate with id=b.pk %}Run matching on batch {{ id }}{% endblocktranslate %}</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% if is_admin %}<p class="hint">{% translate "A batch with several districts creates one run per district." %}</p>{% endif %}
+{% else %}
+<p class="empty">{% translate "No listing batches yet." %} <a href="{% url 'upload_listings' %}">{% translate "Upload a listings CSV" %}</a></p>
+{% endif %}
+
+<h2>{% translate "Recent runs" %}</h2>
+{% if runs %}
+<div class="table-scroll">
+  <table class="data">
+    <thead>
+      <tr>
+        <th scope="col">{% translate "Run" %}</th>
+        <th scope="col">{% translate "District" %}</th>
+        <th scope="col">{% translate "Batch" %}</th>
+        <th scope="col">{% translate "Listings" %}</th>
+        <th scope="col">{% translate "Parameters" %}</th>
+        <th scope="col">{% translate "Started by" %}</th>
+        <th scope="col">{% translate "Started" %}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in runs %}
+      <tr>
+        <td><a href="{% url 'run_detail' r.pk %}">{% blocktranslate with id=r.pk %}Run {{ id }}{% endblocktranslate %}</a></td>
+        <td>{{ r.district.name_en }}</td>
+        <td>{{ r.listing_batch_id|default:"-" }}</td>
+        <td>{{ r.result_count }}</td>
+        <td>{{ r.params_version }}</td>
+        <td>{% if r.created_by %}{{ r.created_by.get_username }}{% else %}{% translate "System" %}{% endif %}</td>
+        <td>{{ r.created_at|date:"Y-m-d H:i" }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<p class="empty">{% translate "No matching runs yet." %}</p>
+{% endif %}
+{% endblock %}

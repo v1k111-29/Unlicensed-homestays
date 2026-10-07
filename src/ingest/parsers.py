@@ -8,6 +8,8 @@ from dataclasses import dataclass
 from datetime import date
 from decimal import Decimal
 
+from django.utils.translation import gettext as _
+
 from ingest.csvtools import CsvTable, LineError, RowChecker, read_csv
 
 REGISTRY_REQUIRED = ["licence_no", "name", "locality", "district", "valid_to"]
@@ -103,7 +105,9 @@ def _duplicates(table: CsvTable, column: str, errors: list[LineError]) -> None:
         if not value:
             continue
         if value in first:
-            errors.append(LineError(line, column, f"duplicate of line {first[value]}"))
+            errors.append(
+                LineError(line, column, _("duplicate of line %(line)d") % {"line": first[value]})
+            )
         else:
             first[value] = line
 
@@ -132,7 +136,7 @@ def parse_registry(data: bytes) -> Parsed:
             district=c.text("district", 100, required=True),
         )
         if entry.valid_from and entry.valid_to and entry.valid_from > entry.valid_to:
-            c.error("valid_from", "is after valid_to")
+            c.error("valid_from", _("is after valid_to"))
         rows.append(entry)
     _duplicates(table, "licence_no", errors)
     return Parsed(table.sha256, rows, sorted(errors, key=lambda e: e.line))
@@ -181,9 +185,11 @@ def parse_ground_truth(data: bytes) -> Parsed:
         )
         needs_entry = truth.type in ("clean", "noisy", "wrong_or_expired")
         if needs_entry and not truth.true_registry_id:
-            c.error("true_registry_id", f"required for type '{truth.type}'")
+            c.error("true_registry_id", _("required for type '%(type)s'") % {"type": truth.type})
         if truth.type in ("no_counterpart", "hard_negative") and truth.true_registry_id:
-            c.error("true_registry_id", f"must be empty for type '{truth.type}'")
+            c.error(
+                "true_registry_id", _("must be empty for type '%(type)s'") % {"type": truth.type}
+            )
         rows.append(truth)
     _duplicates(table, "listing_id", errors)
     return Parsed(table.sha256, rows, sorted(errors, key=lambda e: e.line))

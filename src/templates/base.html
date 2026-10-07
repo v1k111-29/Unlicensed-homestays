@@ -12,6 +12,16 @@
     <div class="wrap header-row">
       <p class="brand"><a href="{% if user.is_authenticated %}{% url 'dashboard' %}{% else %}{% url 'login' %}{% endif %}">{% translate "Verified Stays" %}</a></p>
       {% if user.is_authenticated %}
+      {% url 'upload_listings' as upload_url %}{% url 'runs' as runs_url %}{% url 'upload_registry' as registry_url %}
+      {% if upload_url or runs_url %}
+      <nav aria-label="{% translate 'Main' %}" class="main-nav">
+        <ul>
+          {% if upload_url %}<li><a href="{{ upload_url }}"{% if request.path == upload_url %} aria-current="page"{% endif %}>{% translate "Upload listings" %}</a></li>{% endif %}
+          {% if runs_url %}<li><a href="{{ runs_url }}"{% if request.path == runs_url %} aria-current="page"{% endif %}>{% translate "Matching runs" %}</a></li>{% endif %}
+          {% if registry_url and user.role == "admin" %}<li><a href="{{ registry_url }}"{% if request.path == registry_url %} aria-current="page"{% endif %}>{% translate "Upload registry" %}</a></li>{% endif %}
+        </ul>
+      </nav>
+      {% endif %}
       <nav aria-label="{% translate 'Account' %}">
         <span class="who">{{ user.get_username }}</span>
         <form method="post" action="{% url 'logout' %}" class="inline">
@@ -26,7 +36,7 @@
   <main id="main" class="wrap" tabindex="-1">
     {% if messages %}
     <ul class="messages" role="status">
-      {% for message in messages %}<li>{{ message }}</li>{% endfor %}
+      {% for message in messages %}<li class="message-{{ message.level_tag }}">{% if message.level_tag == "error" %}<strong>{% translate "Problem:" %}</strong> {% endif %}{{ message }}</li>{% endfor %}
     </ul>
     {% endif %}
     {% block content %}{% endblock %}
