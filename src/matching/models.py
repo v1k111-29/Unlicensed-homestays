@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 
 from accounts.models import District
 from listings.models import Listing
-from registry.models import RegistryEntry
+from registry.models import RegistryEntry, UploadBatch
 
 
 def check_same_district(run: "MatchRun", listing: Listing, entry: RegistryEntry | None) -> None:
@@ -19,7 +19,8 @@ def check_same_district(run: "MatchRun", listing: Listing, entry: RegistryEntry 
 
 class MatchRun(models.Model):
     """One matching run over one district. `params_version` makes results reproducible
-    (AGENTS.md §8). The district is what officer scoping filters on (D51)."""
+    (AGENTS.md §8); `thresholds` holds the full parameter snapshot of that version (M4).
+    The district is what officer scoping filters on (D51)."""
 
     district = models.ForeignKey(District, on_delete=models.PROTECT, related_name="match_runs")
     params_version = models.CharField(max_length=32)
@@ -28,6 +29,22 @@ class MatchRun(models.Model):
         settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.PROTECT
     )
     created_at = models.DateTimeField(auto_now_add=True)
+    # What was matched against what, and the date licence validity was judged on (D54).
+    listing_batch = models.ForeignKey(
+        UploadBatch,
+        null=True,
+        blank=True,
+        on_delete=models.PROTECT,
+        related_name="match_runs",
+    )
+    registry_batch = models.ForeignKey(
+        UploadBatch,
+        null=True,
+        blank=True,
+        on_delete=models.PROTECT,
+        related_name="registry_match_runs",
+    )
+    as_of = models.DateField(null=True, blank=True)
 
 
 class MatchCandidate(models.Model):
@@ -58,9 +75,23 @@ class MatchResult(models.Model):
         NEEDS_REVIEW = "needs_review", _("Needs review")
         NO_MATCH = "no_match", _("No match")
 
+    class Band(models.TextChoices):
+        """Status bands of data-and-matching.md §7 (keys from ``matching.engine``). Labels
+        describe what the officer should do next; they never judge the stay."""
+
+        REVIEW_LICENCE = "review_licence", _("Needs review - high priority (licence details)")
+        NO_CANDIDATE = "no_candidate", _("No match - needs review")
+        REVIEW_SCORE = "review_score", _("Needs review")
+        MATCHED_SCORE = "matched_score", _("Matched (optional review)")
+        MATCHED_LICENCE = "matched_licence", _("Matched (licence and details agree)")
+        MATCHED_CONFIRMED = "matched_confirmed", _("Matched (confirmed by an officer)")
+
     run = models.ForeignKey(MatchRun, on_delete=models.CASCADE, related_name="results")
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="results")
     status = models.CharField(max_length=16, choices=Status.choices)
+    band = models.CharField(max_length=32, choices=Band.choices, blank=True)
+    # Reason codes from the engine (e.g. "licence_not_valid"); rendered via gettext later.
+    reasons = models.JSONField(default=list)
     top_registry_entry = models.ForeignKey(
         RegistryEntry, null=True, blank=True, on_delete=models.PROTECT
     )
