@@ -6,6 +6,25 @@ on:
 jobs:
   checks:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: verified_stays
+          POSTGRES_PASSWORD: ci-only-not-secret
+          POSTGRES_DB: verified_stays
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U verified_stays"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgres://verified_stays:ci-only-not-secret@localhost:5432/verified_stays
+      # DB tests must run in CI; a missing database is a failure here, not a skip.
+      REQUIRE_DB: "1"
+      DJANGO_DEBUG: "1"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -16,6 +35,9 @@ jobs:
       - run: make setup
       - run: make lint
       - run: make test
+      # M2 done-criterion on a real PostgreSQL: migrate, load M1 output, row counts match CSVs.
+      - run: make migrate
+      - run: make load
       # Eval gate: added in M5 (`make eval` is not implemented before then).
       - run: python -m pip_audit -r requirements.txt
       - uses: gitleaks/gitleaks-action@v2

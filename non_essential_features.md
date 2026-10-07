@@ -22,6 +22,8 @@ Nothing here is built for the demo. Each item has a reason and a revisit trigger
 | Native mobile app | Responsive web suffices | Demand evidence |
 | Bulk tourist analytics | Privacy exposure, no need | Policy decision |
 | Third language support | Out of scope | Request from stakeholders |
+| Registry version diff (what changed between two registry uploads) | Not needed for the demo; batches are kept, so it can be added later | Real registry with periodic updates |
+| Database-role privileges on `audit_log` (REVOKE UPDATE/DELETE from the app role) | Trigger + model guard suffice for the demo; depends on host (Neon) role setup [A] | Pilot deployment |
 
 ## Scope-creep rule
 If a new idea appears during the build, add it here with a reason, then continue. Do not build it.
