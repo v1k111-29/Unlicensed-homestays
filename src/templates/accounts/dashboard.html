@@ -2,7 +2,9 @@
 {% load i18n %}
 {% block title %}{% translate "Dashboard" %} · {% translate "Verified Stays" %}{% endblock %}
 {% block content %}
-<h1>{% translate "Dashboard" %}</h1>
+<div class="page-head">
+  <h1>{% translate "Dashboard" %}</h1>
+</div>
 <dl class="facts">
   <dt>{% translate "Signed in as" %}</dt>
   <dd>{{ user.get_username }}</dd>
@@ -20,5 +22,4 @@
   {% if is_admin and registry_url %}<li><a href="{{ registry_url }}">{% translate "Upload a registry CSV" %}</a></li>{% endif %}
 </ul>
 {% endif %}
-<p class="hint">{% translate "The review queue arrives in a later module." %}</p>
-{% endblock %}
+<p class="hint">{% translate "The review queue arrives in a later module." %}</p>{% endblock %}
