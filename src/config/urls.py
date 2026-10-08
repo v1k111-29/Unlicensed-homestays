@@ -1,14 +1,17 @@
 """URL routes. Auth in M6; uploads and matching runs in M7; queue/cases in M8; tourist pages
-in M9. Every view is guarded by a capability (a test walks all routes). The Django admin site
+in M9. Every view is guarded by a capability or is on the explicit public allowlist (a test walks
+all routes). The Django admin site
 is not installed, so `admin/` paths are ordinary guarded views."""
 
 from django.urls import include, path
 
 from ingest import views as ingest_views
 from matching import views as matching_views
+from tourist import views as tourist_views
 
 urlpatterns = [
     path("", include("accounts.urls")),
+    path("check/", tourist_views.check, name="tourist_check"),  # public (allowlisted)
     path("officer/uploads/", ingest_views.upload_listings, name="upload_listings"),
     path(
         "officer/uploads/confirm/",

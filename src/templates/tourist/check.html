@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% translate "Check a stay" %} · {% translate "Verified Stays" %}{% endblock %}
+{% block content %}
+<div class="wrap--narrow">
+  <div class="page-head">
+    <h1>{% translate "Check a stay" %}</h1>
+    <p class="lede">{% translate "See whether a homestay, cottage, guest house or lodge appears in the Tamil Nadu tourism licence registry." %}</p>
+  </div>
+  <p class="muted">{% translate "This demonstration uses a synthetic registry: every name and licence number is made up." %}</p>
+
+  {% if rate_limited %}
+  <div class="alert alert--error" role="alert">
+    <p class="alert__title">{% translate "Please wait and try again." %}</p>
+    <p>{% translate "Too many checks were made from this connection in a short time. Try again in a few minutes." %}</p>
+  </div>
+  {% elif unavailable %}
+  <div class="alert alert--error" role="alert">
+    <p class="alert__title">{% translate "The registry is not available right now." %}</p>
+    <p>{% translate "Please try again later." %}</p>
+  </div>
+  {% elif form.errors %}
+  <div class="alert alert--error" role="alert" id="form-errors">
+    <p class="alert__title">{% translate "Please check the form." %}</p>
+    <ul>
+      {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+      {% for field in form %}{% if field.errors %}<li><a href="#{{ field.id_for_label }}">{{ field.label }}: {{ field.errors|join:" " }}</a></li>{% endif %}{% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  <form method="post" action="{% url 'tourist_check' %}#result" class="search-form" novalidate>
+    {% translate "As written in the licence or on the booking page, for example SYN-NLG-12345-A." as licence_hint %}
+    {% include "tourist/_field.html" with field=form.licence hint=licence_hint %}
+    <p class="or">{% translate "or" %}</p>
+    {% include "tourist/_field.html" with field=form.name hint="" %}
+    {% translate "English or Tamil." as locality_hint %}
+    {% include "tourist/_field.html" with field=form.locality hint=locality_hint %}
+    {% translate "Optional. Narrows the search when several stays have similar names." as district_hint %}
+    {% include "tourist/_field.html" with field=form.district hint=district_hint %}
+    <div class="actions">
+      <button type="submit" class="button">{% translate "Check the registry" %}</button>
+    </div>
+  </form>
+
+  {% if result %}
+  <div id="result">
+  {% if result.outcome == "found" %}
+  <section class="result result--found" aria-labelledby="result-title">
+    <h2 class="result__title" id="result-title">{% translate "Found in the registry" %}</h2>
+    {% include "tourist/_entry.html" with entry=result.entries.0 %}
+  </section>
+  {% elif result.outcome == "differs" %}
+  <section class="result result--differs" aria-labelledby="result-title">
+    <h2 class="result__title" id="result-title">{% translate "Found, but some details differ" %}</h2>
+    <ul>{% for text in differences %}<li>{{ text }}</li>{% endfor %}</ul>
+    {% include "tourist/_entry.html" with entry=result.entries.0 %}
+    <p class="next-step">{% translate "Please check the details with the host or the district tourism office before you book." %}</p>
+  </section>
+  {% elif result.outcome == "several" %}
+  <section class="result result--several" aria-labelledby="result-title">
+    <h2 class="result__title" id="result-title">{% translate "Several possible matches" %}</h2>
+    <p>{% translate "More than one registry entry is similar. Add the licence number or choose the district in the form above to narrow the search." %}</p>
+    <ul class="result-list">
+      {% for entry in result.entries %}<li>{% include "tourist/_entry.html" %}</li>{% endfor %}
+    </ul>
+  </section>
+  {% else %}
+  <section class="result result--not-found" aria-labelledby="result-title">
+    <h2 class="result__title" id="result-title">{% translate "Not found in the registry" %}</h2>
+    <p class="disclaimer">{{ disclaimer }}</p>
+    <p>{% translate "Check the spelling, try the licence number, or ask the host or the district tourism office." %}</p>
+  </section>
+  {% endif %}
+  {% if result.as_of %}<p class="muted">{% blocktranslate with day=result.as_of|date:"j M Y" %}Validity is shown as on {{ day }}.{% endblocktranslate %}</p>{% endif %}
+  </div>
+  {% endif %}
+
+  <h2>{% translate "About this check" %}</h2>
+  <p>{% translate "The answer only says whether the registry contains the stay. We keep the type of answer and the time of the check. We do not keep what you type, your address or any other identifier, and this page sets no cookies." %}</p>
+</div>
+{% endblock %}
