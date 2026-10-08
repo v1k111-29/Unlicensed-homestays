@@ -49,9 +49,9 @@ Implemented in M2 (Django models + migrations under `src/<app>/`). Names above a
 | `GET /dashboard/` | Officer, Admin | Signed-in landing page (M6 placeholder; M8 fills it) |
 | `GET/POST /officer/uploads/`, `POST /officer/uploads/confirm/`, `POST /officer/uploads/cancel/` | Officer, Admin | Listings CSV: preview, then confirm (nothing saved before confirm; D67-D69) |
 | `GET /officer/runs/`, `POST /officer/runs/start/`, `GET /officer/runs/{id}/` | Officer, Admin | Listing batches, start a run, run summary (counts per status and band) (M7) |
-| `GET /officer/queue` | Officer | Prioritised queue |
-| `GET/POST /officer/cases/{id}` | Officer | Case detail + decision |
-| `GET /officer/cases/{id}/evidence` | Officer | Evidence page |
+| `GET /officer/queue/` | Officer, Admin | Prioritised queue; GET filters `state`, `band`, `status`, `locality`, `page` (M8, D72) |
+| `GET /officer/cases/{listing_id}/`, `POST .../decide/` | Officer, Admin | Case detail + decision (POST only; 409 on a stale form; D71-D72) |
+| `GET/POST /officer/cases/{listing_id}/evidence/`, `GET /officer/evidence/{id}/` | Officer, Admin | Create (POST) and view a stored, hashed evidence snapshot (D73) |
 | `GET/POST /admin/registry/`, `POST /admin/registry/confirm/`, `POST /admin/registry/cancel/` | Admin | Registry CSV: preview, then confirm (M7) |
 | `GET /admin/audit` | Admin | Audit log |
 | `GET /healthz` | Monitor | Health |

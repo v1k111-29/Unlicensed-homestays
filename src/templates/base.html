@@ -14,10 +14,12 @@
       <p class="brand"><a href="{% if user.is_authenticated %}{% url 'dashboard' %}{% else %}{% url 'login' %}{% endif %}">{% translate "Verified Stays" %}</a></p>
       {% block nav %}
       {% if user.is_authenticated %}
-      {% url 'upload_listings' as upload_url %}{% url 'runs' as runs_url %}{% url 'upload_registry' as registry_url %}
-      {% if upload_url or runs_url %}
+      {% url 'dashboard' as dashboard_url %}{% url 'queue' as queue_url %}{% url 'upload_listings' as upload_url %}{% url 'runs' as runs_url %}{% url 'upload_registry' as registry_url %}
+      {% if queue_url or upload_url or runs_url %}
       <nav class="site-nav" aria-label="{% translate 'Main' %}">
         <ul>
+          <li><a href="{{ dashboard_url }}"{% if request.path == dashboard_url %} aria-current="page"{% endif %}>{% translate "Dashboard" %}</a></li>
+          {% if queue_url %}<li><a href="{{ queue_url }}"{% if request.path == queue_url %} aria-current="page"{% endif %}>{% translate "Review queue" %}</a></li>{% endif %}
           {% if upload_url %}<li><a href="{{ upload_url }}"{% if request.path == upload_url %} aria-current="page"{% endif %}>{% translate "Upload listings" %}</a></li>{% endif %}
           {% if runs_url %}<li><a href="{{ runs_url }}"{% if request.path == runs_url %} aria-current="page"{% endif %}>{% translate "Matching runs" %}</a></li>{% endif %}
           {% if registry_url and user.role == "admin" %}<li><a href="{{ registry_url }}"{% if request.path == registry_url %} aria-current="page"{% endif %}>{% translate "Upload registry" %}</a></li>{% endif %}

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% translate "Evidence page" %} · {% translate "Verified Stays" %}{% endblock %}
+{% block content %}
+<p class="breadcrumb"><a href="{% url 'case_detail' listing.pk %}">{% translate "Back to the case" %}</a></p>
+<div class="page-head"><h1>{% translate "Evidence page" %}</h1></div>
+<p class="evidence-statement">{% translate "Supporting evidence for officer review, not a finding." %}</p>
+<div class="empty-state">
+  <p>{% blocktranslate with title=listing.title %}No evidence page has been created for "{{ title }}" yet.{% endblocktranslate %}</p>
+  <form method="post" action="{% url 'case_evidence' listing.pk %}">
+    {% csrf_token %}
+    <button type="submit" class="button">{% translate "Create evidence page" %}</button>
+  </form>
+</div>
+{% endblock %}

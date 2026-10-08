@@ -6,7 +6,7 @@
 <div class="page-head">
   <h1>{% blocktranslate with id=run.pk district=run.district.name_en %}Run {{ id }}: {{ district }}{% endblocktranslate %}</h1>
 </div>
-<p>{% translate "Results prioritise listings for officer review. They are not findings." %}</p>
+<p>{% translate "Results prioritise listings for officer review. They are not findings." %} <a href="{% url 'queue' %}">{% translate "Open the review queue" %}</a></p>
 
 <dl class="facts">
   <dt>{% translate "District" %}</dt><dd>{{ run.district.name_en }}</dd>
