@@ -1,0 +1,75 @@
+district,alias,locality,script,needs_review
+Nilgiris,Ooty,Ooty,latin,0
+Nilgiris,Udhagamandalam,Ooty,latin,0
+Nilgiris,Ootacamund,Ooty,latin,0
+Nilgiris,Udhagai,Ooty,latin,0
+Nilgiris,ஊட்டி,Ooty,tamil,1
+Nilgiris,உதகமண்டலம்,Ooty,tamil,1
+Nilgiris,உதகை,Ooty,tamil,1
+Nilgiris,Coonoor,Coonoor,latin,0
+Nilgiris,குன்னூர்,Coonoor,tamil,1
+Nilgiris,Kotagiri,Kotagiri,latin,0
+Nilgiris,கோத்தகிரி,Kotagiri,tamil,1
+Nilgiris,Gudalur,Gudalur,latin,0
+Nilgiris,கூடலூர்,Gudalur,tamil,1
+Nilgiris,Ketti,Ketti,latin,0
+Nilgiris,கேத்தி,Ketti,tamil,1
+Nilgiris,Lovedale,Lovedale,latin,0
+Nilgiris,லவ்டேல்,Lovedale,tamil,1
+Nilgiris,Wellington,Wellington,latin,0
+Nilgiris,வெலிங்டன்,Wellington,tamil,1
+Nilgiris,Aruvankadu,Aruvankadu,latin,0
+Nilgiris,அருவங்காடு,Aruvankadu,tamil,1
+Nilgiris,Masinagudi,Masinagudi,latin,0
+Nilgiris,மசினகுடி,Masinagudi,tamil,1
+Coimbatore,RS Puram,RS Puram,latin,0
+Coimbatore,R.S. Puram,RS Puram,latin,0
+Coimbatore,ஆர்.எஸ். புரம்,RS Puram,tamil,1
+Coimbatore,Gandhipuram,Gandhipuram,latin,0
+Coimbatore,காந்திபுரம்,Gandhipuram,tamil,1
+Coimbatore,Valparai,Valparai,latin,0
+Coimbatore,வால்பாறை,Valparai,tamil,1
+Madurai,Simmakkal,Simmakkal,latin,0
+Madurai,சிம்மக்கல்,Simmakkal,tamil,1
+Madurai,Tallakulam,Tallakulam,latin,0
+Madurai,தல்லாகுளம்,Tallakulam,tamil,1
+Madurai,Anna Nagar,Anna Nagar,latin,0
+Madurai,அண்ணா நகர்,Anna Nagar,tamil,1
+Dindigul,Kodaikanal,Kodaikanal,latin,0
+Dindigul,Kodai,Kodaikanal,latin,0
+Dindigul,கொடைக்கானல்,Kodaikanal,tamil,1
+Dindigul,Palani,Palani,latin,0
+Dindigul,பழனி,Palani,tamil,1
+Dindigul,Dindigul Town,Dindigul Town,latin,0
+Dindigul,Dindigul,Dindigul Town,latin,0
+Dindigul,திண்டுக்கல்,Dindigul Town,tamil,1
+Kanyakumari,Kanyakumari,Kanyakumari,latin,0
+Kanyakumari,Cape Comorin,Kanyakumari,latin,0
+Kanyakumari,கன்னியாகுமரி,Kanyakumari,tamil,1
+Kanyakumari,Nagercoil,Nagercoil,latin,0
+Kanyakumari,நாகர்கோவில்,Nagercoil,tamil,1
+Kanyakumari,Colachel,Colachel,latin,0
+Kanyakumari,குளச்சல்,Colachel,tamil,1
+Thanjavur,Thanjavur Town,Thanjavur Town,latin,0
+Thanjavur,Thanjavur,Thanjavur Town,latin,0
+Thanjavur,Tanjore,Thanjavur Town,latin,0
+Thanjavur,தஞ்சாவூர்,Thanjavur Town,tamil,1
+Thanjavur,தஞ்சை,Thanjavur Town,tamil,1
+Thanjavur,Kumbakonam,Kumbakonam,latin,0
+Thanjavur,கும்பகோணம்,Kumbakonam,tamil,1
+Thanjavur,Pattukkottai,Pattukkottai,latin,0
+Thanjavur,பட்டுக்கோட்டை,Pattukkottai,tamil,1
+Ramanathapuram,Rameswaram,Rameswaram,latin,0
+Ramanathapuram,ராமேஸ்வரம்,Rameswaram,tamil,1
+Ramanathapuram,Ramanathapuram Town,Ramanathapuram Town,latin,0
+Ramanathapuram,Ramnad,Ramanathapuram Town,latin,0
+Ramanathapuram,இராமநாதபுரம்,Ramanathapuram Town,tamil,1
+Ramanathapuram,Mandapam,Mandapam,latin,0
+Ramanathapuram,மண்டபம்,Mandapam,tamil,1
+Chennai,Mylapore,Mylapore,latin,0
+Chennai,மயிலாப்பூர்,Mylapore,tamil,1
+Chennai,T Nagar,T Nagar,latin,0
+Chennai,Thyagaraya Nagar,T Nagar,latin,0
+Chennai,தி. நகர்,T Nagar,tamil,1
+Chennai,Besant Nagar,Besant Nagar,latin,0
+Chennai,பெசன்ட் நகர்,Besant Nagar,tamil,1

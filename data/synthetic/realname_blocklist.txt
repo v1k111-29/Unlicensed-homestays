@@ -1,0 +1,59 @@
+# Known real business names (and very common generic names likely to be in real use).
+# Used ONLY to reject generated synthetic names. One entry per line, matched
+# case-insensitively as a whole-token sequence inside the name core
+# (the name with generic words such as homestay/lodge/cottage removed).
+# This list is small and not exhaustive [A]; see out/name_spotcheck.csv for manual review.
+accord
+ambassador pallava
+annalakshmi
+carlton
+club mahindra
+daiwik
+dasaprakash
+destiny
+fern hill
+fern hills
+fernhills
+fortune
+gateway
+gem park
+germanus
+ginger
+heritage
+hyacinth
+hyatt
+ideal beach
+itc
+king's cliff
+kings cliff
+kurumba
+le meridien
+leela
+lemon tree
+lymond
+marriott
+oberoi
+oyo
+radisson
+saravana bhavan
+savoy
+sparsa
+sterling
+taj
+tamara
+tamil nadu
+treebo
+ttdc
+vivanta
+woodlands
+zostel
+# Common generic names likely used by real stays
+blue hills
+green valley
+hill view
+misty hills
+pine valley
+sunrise
+sunset view
+tea county
+valley view

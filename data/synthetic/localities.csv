@@ -1,0 +1,31 @@
+district,locality,pincode,lat,lng
+Nilgiris,Ooty,643001,11.41020,76.69500
+Nilgiris,Coonoor,643101,11.35300,76.79590
+Nilgiris,Kotagiri,643217,11.42100,76.86000
+Nilgiris,Gudalur,643212,11.50300,76.49300
+Nilgiris,Ketti,643215,11.38000,76.74000
+Nilgiris,Lovedale,643003,11.39000,76.71000
+Nilgiris,Wellington,643231,11.37000,76.78800
+Nilgiris,Aruvankadu,643202,11.36500,76.75500
+Nilgiris,Masinagudi,643223,11.57000,76.64000
+Coimbatore,RS Puram,641002,11.00900,76.95000
+Coimbatore,Gandhipuram,641012,11.01800,76.96600
+Coimbatore,Valparai,642127,10.32700,76.95500
+Madurai,Simmakkal,625001,9.92500,78.11900
+Madurai,Tallakulam,625002,9.94000,78.13000
+Madurai,Anna Nagar,625020,9.92000,78.15000
+Dindigul,Kodaikanal,624101,10.23810,77.48920
+Dindigul,Palani,624601,10.45000,77.52000
+Dindigul,Dindigul Town,624001,10.36240,77.96950
+Kanyakumari,Kanyakumari,629702,8.08830,77.53850
+Kanyakumari,Nagercoil,629001,8.18330,77.41190
+Kanyakumari,Colachel,629251,8.17700,77.25900
+Thanjavur,Thanjavur Town,613001,10.78700,79.13780
+Thanjavur,Kumbakonam,612001,10.96170,79.38810
+Thanjavur,Pattukkottai,614601,10.42300,79.31900
+Ramanathapuram,Rameswaram,623526,9.28760,79.31290
+Ramanathapuram,Ramanathapuram Town,623501,9.36390,78.83950
+Ramanathapuram,Mandapam,623518,9.28000,79.12000
+Chennai,Mylapore,600004,13.03390,80.26190
+Chennai,T Nagar,600017,13.04180,80.23410
+Chennai,Besant Nagar,600090,13.00030,80.26670

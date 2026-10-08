@@ -1,0 +1,109 @@
+licence_no,name,address_en,address_ta,locality,pincode,lat,lng,category,valid_from,valid_to,status,district
+SYN-NLG-98676-E,Moonbeam Meadow Stay,"115, Hospital Road, Kotagiri","115, ஆஸ்பத்திரி ரோடு, கோத்தகிரி",Kotagiri,643217,11.41421,76.84954,cottage,2023-01-18,2027-01-10,active,Nilgiris
+SYN-NLG-34172-U,Ivory Haven Cottage,"46, Bazaar Street, Kotagiri","46, பஜார் தெரு, கோத்தகிரி",Kotagiri,643217,11.42263,76.84726,cottage,2023-01-15,2026-03-03,expired,Nilgiris
+SYN-NLG-57111-R,Clover Arbour Lodge,"79, Hill Road, Ooty","79, ஹில் ரோடு, ஊட்டி",Ooty,643001,11.40548,76.68301,lodge,2022-04-23,2026-11-19,active,Nilgiris
+SYN-NLG-07522-L,Fern Perch Residency,"50, Park Road, Aruvankadu","50, பார்க் ரோடு, அருவங்காடு",Aruvankadu,643202,11.35741,76.75699,guest_house,2024-08-13,2027-04-23,active,Nilgiris
+SYN-NLG-25972-V,Lantern Corner Cottage,"84, Park Road, Wellington","84, பார்க் ரோடு, வெலிங்டன்",Wellington,643231,11.37479,76.78332,cottage,2024-01-16,2026-08-22,active,Nilgiris
+SYN-NLG-16889-F,Indigo Burrow Stay,"48, North Street, Ooty","48, வடக்கு தெரு, ஊட்டி",Ooty,643001,11.40788,76.68555,cottage,2022-04-23,2028-02-26,active,Nilgiris
+SYN-NLG-61061-U,Coral Court Cottage,"155, South Street, Ketti","155, தெற்கு தெரு, கேத்தி",Ketti,643215,11.38596,76.75139,cottage,2022-05-01,2027-07-29,active,Nilgiris
+SYN-NLG-85444-J,Cedar Bough Stay,"246, Temple Street, Ooty","246, கோவில் தெரு, ஊட்டி",Ooty,643001,11.40230,76.68562,cottage,2025-08-18,2028-08-02,active,Nilgiris
+SYN-NLG-54028-K,Amber Arbour Cottage,"247, Market Road, Ooty","247, மார்க்கெட் ரோடு, ஊட்டி",Ooty,643001,11.40576,76.68612,cottage,2025-06-28,2026-11-27,suspended,Nilgiris
+SYN-NLG-09545-L,Hornbill Loft Guest House,"117, Hill Road, Ooty","117, ஹில் ரோடு, ஊட்டி",Ooty,643001,11.42237,76.69230,guest_house,2022-08-04,2026-10-24,active,Nilgiris
+SYN-NLG-41026-Y,Cardamom Bower Lodge,"161, North Street, Kotagiri","161, வடக்கு தெரு, கோத்தகிரி",Kotagiri,643217,11.41935,76.86095,lodge,2025-08-21,2028-02-22,active,Nilgiris
+SYN-NLG-13119-V,Magnolia Den Cottages,"142, Park Road, Aruvankadu","142, பார்க் ரோடு, அருவங்காடு",Aruvankadu,643202,11.36013,76.76741,cottage,2023-10-22,2025-11-15,expired,Nilgiris
+SYN-NLG-39419-D,Neem Terrace Stay,"126, School Street, Gudalur","126, பள்ளி தெரு, கூடலூர்",Gudalur,643212,11.50292,76.50328,cottage,2024-08-06,2028-02-10,active,Nilgiris
+SYN-NLG-60962-D,Saffron Garden Homestay,"14, East Street, Gudalur","14, கிழக்கு தெரு, கூடலூர்",Gudalur,643212,11.49484,76.50217,homestay,2023-08-20,2028-01-24,active,Nilgiris
+SYN-NLG-83093-B,Kingfisher Glade Lodge,"50, West Street, Masinagudi","50, மேற்கு தெரு, மசினகுடி",Masinagudi,643223,11.57590,76.63735,lodge,2022-02-22,2027-01-18,active,Nilgiris
+SYN-NLG-37862-W,Fern Ridge Residency,"52, Lake Road, Wellington","52, லேக் ரோடு, வெலிங்டன்",Wellington,643231,11.37186,76.78855,guest_house,2024-01-19,2028-08-09,active,Nilgiris
+SYN-NLG-76581-V,Banyan Haven Inn,"99, Church Road, Ooty","99, சர்ச் ரோடு, ஊட்டி",Ooty,643001,11.40595,76.68294,lodge,2023-12-30,2025-10-10,expired,Nilgiris
+SYN-NLG-22671-C,Laurel Porch Cottage,"49, South Street, Ooty","49, தெற்கு தெரு, ஊட்டி",Ooty,643001,11.40903,76.70833,cottage,2023-08-02,2027-03-30,active,Nilgiris
+SYN-NLG-26410-J,Mango Porch Inn,"6, Temple Street, Coonoor","6, கோவில் தெரு, குன்னூர்",Coonoor,643101,11.34680,76.78913,lodge,2024-08-24,2027-02-17,active,Nilgiris
+SYN-NLG-08401-M,Tamarind Bough Cottage,"172, North Street, Ketti","172, வடக்கு தெரு, கேத்தி",Ketti,643215,11.37443,76.74842,cottage,2024-10-07,2028-12-04,active,Nilgiris
+SYN-NLG-49930-D,Kingfisher Perch Lodge,"111, Lake Road, Lovedale","111, லேக் ரோடு, லவ்டேல்",Lovedale,643003,11.38803,76.71808,lodge,2023-06-21,2027-12-29,active,Nilgiris
+SYN-NLG-29047-E,Quill Knoll Stay,"205, South Street, Wellington","205, தெற்கு தெரு, வெலிங்டன்",Wellington,643231,11.37871,76.79275,cottage,2025-06-26,2027-05-13,active,Nilgiris
+SYN-NLG-33936-T,Silver Garden Lodge,"62, Market Road, Masinagudi","62, மார்க்கெட் ரோடு, மசினகுடி",Masinagudi,643223,11.56973,76.62844,lodge,2023-08-16,2027-12-20,active,Nilgiris
+SYN-NLG-45037-K,Cardamom Retreat Homestay,"74, North Street, Ooty","74, வடக்கு தெரு, ஊட்டி",Ooty,643001,11.41464,76.68354,homestay,2024-03-16,2027-05-22,active,Nilgiris
+SYN-CBE-80813-P,Fern Arbour Inn,"61, Temple Street, Gandhipuram","61, கோவில் தெரு, காந்திபுரம்",Gandhipuram,641012,11.01901,76.96745,lodge,2025-04-24,2026-09-23,active,Coimbatore
+SYN-CBE-43487-X,Indigo Porch Cottages,"229, Lake Road, Valparai","229, லேக் ரோடு, வால்பாறை",Valparai,642127,10.31965,76.95573,cottage,2025-03-21,2026-06-01,active,Coimbatore
+SYN-CBE-68720-Y,Lantern Retreat Lodge,"123, Main Road, Valparai","123, மெயின் ரோடு, வால்பாறை",Valparai,642127,10.33569,76.95266,lodge,2022-08-31,2028-11-19,active,Coimbatore
+SYN-CBE-05829-P,Coral Terrace Inn,"22, Park Road, Gandhipuram","22, பார்க் ரோடு, காந்திபுரம்",Gandhipuram,641012,11.02160,76.96259,lodge,2024-01-04,2028-09-26,active,Coimbatore
+SYN-CBE-10226-E,Hazel Acre Homestay,"140, Church Road, RS Puram","140, சர்ச் ரோடு, ஆர்.எஸ். புரம்",RS Puram,641002,11.01165,76.94785,homestay,2022-12-21,2026-05-26,suspended,Coimbatore
+SYN-CBE-84991-H,Tamarind Perch Cottages,"2, Hospital Road, RS Puram","2, ஆஸ்பத்திரி ரோடு, ஆர்.எஸ். புரம்",RS Puram,641002,11.01869,76.94975,cottage,2022-10-14,2026-02-17,expired,Coimbatore
+SYN-CBE-43595-U,Hornbill Terrace Cottage,"202, Main Road, RS Puram","202, மெயின் ரோடு, ஆர்.எஸ். புரம்",RS Puram,641002,11.00579,76.94781,cottage,2025-12-11,2027-10-05,active,Coimbatore
+SYN-CBE-48692-B,Magnolia Bower Guest House,"7, South Street, RS Puram","7, தெற்கு தெரு, ஆர்.எஸ். புரம்",RS Puram,641002,11.00127,76.96060,guest_house,2024-03-27,2026-10-09,active,Coimbatore
+SYN-CBE-78814-K,Pepper Crest Guest House,"49, Main Road, RS Puram","49, மெயின் ரோடு, ஆர்.எஸ். புரம்",RS Puram,641002,11.00324,76.94131,guest_house,2022-08-28,2028-12-01,active,Coimbatore
+SYN-CBE-71751-W,Wren Hollow Inn,"189, Hospital Road, RS Puram","189, ஆஸ்பத்திரி ரோடு, ஆர்.எஸ். புரம்",RS Puram,641002,10.99973,76.95846,lodge,2022-09-18,2026-03-03,expired,Coimbatore
+SYN-CBE-19218-L,Lantern Porch Homestay,"122, Hospital Road, RS Puram","122, ஆஸ்பத்திரி ரோடு, ஆர்.எஸ். புரம்",RS Puram,641002,11.00720,76.94852,homestay,2023-10-17,2028-01-30,active,Coimbatore
+SYN-CBE-35580-B,Clover Acre Cottages,"93, East Street, RS Puram","93, கிழக்கு தெரு, ஆர்.எஸ். புரம்",RS Puram,641002,11.01127,76.95211,cottage,2025-03-10,2028-12-16,active,Coimbatore
+SYN-MDU-98595-F,Sandal Den Homestay,"166, West Street, Tallakulam","166, மேற்கு தெரு, தல்லாகுளம்",Tallakulam,625002,9.93273,78.13071,homestay,2025-09-13,2026-06-30,suspended,Madurai
+SYN-MDU-74078-F,Plum Loft Cottage,"59, Hospital Road, Simmakkal","59, ஆஸ்பத்திரி ரோடு, சிம்மக்கல்",Simmakkal,625001,9.91523,78.12574,cottage,2025-01-10,2026-10-12,active,Madurai
+SYN-MDU-63774-G,Tamarind Burrow Inn,"56, Main Road, Tallakulam","56, மெயின் ரோடு, தல்லாகுளம்",Tallakulam,625002,9.94601,78.12340,lodge,2023-01-05,2027-07-08,active,Madurai
+SYN-MDU-50920-E,Indigo Retreat Homestay,"77, West Street, Anna Nagar","77, மேற்கு தெரு, அண்ணா நகர்",Anna Nagar,625020,9.90759,78.14898,homestay,2022-01-10,2025-04-04,expired,Madurai
+SYN-MDU-74027-L,Silver Crest Stay,"6, East Street, Simmakkal","6, கிழக்கு தெரு, சிம்மக்கல்",Simmakkal,625001,9.91711,78.10931,cottage,2023-07-14,2028-01-13,active,Madurai
+SYN-MDU-32101-A,Sparrow Crest Stay,"119, Temple Street, Tallakulam","119, கோவில் தெரு, தல்லாகுளம்",Tallakulam,625002,9.94820,78.12530,cottage,2024-05-27,2025-08-22,expired,Madurai
+SYN-MDU-47779-L,Sapphire Nook Guest House,"246, East Street, Simmakkal","246, கிழக்கு தெரு, சிம்மக்கல்",Simmakkal,625001,9.92756,78.12561,guest_house,2024-10-31,2026-11-28,active,Madurai
+SYN-MDU-30205-E,Sapphire Hollow Lodge,"98, Station Road, Tallakulam","98, ஸ்டேஷன் ரோடு, தல்லாகுளம்",Tallakulam,625002,9.94946,78.13463,lodge,2023-09-07,2027-05-08,active,Madurai
+SYN-MDU-04700-C,Driftwood Porch Homestay,"82, West Street, Anna Nagar","82, மேற்கு தெரு, அண்ணா நகர்",Anna Nagar,625020,9.92165,78.16057,homestay,2024-06-10,2028-10-13,active,Madurai
+SYN-MDU-65129-K,Fern Bower Homestay,"142, Station Road, Tallakulam","142, ஸ்டேஷன் ரோடு, தல்லாகுளம்",Tallakulam,625002,9.93854,78.13095,homestay,2023-08-09,2027-11-10,active,Madurai
+SYN-MDU-44891-Z,Velvet Terrace Homestay,"15, Temple Street, Anna Nagar","15, கோவில் தெரு, அண்ணா நகர்",Anna Nagar,625020,9.92587,78.15896,homestay,2023-06-04,2027-02-02,active,Madurai
+SYN-MDU-25303-R,Wildflower Bower Residency,"132, South Street, Tallakulam","132, தெற்கு தெரு, தல்லாகுளம்",Tallakulam,625002,9.94233,78.14092,guest_house,2024-03-02,2028-06-19,active,Madurai
+SYN-DGL-95014-L,Teak Garden Inn,"164, Hill Road, Kodaikanal","164, ஹில் ரோடு, கொடைக்கானல்",Kodaikanal,624101,10.23195,77.49195,lodge,2025-06-03,2026-12-18,active,Dindigul
+SYN-DGL-46098-M,Teak Bough Stay,"52, Church Road, Dindigul Town","52, சர்ச் ரோடு, திண்டுக்கல்",Dindigul Town,624001,10.36761,77.95719,cottage,2024-12-10,2026-06-01,active,Dindigul
+SYN-DGL-48433-M,Quill Glade Cottage,"142, Temple Street, Kodaikanal","142, கோவில் தெரு, கொடைக்கானல்",Kodaikanal,624101,10.23610,77.48262,cottage,2025-07-15,2028-10-22,suspended,Dindigul
+SYN-DGL-68260-E,Wildflower Terrace Cottages,"16, Hospital Road, Dindigul Town","16, ஆஸ்பத்திரி ரோடு, திண்டுக்கல்",Dindigul Town,624001,10.36249,77.97479,cottage,2022-11-14,2028-07-08,active,Dindigul
+SYN-DGL-14098-P,Laurel Hollow Guest House,"234, Hospital Road, Dindigul Town","234, ஆஸ்பத்திரி ரோடு, திண்டுக்கல்",Dindigul Town,624001,10.35741,77.96947,guest_house,2023-08-06,2028-06-01,active,Dindigul
+SYN-DGL-31929-V,Magnolia Haven Cottages,"8, School Street, Palani","8, பள்ளி தெரு, பழனி",Palani,624601,10.44511,77.50860,cottage,2025-11-21,2026-08-09,active,Dindigul
+SYN-DGL-33401-T,Maple Knoll Homestay,"120, Main Road, Dindigul Town","120, மெயின் ரோடு, திண்டுக்கல்",Dindigul Town,624001,10.34933,77.97035,homestay,2022-04-19,2028-06-03,active,Dindigul
+SYN-DGL-80429-E,Quill Retreat Stay,"88, East Street, Palani","88, கிழக்கு தெரு, பழனி",Palani,624601,10.44310,77.53018,cottage,2022-02-23,2025-08-24,expired,Dindigul
+SYN-DGL-79374-L,Wren Ridge Residency,"39, North Street, Kodaikanal","39, வடக்கு தெரு, கொடைக்கானல்",Kodaikanal,624101,10.23991,77.48493,guest_house,2024-02-16,2028-02-22,active,Dindigul
+SYN-DGL-77922-K,Bluebell Court Residency,"248, Temple Street, Palani","248, கோவில் தெரு, பழனி",Palani,624601,10.46254,77.52303,guest_house,2023-08-06,2025-10-17,expired,Dindigul
+SYN-DGL-82307-C,Peacock Burrow Guest House,"143, Park Road, Dindigul Town","143, பார்க் ரோடு, திண்டுக்கல்",Dindigul Town,624001,10.36215,77.96905,guest_house,2022-11-05,2026-11-20,active,Dindigul
+SYN-DGL-87759-G,Moonbeam Court Lodge,"188, Hospital Road, Palani","188, ஆஸ்பத்திரி ரோடு, பழனி",Palani,624601,10.45111,77.50981,lodge,2024-06-01,2028-09-11,active,Dindigul
+SYN-KNK-59338-A,Sapphire Crest Guest House,"162, Main Road, Nagercoil","162, மெயின் ரோடு, நாகர்கோவில்",Nagercoil,629001,8.19633,77.41368,guest_house,2024-05-30,2027-11-28,active,Kanyakumari
+SYN-KNK-83138-U,Jacaranda Burrow Residency,"183, Bazaar Street, Kanyakumari","183, பஜார் தெரு, கன்னியாகுமரி",Kanyakumari,629702,8.09712,77.54805,guest_house,2024-02-27,2028-05-12,active,Kanyakumari
+SYN-KNK-06098-P,Hazel Bower Lodge,"98, School Street, Colachel","98, பள்ளி தெரு, குளச்சல்",Colachel,629251,8.16580,77.26274,lodge,2025-04-14,2026-12-31,active,Kanyakumari
+SYN-KNK-36213-P,Mango Glade Stay,"249, West Street, Nagercoil","249, மேற்கு தெரு, நாகர்கோவில்",Nagercoil,629001,8.18183,77.40602,cottage,2023-07-17,2027-11-13,active,Kanyakumari
+SYN-KNK-54518-X,Neem Garden Guest House,"104, Lake Road, Nagercoil","104, லேக் ரோடு, நாகர்கோவில்",Nagercoil,629001,8.18197,77.40790,guest_house,2022-06-23,2025-05-14,expired,Kanyakumari
+SYN-KNK-07539-Q,Amber Corner Inn,"91, South Street, Colachel","91, தெற்கு தெரு, குளச்சல்",Colachel,629251,8.17473,77.26340,lodge,2023-12-23,2028-12-20,suspended,Kanyakumari
+SYN-KNK-69280-T,Juniper Retreat Inn,"228, East Street, Colachel","228, கிழக்கு தெரு, குளச்சல்",Colachel,629251,8.18294,77.25079,lodge,2022-11-20,2028-10-30,active,Kanyakumari
+SYN-KNK-49059-A,Hornbill Grove Residency,"85, School Street, Nagercoil","85, பள்ளி தெரு, நாகர்கோவில்",Nagercoil,629001,8.18955,77.40479,guest_house,2022-02-26,2026-05-24,active,Kanyakumari
+SYN-KNK-47628-X,Peacock Glade Homestay,"226, Bazaar Street, Nagercoil","226, பஜார் தெரு, நாகர்கோவில்",Nagercoil,629001,8.19542,77.41129,homestay,2024-12-05,2027-05-05,active,Kanyakumari
+SYN-KNK-71238-L,Firefly Arbour Guest House,"58, Hospital Road, Kanyakumari","58, ஆஸ்பத்திரி ரோடு, கன்னியாகுமரி",Kanyakumari,629702,8.07952,77.54413,guest_house,2024-06-11,2027-11-20,active,Kanyakumari
+SYN-KNK-59784-D,Willow Knoll Guest House,"72, Park Road, Kanyakumari","72, பார்க் ரோடு, கன்னியாகுமரி",Kanyakumari,629702,8.09081,77.54664,guest_house,2022-04-06,2028-09-20,active,Kanyakumari
+SYN-KNK-45236-C,Tamarind Nest Homestay,"135, Temple Street, Nagercoil","135, கோவில் தெரு, நாகர்கோவில்",Nagercoil,629001,8.17748,77.41224,homestay,2022-09-26,2026-02-01,expired,Kanyakumari
+SYN-TNJ-86482-W,Juniper Bough Homestay,"186, West Street, Thanjavur Town","186, மேற்கு தெரு, தஞ்சாவூர்",Thanjavur Town,613001,10.78582,79.12537,homestay,2024-01-05,2026-10-31,active,Thanjavur
+SYN-TNJ-21829-K,Eucalyptus Terrace Homestay,"169, Station Road, Kumbakonam","169, ஸ்டேஷன் ரோடு, கும்பகோணம்",Kumbakonam,612001,10.96522,79.38765,homestay,2023-10-25,2026-05-11,active,Thanjavur
+SYN-TNJ-66113-B,Bamboo Burrow Homestay,"36, School Street, Thanjavur Town","36, பள்ளி தெரு, தஞ்சாவூர்",Thanjavur Town,613001,10.78045,79.13393,homestay,2022-10-04,2025-06-13,expired,Thanjavur
+SYN-TNJ-83850-S,Willow Glade Lodge,"87, Station Road, Kumbakonam","87, ஸ்டேஷன் ரோடு, கும்பகோணம்",Kumbakonam,612001,10.95251,79.39154,lodge,2024-03-10,2026-11-07,active,Thanjavur
+SYN-TNJ-74728-G,Bamboo Knoll Residency,"185, Temple Street, Thanjavur Town","185, கோவில் தெரு, தஞ்சாவூர்",Thanjavur Town,613001,10.79351,79.13276,guest_house,2023-02-04,2027-10-01,active,Thanjavur
+SYN-TNJ-48455-T,Sandal Nest Residency,"228, Church Road, Kumbakonam","228, சர்ச் ரோடு, கும்பகோணம்",Kumbakonam,612001,10.95365,79.38087,guest_house,2022-01-07,2025-07-31,expired,Thanjavur
+SYN-TNJ-35498-C,Moonbeam Crest Stay,"97, South Street, Pattukkottai","97, தெற்கு தெரு, பட்டுக்கோட்டை",Pattukkottai,614601,10.42171,79.32004,cottage,2023-08-23,2026-11-01,active,Thanjavur
+SYN-TNJ-14740-E,Velvet Ridge Homestay,"66, Market Road, Pattukkottai","66, மார்க்கெட் ரோடு, பட்டுக்கோட்டை",Pattukkottai,614601,10.41429,79.31641,homestay,2023-09-22,2027-12-22,active,Thanjavur
+SYN-TNJ-21805-M,Eucalyptus Acre Homestay,"184, Church Road, Kumbakonam","184, சர்ச் ரோடு, கும்பகோணம்",Kumbakonam,612001,10.96703,79.39721,homestay,2024-03-24,2028-01-13,active,Thanjavur
+SYN-TNJ-34501-E,Moonbeam Ridge Stay,"112, Lake Road, Pattukkottai","112, லேக் ரோடு, பட்டுக்கோட்டை",Pattukkottai,614601,10.41498,79.31920,cottage,2022-09-20,2026-08-17,suspended,Thanjavur
+SYN-TNJ-93034-Q,Sparrow Loft Lodge,"142, Hospital Road, Kumbakonam","142, ஆஸ்பத்திரி ரோடு, கும்பகோணம்",Kumbakonam,612001,10.95863,79.40046,lodge,2023-09-19,2028-12-02,active,Thanjavur
+SYN-TNJ-13760-P,Ivory Grove Lodge,"16, West Street, Kumbakonam","16, மேற்கு தெரு, கும்பகோணம்",Kumbakonam,612001,10.97088,79.39150,lodge,2022-05-16,2027-06-29,active,Thanjavur
+SYN-RMD-98242-W,Willow Burrow Cottage,"139, West Street, Mandapam","139, மேற்கு தெரு, மண்டபம்",Mandapam,623518,9.27916,79.12792,cottage,2025-11-09,2026-08-18,active,Ramanathapuram
+SYN-RMD-74060-C,Cardamom Acre Cottage,"163, Lake Road, Ramanathapuram Town","163, லேக் ரோடு, இராமநாதபுரம்",Ramanathapuram Town,623501,9.37085,78.83240,cottage,2022-07-14,2026-12-10,active,Ramanathapuram
+SYN-RMD-51264-Z,Birch Knoll Stay,"91, West Street, Mandapam","91, மேற்கு தெரு, மண்டபம்",Mandapam,623518,9.28316,79.10997,cottage,2025-09-25,2027-08-14,active,Ramanathapuram
+SYN-RMD-16446-Y,Sapphire Arbour Homestay,"3, Park Road, Mandapam","3, பார்க் ரோடு, மண்டபம்",Mandapam,623518,9.28106,79.11547,homestay,2024-12-06,2027-05-08,active,Ramanathapuram
+SYN-RMD-51342-Z,Orchid Hollow Lodge,"21, West Street, Ramanathapuram Town","21, மேற்கு தெரு, இராமநாதபுரம்",Ramanathapuram Town,623501,9.37529,78.84540,lodge,2024-07-23,2025-12-09,expired,Ramanathapuram
+SYN-RMD-09116-U,Wren Loft Homestay,"98, School Street, Ramanathapuram Town","98, பள்ளி தெரு, இராமநாதபுரம்",Ramanathapuram Town,623501,9.35215,78.84406,homestay,2023-12-23,2028-06-20,active,Ramanathapuram
+SYN-RMD-87073-E,Orchid Retreat Stay,"238, Bazaar Street, Rameswaram","238, பஜார் தெரு, ராமேஸ்வரம்",Rameswaram,623526,9.29003,79.30043,cottage,2022-09-24,2026-08-18,active,Ramanathapuram
+SYN-RMD-93783-P,Cardamom Glade Homestay,"124, Hill Road, Mandapam","124, ஹில் ரோடு, மண்டபம்",Mandapam,623518,9.27222,79.13082,homestay,2025-10-28,2027-12-19,active,Ramanathapuram
+SYN-RMD-87123-Z,Laurel Corner Homestay,"138, Main Road, Ramanathapuram Town","138, மெயின் ரோடு, இராமநாதபுரம்",Ramanathapuram Town,623501,9.35459,78.83525,homestay,2022-12-09,2027-10-21,active,Ramanathapuram
+SYN-RMD-94507-G,Peacock Meadow Homestay,"92, Market Road, Rameswaram","92, மார்க்கெட் ரோடு, ராமேஸ்வரம்",Rameswaram,623526,9.28735,79.31790,homestay,2025-09-21,2026-08-16,active,Ramanathapuram
+SYN-RMD-08730-R,Moonbeam Nook Lodge,"156, South Street, Rameswaram","156, தெற்கு தெரு, ராமேஸ்வரம்",Rameswaram,623526,9.29590,79.30848,lodge,2021-09-01,2025-04-21,expired,Ramanathapuram
+SYN-RMD-68576-H,Driftwood Arbour Lodge,"110, Main Road, Rameswaram","110, மெயின் ரோடு, ராமேஸ்வரம்",Rameswaram,623526,9.28820,79.32444,lodge,2023-05-27,2026-05-04,suspended,Ramanathapuram
+SYN-CHN-15485-U,Neem Acre Residency,"58, Hill Road, T Nagar","58, ஹில் ரோடு, தி. நகர்",T Nagar,600017,13.03310,80.22706,guest_house,2022-09-22,2025-05-18,expired,Chennai
+SYN-CHN-69786-N,Orchid Bower Cottage,"162, Lake Road, T Nagar","162, லேக் ரோடு, தி. நகர்",T Nagar,600017,13.02892,80.23497,cottage,2022-03-27,2026-10-08,active,Chennai
+SYN-CHN-41835-Z,Kingfisher Meadow Guest House,"96, Main Road, T Nagar","96, மெயின் ரோடு, தி. நகர்",T Nagar,600017,13.04464,80.24080,guest_house,2024-07-03,2028-04-23,active,Chennai
+SYN-CHN-47356-X,Moonbeam Knoll Inn,"164, Church Road, Besant Nagar","164, சர்ச் ரோடு, பெசன்ட் நகர்",Besant Nagar,600090,12.99860,80.27667,lodge,2024-03-19,2026-10-11,active,Chennai
+SYN-CHN-71988-E,Marigold Acre Homestay,"187, Market Road, Besant Nagar","187, மார்க்கெட் ரோடு, பெசன்ட் நகர்",Besant Nagar,600090,13.00095,80.26593,homestay,2022-03-01,2027-11-11,active,Chennai
+SYN-CHN-27620-L,Eucalyptus Nest Residency,"236, Church Road, T Nagar","236, சர்ச் ரோடு, தி. நகர்",T Nagar,600017,13.04500,80.22462,guest_house,2022-07-24,2027-11-14,active,Chennai
+SYN-CHN-72676-S,Willow Den Residency,"203, Main Road, Besant Nagar","203, மெயின் ரோடு, பெசன்ட் நகர்",Besant Nagar,600090,13.00846,80.26516,guest_house,2022-06-15,2028-09-01,active,Chennai
+SYN-CHN-62889-H,Clover Nook Homestay,"77, Hospital Road, Besant Nagar","77, ஆஸ்பத்திரி ரோடு, பெசன்ட் நகர்",Besant Nagar,600090,13.00592,80.27591,homestay,2025-10-06,2028-11-17,active,Chennai
+SYN-CHN-14321-F,Lantern Perch Cottages,"216, West Street, Besant Nagar","216, மேற்கு தெரு, பெசன்ட் நகர்",Besant Nagar,600090,12.99333,80.26219,cottage,2023-08-31,2025-09-25,expired,Chennai
+SYN-CHN-32057-G,Skylark Knoll Residency,"19, East Street, Mylapore","19, கிழக்கு தெரு, மயிலாப்பூர்",Mylapore,600004,13.04651,80.25835,guest_house,2022-10-07,2028-03-13,suspended,Chennai
+SYN-CHN-20525-K,Laurel Court Guest House,"76, Park Road, Besant Nagar","76, பார்க் ரோடு, பெசன்ட் நகர்",Besant Nagar,600090,13.00445,80.27244,guest_house,2025-11-11,2027-01-02,active,Chennai
+SYN-CHN-11176-F,Cypress Knoll Lodge,"37, South Street, T Nagar","37, தெற்கு தெரு, தி. நகர்",T Nagar,600017,13.03673,80.23674,lodge,2022-12-23,2028-06-08,active,Chennai
