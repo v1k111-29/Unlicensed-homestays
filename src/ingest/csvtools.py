@@ -2,9 +2,9 @@
 
 Rules (docs/data-and-matching.md §1, §3; docs/security-and-privacy.md §5):
 - UTF-8 only (a BOM is accepted). Values are stored as text; nothing is evaluated.
-- At most MAX_BYTES bytes and MAX_ROWS data rows per file (D56).
+- At most MAX_BYTES bytes and MAX_ROWS data rows per file (D67).
 - Missing required columns and unknown columns are errors on line 1.
-- Cells that a spreadsheet program would run as a formula are errors (CSV injection, D56).
+- Cells that a spreadsheet program would run as a formula are errors (CSV injection, D67).
 - All-or-nothing: callers must not save anything if any error is returned.
 
 Messages use gettext, so an upload page shows them in the user's language (O2).

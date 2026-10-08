@@ -160,7 +160,7 @@ def test_oversized_file_rejected() -> None:
     "value", ["=HYPERLINK(1)", "+cmd|' /C calc'!A0", "-2+3", "@SUM(A1)", "-", "=1"]
 )
 def test_formula_like_cells_are_rejected(value: str) -> None:
-    """CSV injection (D56, M7 replaces M2's "stored as text"): the file is refused with a
+    """CSV injection (D67, M7 replaces M2's "stored as text"): the file is refused with a
     line-level error, so such values never reach the database or a later export."""
     cells = REG_ROW.split(",")
     cells[1] = value

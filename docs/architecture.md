@@ -38,7 +38,7 @@ Uptime monitor → /healthz
 - `ground_truth(listing_id, true_registry_id, type, noise)` — synthetic eval labels only; never read by the matcher (D35, D40)
 - `audit_log(id, actor, action, entity, entity_id, meta jsonb, ts)` — append-only (DB triggers block UPDATE/DELETE/TRUNCATE, D65; model refuses update/delete; `actor` is text; restrict privileges where the host allows [A]) (D42)
 
-Implemented in M2 (Django models + migrations under `src/<app>/`). Names above are logical; Django table names are `<app>_<model>` (e.g. `registry_registryentry`), except `audit_log`. CSV parsing and loading live in `src/ingest/` (D41); web uploads in `ingest/uploads.py` (service) and `ingest/views.py` (M7, D56-D58).
+Implemented in M2 (Django models + migrations under `src/<app>/`). Names above are logical; Django table names are `<app>_<model>` (e.g. `registry_registryentry`), except `audit_log`. CSV parsing and loading live in `src/ingest/` (D41); web uploads in `ingest/uploads.py` (service) and `ingest/views.py` (M7, D67-D69).
 
 ## 4. API outline
 | Endpoint | Who | Purpose |
@@ -47,7 +47,7 @@ Implemented in M2 (Django models + migrations under `src/<app>/`). Names above a
 | `POST /{lang}/report` | Public | Stretch: tourist report with consent |
 | `GET/POST /login/`, `POST /logout/` | All | Session auth (M6; logout is POST-only, failed logins throttled, D58-D59) |
 | `GET /dashboard/` | Officer, Admin | Signed-in landing page (M6 placeholder; M8 fills it) |
-| `GET/POST /officer/uploads/`, `POST /officer/uploads/confirm/`, `POST /officer/uploads/cancel/` | Officer, Admin | Listings CSV: preview, then confirm (nothing saved before confirm; D56-D58) |
+| `GET/POST /officer/uploads/`, `POST /officer/uploads/confirm/`, `POST /officer/uploads/cancel/` | Officer, Admin | Listings CSV: preview, then confirm (nothing saved before confirm; D67-D69) |
 | `GET /officer/runs/`, `POST /officer/runs/start/`, `GET /officer/runs/{id}/` | Officer, Admin | Listing batches, start a run, run summary (counts per status and band) (M7) |
 | `GET /officer/queue` | Officer | Prioritised queue |
 | `GET/POST /officer/cases/{id}` | Officer | Case detail + decision |

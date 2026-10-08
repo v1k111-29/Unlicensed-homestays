@@ -2,7 +2,7 @@
 
 Format: chosen · rejected · why · status. Labels: **[V]** verified, **[E]** estimated, **[A]** assumed. Add new entries at the bottom; never rewrite history — supersede instead.
 
-**Numbering clash (Q25, kept at the M7 merge):** D45-D53 were used twice, by the M6 branch (roles, throttle, sessions, scoping, accounts, client IP, run district, batch scoping, review hardening) and by the M3/M4 branches (D45-D48 normaliser, D50-D54 matching engine). Both sets are kept below, unrenumbered, M6 rows first. Cite them as e.g. "D51 (M6)" / "D51 (M4)". New entries continue at D55.
+**Numbering (Q25, resolved at the integration merge):** module branches were built in parallel and reused numbers. On `integration` the first-merged side keeps its numbers (M3 D45-D48, M4 D50-D54, M5 D55-D56; D49 was never used) and later-merged duplicates were renumbered: M6 D45-D53 -> D57-D65; M7 D55-D58 -> D66-D69. Commits on the module branches themselves still show the old numbers.
 
 | # | Decision | Chosen | Rejected | Why | Status |
 |---|---|---|---|---|---|

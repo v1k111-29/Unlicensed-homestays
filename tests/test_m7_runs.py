@@ -113,7 +113,7 @@ def test_officer_cannot_run_admin_multi_district_batch(users, dev_set) -> None:
     batch = UploadBatch.objects.get(type="listings", dataset="synthetic-dev")
     assert batch.district is None
     response = _client(users["off_nil"]).post(START, {"batch": batch.pk})
-    assert response.status_code == 404  # not in the officer's scope (D52)
+    assert response.status_code == 404  # not in the officer's scope (D64)
     assert not MatchRun.objects.exists()
 
 

@@ -4,7 +4,7 @@ Flow: choose file → preview (row count, districts, first rows) → confirm or 
 rules live in `ingest.uploads`; this module only handles HTTP and templates.
 
 The file field is read through `CappedUploadHandler`, so at most MAX_BYTES + 1 bytes of an
-upload are ever held, in memory, and nothing is written to disk (D56).
+upload are ever held, in memory, and nothing is written to disk (D67).
 """
 
 from __future__ import annotations
