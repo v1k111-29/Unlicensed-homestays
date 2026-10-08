@@ -45,7 +45,7 @@ class ConfirmedPair(models.Model):
         ]
 
     def save(self, *args, **kwargs) -> None:
-        if self.registry_entry.district_id != self.listing.district_id:  # D51
+        if self.registry_entry.district_id != self.listing.district_id:  # D63
             raise ValidationError("registry entry district differs from the listing district")
         super().save(*args, **kwargs)
 

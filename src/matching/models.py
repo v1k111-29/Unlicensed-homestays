@@ -10,7 +10,7 @@ from registry.models import RegistryEntry, UploadBatch
 
 def check_same_district(run: "MatchRun", listing: Listing, entry: RegistryEntry | None) -> None:
     """A run covers one district; its listings and candidate registry entries must all belong to
-    it (D51). Called by save(); services that use bulk_create must call it for every object."""
+    it (D63). Called by save(); services that use bulk_create must call it for every object."""
     if listing.district_id != run.district_id:
         raise ValidationError("listing district differs from the match run district")
     if entry is not None and entry.district_id != listing.district_id:
@@ -20,7 +20,7 @@ def check_same_district(run: "MatchRun", listing: Listing, entry: RegistryEntry 
 class MatchRun(models.Model):
     """One matching run over one district. `params_version` makes results reproducible
     (AGENTS.md §8); `thresholds` holds the full parameter snapshot of that version (M4).
-    The district is what officer scoping filters on (D51)."""
+    The district is what officer scoping filters on (D63)."""
 
     district = models.ForeignKey(District, on_delete=models.PROTECT, related_name="match_runs")
     params_version = models.CharField(max_length=32)

@@ -25,7 +25,7 @@ from matching import engine
 from matching.features import FEATURES
 from matching.models import MatchCandidate, MatchResult, MatchRun
 from matching.params import CURRENT_VERSION, get_params
-from matching.services import MatchingError, run_matching
+from matching.services import MatchingError, run_matching, run_matching_per_district
 from registry.models import RegistryEntry, UploadBatch
 from reviews.models import ConfirmedPair
 
@@ -86,16 +86,19 @@ def _snapshot(run: MatchRun) -> list[tuple]:
 @db
 def test_run_persists_results_candidates_and_audit(dev_batches) -> None:
     listings, registry = dev_batches
-    run = run_matching(listings, actor="system:test")
+    nilgiris = District.objects.get(name_en="Nilgiris")
+    run = run_matching(listings, actor="system:test", district=nilgiris)
 
+    assert run.district == nilgiris
     assert run.params_version == CURRENT_VERSION
     assert run.thresholds["fingerprint"] == get_params().fingerprint()
     assert run.thresholds["t_low"] == get_params().t_low
     assert run.listing_batch == listings and run.registry_batch == registry
     assert run.as_of == date(2026, 4, 1)  # synthetic sets use the generator date (D54)
 
-    n = Listing.objects.filter(batch=listings).count()
+    n = Listing.objects.filter(batch=listings, district=nilgiris).count()
     assert MatchResult.objects.filter(run=run).count() == n
+    assert not MatchResult.objects.filter(run=run).exclude(listing__district=nilgiris).exists()
     cands = MatchCandidate.objects.filter(run=run)
     assert cands.exists()
     for c in cands[:50]:
@@ -110,23 +113,45 @@ def test_run_persists_results_candidates_and_audit(dev_batches) -> None:
     entry = AuditLog.objects.get(action="match_run.create", entity_id=str(run.pk))
     assert entry.actor == "system:test"
     assert entry.meta["listings"] == n
+    assert entry.meta["district"] == "Nilgiris"
     assert sum(entry.meta["bands"].values()) == n
+
+
+@db
+def test_per_district_runs_cover_the_whole_batch(dev_batches) -> None:
+    listings, _ = dev_batches
+    runs = run_matching_per_district(listings, actor="system:test")
+    assert len(runs) == 8  # dev listings span all 8 districts
+    assert len({r.district_id for r in runs}) == 8
+    total = sum(MatchResult.objects.filter(run=r).count() for r in runs)
+    assert total == Listing.objects.filter(batch=listings).count()
+    for r in runs:
+        assert not MatchResult.objects.filter(run=r).exclude(listing__district=r.district).exists()
+    assert AuditLog.objects.filter(action="match_run.create").count() == 8
+
+
+@db
+def test_multi_district_batch_needs_a_district(dev_batches) -> None:
+    listings, _ = dev_batches
+    with pytest.raises(MatchingError):
+        run_matching(listings, actor="system:test")
+    assert not MatchRun.objects.exists()
 
 
 @db
 def test_two_runs_give_identical_results(dev_batches) -> None:
     listings, _ = dev_batches
-    first = run_matching(listings, actor="system:test")
-    second = run_matching(listings, actor="system:test")
-    assert first.pk != second.pk
-    assert _snapshot(first) == _snapshot(second)
+    first = run_matching_per_district(listings, actor="system:test")
+    second = run_matching_per_district(listings, actor="system:test")
+    assert {r.pk for r in first}.isdisjoint(r.pk for r in second)
+    assert [_snapshot(r) for r in first] == [_snapshot(r) for r in second]
 
 
 @db
 def test_run_never_queries_ground_truth(dev_batches) -> None:
     listings, _ = dev_batches
     with CaptureQueriesContext(connection) as ctx:
-        run_matching(listings, actor="system:test")
+        run_matching_per_district(listings, actor="system:test")
     assert ctx.captured_queries
     assert not [q for q in ctx.captured_queries if "groundtruth" in q["sql"].lower()]
 
@@ -134,11 +159,11 @@ def test_run_never_queries_ground_truth(dev_batches) -> None:
 @db
 def test_candidates_stay_in_listing_district(dev_batches) -> None:
     listings, _ = dev_batches
-    run = run_matching(listings, actor="system:test")
-    mixed = MatchCandidate.objects.filter(run=run).exclude(
+    runs = run_matching_per_district(listings, actor="system:test")
+    mixed = MatchCandidate.objects.filter(run__in=runs).exclude(
         registry_entry__district=F("listing__district")
     )
-    assert MatchCandidate.objects.filter(run=run).exists()
+    assert MatchCandidate.objects.filter(run__in=runs).exists()
     assert not mixed.exists()
 
 
@@ -154,8 +179,11 @@ def _officer(district: str) -> User:
 @db
 def test_officer_cannot_run_on_other_district_listings(dev_batches) -> None:
     listings, _ = dev_batches  # dev listings span all 8 districts
+    officer = _officer("Nilgiris")
     with pytest.raises(PermissionDenied):
-        run_matching(listings, actor=_officer("Nilgiris"))
+        run_matching(listings, actor=officer)
+    with pytest.raises(PermissionDenied):
+        run_matching(listings, actor=officer, district=officer.district)
     assert not MatchRun.objects.exists()
 
 
@@ -184,6 +212,7 @@ def test_officer_run_on_own_district(dev_batches) -> None:
     officer = _officer("Nilgiris")
     run = run_matching(batch, actor=officer)
     assert run.created_by == officer
+    assert run.district == nilgiris
     result = MatchResult.objects.get(run=run, listing=listing)
     assert result.top_registry_entry == entry
     assert result.band == engine.MATCHED_SCORE
@@ -197,17 +226,17 @@ def test_officer_run_on_own_district(dev_batches) -> None:
 @db
 def test_confirmed_pair_is_not_flagged_again(dev_batches) -> None:
     listings, _ = dev_batches
-    run = run_matching(listings, actor="system:test")
+    runs = run_matching_per_district(listings, actor="system:test")
     flagged = (
         MatchResult.objects.filter(
-            run=run, band=engine.REVIEW_SCORE, top_registry_entry__status="active"
+            run__in=runs, band=engine.REVIEW_SCORE, top_registry_entry__status="active"
         )
         .order_by("listing__external_id")
         .first()
     )
     assert flagged is not None
     ConfirmedPair.objects.create(listing=flagged.listing, registry_entry=flagged.top_registry_entry)
-    again = run_matching(listings, actor="system:test")
+    again = run_matching(listings, actor="system:test", district=flagged.listing.district)
     result = MatchResult.objects.get(run=again, listing=flagged.listing)
     assert result.band == engine.MATCHED_CONFIRMED
     assert result.top_registry_entry == flagged.top_registry_entry

@@ -26,7 +26,7 @@ M = TypeVar("M", bound=Model)
 # "app_label.ModelName" -> ORM lookup path from that model to accounts.District.
 # Paths follow forward foreign keys only (no reverse relations, so no duplicates).
 # UploadBatch: registry batches have no district and are admin-only; listings batches are
-# scoped by their district (D52).
+# scoped by their district (D64).
 DISTRICT_PATHS: dict[str, str] = {
     "accounts.District": "pk",
     "accounts.User": "district",

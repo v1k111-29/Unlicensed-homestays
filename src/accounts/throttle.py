@@ -4,7 +4,7 @@ Two independent limits, both "N failures inside a sliding window" (settings.LOGI
 
 - Account: counted from `login_failed` audit rows for the username since the later of (window
   start, last successful login). Rows store only an HMAC of the normalised username, never the
-  typed text (D46, Q19). The audit log is in PostgreSQL, so all workers share the count.
+  typed text (D58, Q28). The audit log is in PostgreSQL, so all workers share the count.
 - Address: counted in the database cache (shared by all workers) under an HMAC of the client
   address. The address itself is never written anywhere (AGENTS.md §11).
 

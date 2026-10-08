@@ -2,7 +2,7 @@
 
 Hooked to Django's auth signals so every login path is covered, not only the login view.
 No IP address, user agent, password or typed username is stored: a failed login stores only an
-HMAC of the normalised username (D46), which the account throttle counts.
+HMAC of the normalised username (D58), which the account throttle counts.
 """
 
 import time

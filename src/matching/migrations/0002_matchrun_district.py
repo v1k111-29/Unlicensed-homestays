@@ -1,4 +1,4 @@
-"""One district per match run (D51). No match runs exist before M4, so the table is empty and
+"""One district per match run (D63). No match runs exist before M4, so the table is empty and
 no default value is ever applied; the placeholder default only satisfies the operation."""
 
 import django.db.models.deletion

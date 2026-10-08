@@ -1,4 +1,4 @@
-"""Absolute session lifetime (D47): a signed-in session ends SESSION_ABSOLUTE_SECONDS after
+"""Absolute session lifetime (D59): a signed-in session ends SESSION_ABSOLUTE_SECONDS after
 login even if it stays active. The idle timeout is Django's SESSION_COOKIE_AGE."""
 
 import time

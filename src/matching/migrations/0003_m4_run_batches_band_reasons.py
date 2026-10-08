@@ -6,7 +6,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("matching", "0001_initial"),
+        ("matching", "0002_matchrun_district"),
         ("registry", "0001_initial"),
     ]
 

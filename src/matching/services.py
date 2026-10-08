@@ -17,11 +17,11 @@ from django.db import transaction
 from django.utils import timezone
 
 import audit
-from accounts.models import User
+from accounts.models import District, User
 from listings.models import Listing
 from matching import engine
 from matching.gazetteer import Gazetteer
-from matching.models import MatchCandidate, MatchResult, MatchRun
+from matching.models import MatchCandidate, MatchResult, MatchRun, check_same_district
 from matching.params import CURRENT_VERSION, get_params
 from matching.records import ListingRecord, RegistryRecord
 from registry.models import RegistryEntry, UploadBatch
@@ -77,6 +77,13 @@ def _check_scope(actor: Any, listings: list[Listing]) -> None:
         raise PermissionDenied("listings outside the officer's district")
 
 
+def _check_district(actor: Any, district: District) -> None:
+    """The run district must be the officer's own (AGENTS.md rule 7)."""
+    if isinstance(actor, User) and actor.role != User.Role.ADMIN:
+        if actor.district_id != district.pk:
+            raise PermissionDenied("run district outside the officer's district")
+
+
 def _f(value: Any) -> float | None:
     return None if value is None else float(value)
 
@@ -113,18 +120,28 @@ def _listing_record(x: Listing) -> ListingRecord:
     )
 
 
+def batch_districts(listing_batch: UploadBatch) -> list[District]:
+    """Districts that have listings in ``listing_batch``, by name."""
+    ids = Listing.objects.filter(batch=listing_batch).values_list("district_id", flat=True)
+    return list(District.objects.filter(pk__in=ids).order_by("name_en"))
+
+
 def run_matching(
     listing_batch: UploadBatch,
     *,
     actor: Any,
+    district: District | None = None,
     registry_batch: UploadBatch | None = None,
     params_version: str = CURRENT_VERSION,
     as_of: date | None = None,
     gazetteer: Gazetteer | None = None,
 ) -> MatchRun:
-    """Match every listing of ``listing_batch`` and store one run. Returns the run.
+    """Match the listings of ``listing_batch`` in one district and store one run (D63:
+    one district per run). Returns the run.
 
-    ``actor`` is a ``User`` or a ``"system:<tool>"`` string (audit actor).
+    ``district`` may be left out when the batch covers one district only; a multi-district
+    batch needs it (or use ``run_matching_per_district``). ``actor`` is a ``User`` or a
+    ``"system:<tool>"`` string (audit actor).
     """
     if listing_batch.type != UploadBatch.Type.LISTINGS:
         raise MatchingError("listing_batch must be a listings batch")
@@ -135,17 +152,28 @@ def run_matching(
     if registry_batch.dataset != listing_batch.dataset:
         raise MatchingError("listings and registry come from different datasets (Q15)")
 
+    all_listings = list(
+        Listing.objects.filter(batch=listing_batch).select_related("district").order_by("id")
+    )
+    _check_scope(actor, all_listings)
+    if district is None:
+        present = {x.district_id for x in all_listings}
+        if len(present) > 1:
+            raise MatchingError("the batch covers several districts; name one")
+        district = listing_batch.district or (all_listings[0].district if all_listings else None)
+        if district is None:
+            raise MatchingError("the batch has no listings")
+    _check_district(actor, district)
+
     params = get_params(params_version)
     as_of = as_of or default_as_of(listing_batch)
     gazetteer = gazetteer or default_gazetteer()
 
-    listings = list(
-        Listing.objects.filter(batch=listing_batch).select_related("district").order_by("id")
-    )
-    _check_scope(actor, listings)
-    district_ids = sorted({x.district_id for x in listings})
+    listings = [x for x in all_listings if x.district_id == district.pk]
+    if not listings:
+        raise MatchingError("the batch has no listings in this district")
     entries = list(
-        RegistryEntry.objects.filter(batch=registry_batch, district_id__in=district_ids)
+        RegistryEntry.objects.filter(batch=registry_batch, district=district)
         .select_related("district")
         .order_by("id")
     )
@@ -166,10 +194,13 @@ def run_matching(
         confirmed=confirmed,
     )
 
+    listing_by_id = {x.pk: x for x in listings}
+    entry_by_id = {e.pk: e for e in entries}
     user = actor if isinstance(actor, User) else None
     counts = {band: 0 for band in engine.BANDS}
     with transaction.atomic():
         run = MatchRun.objects.create(
+            district=district,
             params_version=params.version,
             thresholds={**params.snapshot(), "fingerprint": params.fingerprint()},
             created_by=user,
@@ -181,25 +212,31 @@ def run_matching(
         results = []
         for o in outcomes:
             counts[o.band] += 1
-            candidates.extend(
-                MatchCandidate(
-                    run=run,
-                    listing_id=o.listing_id,
-                    registry_entry_id=c.registry_id,
-                    score=c.score,
-                    features={**c.features, "blocked_by": list(c.blocked_by)},
-                    rank=c.rank,
+            listing = listing_by_id[o.listing_id]
+            for c in o.candidates:
+                entry = entry_by_id[c.registry_id]
+                # bulk_create skips save(); the same-district check runs here (D63).
+                check_same_district(run, listing, entry)
+                candidates.append(
+                    MatchCandidate(
+                        run=run,
+                        listing=listing,
+                        registry_entry=entry,
+                        score=c.score,
+                        features={**c.features, "blocked_by": list(c.blocked_by)},
+                        rank=c.rank,
+                    )
                 )
-                for c in o.candidates
-            )
+            top = entry_by_id[o.top_registry_id] if o.top_registry_id is not None else None
+            check_same_district(run, listing, top)
             results.append(
                 MatchResult(
                     run=run,
-                    listing_id=o.listing_id,
+                    listing=listing,
                     status=o.status,
                     band=o.band,
                     reasons=list(o.reasons),
-                    top_registry_entry_id=o.top_registry_id,
+                    top_registry_entry=top,
                     score=o.score,
                     priority=o.priority,
                 )
@@ -213,6 +250,7 @@ def run_matching(
             "match_run",
             run.pk,
             {
+                "district": district.name_en,
                 "params_version": params.version,
                 "fingerprint": params.fingerprint(),
                 "listing_batch": listing_batch.pk,
@@ -228,3 +266,15 @@ def run_matching(
             },
         )
     return run
+
+
+def run_matching_per_district(
+    listing_batch: UploadBatch, *, actor: Any, **kwargs: Any
+) -> list[MatchRun]:
+    """One run per district present in ``listing_batch`` (admin and synthetic loads), all in
+    one transaction: either every district run is stored or none is."""
+    with transaction.atomic():
+        return [
+            run_matching(listing_batch, actor=actor, district=d, **kwargs)
+            for d in batch_districts(listing_batch)
+        ]

@@ -26,7 +26,7 @@ def _post_login(client, username: str, password: str, **meta):
     return client.post("/login/", {"username": username, "password": password}, **meta)
 
 
-# --- client address behind a proxy (D50) ---
+# --- client address behind a proxy (D62) ---
 
 
 @pytest.mark.django_db
@@ -126,7 +126,7 @@ def test_no_proxy_ssl_header_without_proxy() -> None:
     assert result.returncode == 0, result.stderr
 
 
-# --- concurrency: one locked slot per login attempt (D46) ---
+# --- concurrency: one locked slot per login attempt (D58) ---
 
 
 @pytest.mark.django_db

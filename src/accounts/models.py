@@ -34,6 +34,6 @@ class User(AbstractUser):
                 condition=Q(role="admin") | Q(district__isnull=False),
                 name="officer_has_district",
             ),
-            # Usernames differing only in case would share one throttle key (D46).
+            # Usernames differing only in case would share one throttle key (D58).
             models.UniqueConstraint(Lower("username"), name="uniq_username_ci"),
         ]

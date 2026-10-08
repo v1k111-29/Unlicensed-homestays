@@ -100,7 +100,7 @@ STATICFILES_DIRS = [SRC_DIR / "static"]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# --- Authentication and sessions (M6, docs/security-and-privacy.md §2, D45-D47) ---
+# --- Authentication and sessions (M6, docs/security-and-privacy.md §2, D57-D59) ---
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "dashboard"
 LOGOUT_REDIRECT_URL = "login"
@@ -123,10 +123,10 @@ SECURE_REFERRER_POLICY = "same-origin"
 X_FRAME_OPTIONS = "DENY"
 
 # 5 failed logins within 15 minutes lock the account and the client address for the rest of
-# that window (essentialfeatures.md O1, D46).
+# that window (essentialfeatures.md O1, D58).
 LOGIN_THROTTLE = {"max_failures": 5, "window_seconds": 15 * 60}
 
-# Where the real client address comes from (D50). "REMOTE_ADDR" = direct connection; behind a
+# Where the real client address comes from (D62). "REMOTE_ADDR" = direct connection; behind a
 # proxy, the header the proxy appends to, e.g. "HTTP_X_FORWARDED_FOR", plus the number of
 # trusted proxies that append to it. Required outside DEBUG: a wrong value either lets clients
 # spoof the address limit or puts every user behind one proxy address.
@@ -145,7 +145,7 @@ if not DEBUG:
         # Behind a TLS-terminating proxy that sets this header (and strips client copies).
         SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
-# Database cache: shared by all workers, so the address limit is global (D46). The table is
+# Database cache: shared by all workers, so the address limit is global (D58). The table is
 # created by `python tasks.py migrate` (createcachetable) and by the test runner.
 CACHES = {
     "default": {

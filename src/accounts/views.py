@@ -22,7 +22,7 @@ class LoginView(auth_views.LoginView):
 
     def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         username = request.POST.get("username", "")
-        # Count, password check and failure record happen inside one locked slot (D46).
+        # Count, password check and failure record happen inside one locked slot (D58).
         with throttle.login_slot(request, username):
             scope = throttle.blocked_scope(request, username)
             if scope is None:
