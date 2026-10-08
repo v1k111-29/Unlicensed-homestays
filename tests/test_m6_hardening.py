@@ -208,6 +208,30 @@ def test_every_url_is_guarded_or_allowlisted() -> None:
     assert unguarded == []
 
 
+def test_route_walk_covers_officer_admin_and_public_routes() -> None:
+    """The walk above must actually see the M7/M8 officer and admin routes and the M9 public
+    route; a route missing from the resolver would otherwise pass the guard test silently."""
+    entries = {entry.name: entry for _, entry in _walk(get_resolver().url_patterns)}
+    names = set(entries)
+    guarded = {
+        "dashboard",
+        "upload_listings",
+        "runs",
+        "run_create",
+        "run_detail",
+        "queue",
+        "case_detail",
+        "case_decide",
+        "case_evidence",
+        "evidence_detail",
+        "upload_registry",
+    }
+    assert guarded | {"tourist_check"} <= names, sorted((guarded | {"tourist_check"}) - names)
+    # Officer/admin routes are never on the public allowlist and carry a guard themselves.
+    assert not guarded & PUBLIC_URL_NAMES
+    assert [n for n in sorted(guarded) if not _is_guarded(entries[n].callback)] == []
+
+
 # --- tourist-safe wording in every template (AGENTS.md rule 2) ---
 
 FORBIDDEN = re.compile(r"\b(illegal|fake|unlicensed)\b", re.IGNORECASE)

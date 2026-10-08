@@ -2,7 +2,7 @@
 
 Format: chosen · rejected · why · status. Labels: **[V]** verified, **[E]** estimated, **[A]** assumed. Add new entries at the bottom; never rewrite history — supersede instead.
 
-**Numbering (Q25, resolved at the integration merge):** module branches were built in parallel and reused numbers. On `integration` the first-merged side keeps its numbers (M3 D45-D48, M4 D50-D54, M5 D55-D56; D49 was never used) and later-merged duplicates were renumbered: M6 D45-D53 -> D57-D65; M7 D55-D58 -> D66-D69; the UI design brief's D56 -> D70. Commits on the module branches themselves still show the old numbers.
+**Numbering (Q25, resolved at the integration merge):** module branches were built in parallel and reused numbers. On `integration` the first-merged side keeps its numbers (M3 D45-D48, M4 D50-D54, M5 D55-D56; D49 was never used) and later-merged duplicates were renumbered: M6 D45-D53 -> D57-D65; M7 D55-D58 -> D66-D69; the UI design brief's D56 -> D70. Commits on the module branches themselves still show the old numbers. At the `integration-2` merge (M8, M9 on top of `main`): M8 D59-D61 -> D71-D73; M9 D59-D61 -> D74-D76 (both branches also carried the UI brief as a second D56, which is D70 here).
 
 | # | Decision | Chosen | Rejected | Why | Status |
 |---|---|---|---|---|---|
