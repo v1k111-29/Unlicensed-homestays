@@ -8,4 +8,5 @@
 <div class="alert alert--info">
   <p>{% translate "Your account does not have access to this page. Access attempts are logged." %}</p>
 </div>
+<p>{% url 'home' as home_url %}<a href="{{ home_url|default:'/' }}">{% translate "Go to the start page" %}</a></p>
 {% endblock %}

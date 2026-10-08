@@ -1,16 +1,27 @@
 """URL routes. Auth in M6; uploads and matching runs in M7; queue/cases in M8; tourist pages
-in M9. Every view is guarded by a capability or is on the explicit public allowlist (a test walks
-all routes). The Django admin site
-is not installed, so `admin/` paths are ordinary guarded views."""
+in M9; language prefix, home page and error handlers in M10. Every view is guarded by a
+capability or is on the explicit public allowlist (a test walks all routes). The Django admin
+site is not installed, so `admin/` paths are ordinary guarded views.
 
-from django.urls import include, path
+Language (D77): English pages have no prefix (`/check/`), Tamil pages are under `/ta/`
+(`/ta/check/`). The header links switch between them; the URL itself carries the choice.
+Routes that must not depend on the language (health checks in M11) go outside i18n_patterns."""
 
+from django.conf.urls.i18n import i18n_patterns
+from django.urls import include, path, re_path
+
+from config import views as site_views
 from ingest import views as ingest_views
 from matching import views as matching_views
 from reviews import views as review_views
 from tourist import views as tourist_views
 
 urlpatterns = [
+    # public (allowlisted): /en/... redirects to the unprefixed English page
+    re_path(r"^en/(?P<rest>.*)$", site_views.english_prefix, name="english_prefix"),
+]
+urlpatterns += i18n_patterns(
+    path("", site_views.home, name="home"),  # public (allowlisted): redirect only
     path("", include("accounts.urls")),
     path("check/", tourist_views.check, name="tourist_check"),  # public (allowlisted)
     path("officer/uploads/", ingest_views.upload_listings, name="upload_listings"),
@@ -43,4 +54,7 @@ urlpatterns = [
         ingest_views.upload_registry_cancel,
         name="upload_registry_cancel",
     ),
-]
+    prefix_default_language=False,
+)
+
+handler500 = "config.views.server_error"

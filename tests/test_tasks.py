@@ -2,7 +2,17 @@ import tasks
 
 
 def test_all_documented_targets_exist() -> None:
-    assert set(tasks.TARGETS) == {"setup", "run", "test", "lint", "eval", "seed", "migrate", "load"}
+    assert set(tasks.TARGETS) == {
+        "setup",
+        "run",
+        "test",
+        "lint",
+        "eval",
+        "seed",
+        "migrate",
+        "load",
+        "messages",
+    }
 
 
 def test_unknown_target_rejected() -> None:
@@ -22,7 +32,7 @@ def test_eval_passes_options_through(monkeypatch) -> None:
     assert cwd == tasks.ROOT / "src"
 
 
-def test_only_eval_takes_extra_options() -> None:
+def test_only_eval_and_messages_take_extra_options() -> None:
     assert tasks.main(["tasks.py", "test", "--anything"]) == 2
 
 

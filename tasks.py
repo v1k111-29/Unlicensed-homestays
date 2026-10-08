@@ -97,6 +97,15 @@ def evaluate(*options: str) -> int:
     return subprocess.call([sys.executable, "-m", "evaluation", *options], cwd=ROOT / "src")
 
 
+def messages(*options: str) -> int:
+    """Extract translatable strings into src/locale/ta/LC_MESSAGES/django.po (keeping existing
+    translations) and compile django.mo. Pure Python (src/config/catalog.py, D77): GNU gettext,
+    which Django's makemessages/compilemessages need, is not installed on Windows here.
+    ``messages --check`` only reports a stale catalog or a missing translation (exit 1)."""
+    command = "check" if "--check" in options else "update"
+    return subprocess.call([sys.executable, "-m", "config.catalog", command], cwd=ROOT / "src")
+
+
 TARGETS: dict[str, Callable[..., int]] = {
     "setup": setup,
     "run": run,
@@ -106,9 +115,10 @@ TARGETS: dict[str, Callable[..., int]] = {
     "seed": seed,
     "migrate": migrate,
     "load": load,
+    "messages": messages,
 }
 # Targets that accept extra command-line options.
-PASS_THROUGH = {"eval"}
+PASS_THROUGH = {"eval", "messages"}
 
 
 def main(argv: list[str]) -> int:

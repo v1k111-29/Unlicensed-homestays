@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% comment %}Rendered by config.views.server_error without context processors or the database:
+only error_id and retry_url are available, so no user, request or language links.{% endcomment %}
+{% block title %}{% translate "Something went wrong" %} · {% translate "Verified Stays" %}{% endblock %}
+{% block nav %}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>{% translate "Something went wrong" %}</h1>
+</div>
+<div class="alert alert--error" role="alert">
+  <p>{% translate "The server could not complete this request." %}</p>
+  <p>{% translate "Error ID:" %} <span class="mono">{{ error_id }}</span></p>
+</div>
+<p><a href="{{ retry_url|default:'/' }}">{% translate "Try again" %}</a> · {% url 'home' as home_url %}<a href="{{ home_url|default:'/' }}">{% translate "Go to the start page" %}</a></p>
+<p class="muted">{% translate "If it happens again, give the error ID to the project team." %}</p>
+{% endblock %}

@@ -8,4 +8,5 @@
 <div class="alert alert--info">
   <p>{% translate "The page does not exist, or it is not available to your account." %}</p>
 </div>
+<p>{% url 'home' as home_url %}<a href="{{ home_url|default:'/' }}">{% translate "Go to the start page" %}</a></p>
 {% endblock %}

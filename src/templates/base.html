@@ -11,7 +11,7 @@
   <a class="skip-link" href="#main">{% translate "Skip to main content" %}</a>
   <header class="site-header">
     <div class="wrap header-row">
-      <p class="brand"><a href="{% if user.is_authenticated %}{% url 'dashboard' %}{% else %}{% url 'tourist_check' as check_url %}{% if check_url %}{{ check_url }}{% else %}{% url 'login' %}{% endif %}{% endif %}">{% translate "Verified Stays" %}</a></p>
+      {% url 'home' as home_url %}<p class="brand"><a href="{{ home_url|default:'/' }}">{% translate "Verified Stays" %}</a></p>
       {% block nav %}
       {% if user.is_authenticated %}
       {% url 'dashboard' as dashboard_url %}{% url 'queue' as queue_url %}{% url 'upload_listings' as upload_url %}{% url 'runs' as runs_url %}{% url 'upload_registry' as registry_url %}
@@ -35,9 +35,16 @@
       </nav>
       {% endif %}
       {% endblock %}
+      {% if language_links %}
+      <nav class="site-nav lang-switch" aria-label="{% translate 'Language' %}">
+        <ul>
+          {% for link in language_links %}<li><a href="{{ link.url }}" lang="{{ link.code }}" hreflang="{{ link.code }}"{% if link.current %} aria-current="true"{% endif %}>{{ link.name }}</a></li>{% endfor %}
+        </ul>
+      </nav>
+      {% endif %}
     </div>
   </header>
-  <div class="notice-bar"><p class="wrap">{% translate "Demonstration build. All data shown is synthetic." %}</p></div>
+  <aside class="notice-bar" aria-label="{% translate 'Data notice' %}"><p class="wrap">{% translate "Demonstration build. All data shown is synthetic." %}</p></aside>
   <main id="main" class="wrap{% block main_class %}{% endblock %}" tabindex="-1">
     {% if messages %}
     <ul class="messages" role="status">
