@@ -5,12 +5,16 @@ is not installed, so `admin/` paths are ordinary guarded views."""
 
 from django.urls import include, path
 
+from config import health
 from ingest import views as ingest_views
 from matching import views as matching_views
 from reviews import views as review_views
 from tourist import views as tourist_views
 
 urlpatterns = [
+    # Public (allowlisted). Normally answered by config.health.HealthCheckMiddleware first (D77).
+    path("livez", health.livez, name="livez"),
+    path("healthz", health.healthz, name="healthz"),
     path("", include("accounts.urls")),
     path("check/", tourist_views.check, name="tourist_check"),  # public (allowlisted)
     path("officer/uploads/", ingest_views.upload_listings, name="upload_listings"),

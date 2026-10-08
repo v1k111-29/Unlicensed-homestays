@@ -34,8 +34,10 @@ Events: login (success/fail), upload, registry upload, match run, decision, evid
 - Dependency scanning (`pip-audit`), secret scanning (`gitleaks`).
 - Secrets only via environment variables.
 
+M11 (D78, D80): CSP `default-src 'none'` with same-origin scripts/styles/images/forms, `frame-ancestors 'none'`, Permissions-Policy, HTTPS redirect, HSTS one year; `ALLOWED_HOSTS` required outside DEBUG. Logs are JSON on stdout with addresses, e-mails, phone numbers and credentials scrubbed; Gunicorn access log off (no client addresses written by the app).
+
 ## 6. Backups and recovery
-Nightly `pg_dump` via GitHub Actions to object storage [A]; one restore test before submission; document steps and time taken.
+Nightly `pg_dump` via GitHub Actions to object storage [A]; one restore test before submission; document steps and time taken. M11 prepared it (`.github/workflows/backup.yml`, `scripts/restore-test.sh`, `docs/backup-restore.md`, D83); not configured and the restore test is not done (human step).
 
 ## 7. Incident basics
 If real data is ever loaded: define who is notified, how access is revoked, and how the audit log is used. Not needed for the synthetic demo.

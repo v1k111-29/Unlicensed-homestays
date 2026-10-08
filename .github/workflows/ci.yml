@@ -45,4 +45,89 @@ jobs:
       - uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  # Deploy on main: added in M11.
+
+  # M11 (D79): build the production image and smoke-test it against a throwaway PostgreSQL.
+  # The image is never pushed to any registry. Docker is not installed on the dev machine
+  # (Q14), so this job is the only place the Dockerfile is built.
+  docker:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: verified_stays
+          POSTGRES_PASSWORD: ci-only-not-secret
+          POSTGRES_DB: verified_stays
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U verified_stays"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image (not pushed)
+        run: docker build --tag verified-stays:ci .
+      - name: Start container (production settings, plain HTTP for the smoke test)
+        run: >-
+          docker run --detach --name vs --network host
+          -e DATABASE_URL=postgres://verified_stays:ci-only-not-secret@localhost:5432/verified_stays
+          -e DJANGO_SECRET_KEY=ci-only-not-secret
+          -e DJANGO_ALLOWED_HOSTS=localhost
+          -e DJANGO_CLIENT_IP_HEADER=REMOTE_ADDR
+          -e DJANGO_SECURE_SSL_REDIRECT=0
+          verified-stays:ci
+      - name: Wait for /healthz (migrations run at start)
+        run: |
+          for _ in $(seq 1 45); do
+            if curl --silent --fail http://localhost:8000/healthz; then exit 0; fi
+            sleep 2
+          done
+          echo "container did not become healthy"; exit 1
+      - name: Smoke checks
+        run: |
+          set -euo pipefail
+          # Non-root user.
+          test "$(docker exec vs id -u)" != "0"
+          curl --fail --silent --show-error http://localhost:8000/livez
+          # Public page with security headers, and the hashed stylesheet served by WhiteNoise.
+          curl --fail --silent --show-error --dump-header headers.txt --output page.html \
+            http://localhost:8000/check/
+          grep -qi '^content-security-policy:' headers.txt
+          css=$(grep -o '/static/css/app\.[0-9a-f]*\.css' page.html | sort -u)
+          test "$(printf '%s\n' "$css" | wc -l)" = "1" && test -n "$css"
+          curl --fail --silent --show-error --output /dev/null "http://localhost:8000$css"
+          # Runtime data files are in the image (Q20): gazetteer loads, synthetic dev set loads.
+          docker exec vs python -c "from matching.gazetteer import Gazetteer; Gazetteer.load()"
+          docker exec vs python manage.py load_synthetic --set dev
+          # A tourist check runs end to end (synthetic name from the dev registry).
+          first="import csv; row = next(csv.DictReader(open('data/synthetic/out/dev/registry.csv', encoding='utf-8-sig')))"
+          name=$(python3 -c "$first; print(row['name'])")
+          locality=$(python3 -c "$first; print(row['locality'])")
+          code=$(curl --silent --output /dev/null --write-out '%{http_code}' \
+            --data-urlencode "name=$name" --data-urlencode "locality=$locality" \
+            http://localhost:8000/check/)
+          test "$code" = "200"
+      - name: Container logs
+        if: always()
+        run: docker logs vs || true
+
+  # M11 (D82): deploy on main through a Render deploy hook. DISABLED BY DEFAULT: it runs only
+  # when the repository variable ENABLE_RENDER_DEPLOY is set to "true" (Settings > Secrets and
+  # variables > Actions > Variables) and the secret RENDER_DEPLOY_HOOK_URL exists. Neither is
+  # set by this repository; see docs/deploy-runbook.md section 8 before enabling.
+  deploy:
+    needs: [checks, docker]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.ENABLE_RENDER_DEPLOY == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render deploy hook
+        env:
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$RENDER_DEPLOY_HOOK_URL" ]; then
+            echo "::error::secret RENDER_DEPLOY_HOOK_URL is not set"; exit 1
+          fi
+          # Output discarded: the response names the deploy, the URL itself is a secret.
+          curl --fail --silent --show-error --request POST --output /dev/null "$RENDER_DEPLOY_HOOK_URL"
