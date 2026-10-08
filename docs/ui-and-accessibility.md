@@ -14,7 +14,7 @@ Admin: Registry upload · Audit log.
 - Officer: Upload → preview/confirm → Run matching → Queue → Case → Decide → Evidence.
 
 ## Design tokens
-Defined in `docs/ui-design-brief.md` (binding) and implemented in `src/static/css/app.css` (D56). Summary: system font stack with Tamil fallbacks (Noto Sans Tamil / Nirmala UI, installed fonts only); base 16px; line-height 1.5 (Latin), 1.7 (Tamil); 4px spacing steps; radius 4px; one accent colour and neutral greys; status = text + shape + colour; WCAG 2.1 AA contrast verified by a test.
+Defined in `docs/ui-design-brief.md` (binding) and implemented in `src/static/css/app.css` (D70). Summary: system font stack with Tamil fallbacks (Noto Sans Tamil / Nirmala UI, installed fonts only); base 16px; line-height 1.5 (Latin), 1.7 (Tamil); 4px spacing steps; radius 4px; one accent colour and neutral greys; status = text + shape + colour; WCAG 2.1 AA contrast verified by a test.
 
 ## Accessibility checklist
 - Semantic HTML; one `h1` per page; landmarks.

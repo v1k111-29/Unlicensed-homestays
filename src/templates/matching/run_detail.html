@@ -2,8 +2,10 @@
 {% load i18n %}
 {% block title %}{% blocktranslate with id=run.pk %}Run {{ id }}{% endblocktranslate %} · {% translate "Verified Stays" %}{% endblock %}
 {% block content %}
-<p class="breadcrumb"><a href="{% url 'runs' %}">{% translate "Matching runs" %}</a></p>
-<h1>{% blocktranslate with id=run.pk district=run.district.name_en %}Run {{ id }}: {{ district }}{% endblocktranslate %}</h1>
+<p class="no-print"><a href="{% url 'runs' %}">{% translate "Matching runs" %}</a></p>
+<div class="page-head">
+  <h1>{% blocktranslate with id=run.pk district=run.district.name_en %}Run {{ id }}: {{ district }}{% endblocktranslate %}</h1>
+</div>
 <p>{% translate "Results prioritise listings for officer review. They are not findings." %}</p>
 
 <dl class="facts">
@@ -13,22 +15,22 @@
   <dt>{% translate "Listing batch" %}</dt><dd>{% if run.listing_batch %}{{ run.listing_batch.pk }} ({{ run.listing_batch.source_name|default:"-" }}){% else %}-{% endif %}</dd>
   <dt>{% translate "Registry batch" %}</dt><dd>{% if run.registry_batch %}{{ run.registry_batch.pk }} ({{ run.registry_batch.source_name|default:"-" }}){% else %}-{% endif %}</dd>
   <dt>{% translate "Licence validity judged on" %}</dt><dd>{{ run.as_of|date:"Y-m-d"|default:"-" }}</dd>
-  <dt>{% translate "Parameter version" %}</dt><dd>{{ run.params_version }}</dd>
+  <dt>{% translate "Parameter version" %}</dt><dd class="mono">{{ run.params_version }}</dd>
   <dt>{% translate "Started by" %}</dt><dd>{% if run.created_by %}{{ run.created_by.get_username }}{% else %}{% translate "System" %}{% endif %}</dd>
   <dt>{% translate "Started" %}</dt><dd>{{ run.created_at|date:"Y-m-d H:i" }}</dd>
 </dl>
 
 <h2>{% translate "Results by status" %}</h2>
 {% if total %}
-<ul class="status-summary">
+<dl class="facts">
   {% for s in status_totals %}
-  <li class="status status-{{ s.key }}"><span class="status-label">{{ s.label }}</span> <span class="status-count">{{ s.count }}</span></li>
+  <dt>{{ s.label }}</dt><dd>{{ s.count }}</dd>
   {% endfor %}
-</ul>
+</dl>
 
 <h2 id="bands-heading">{% translate "Results by band, in review order" %}</h2>
-<div class="table-scroll">
-  <table class="data" aria-labelledby="bands-heading">
+<div class="table-wrap" tabindex="0" role="region" aria-labelledby="bands-heading">
+  <table class="table" aria-labelledby="bands-heading">
     <thead>
       <tr>
         <th scope="col">{% translate "Band" %}</th>
@@ -39,7 +41,7 @@
     <tbody>
       {% for b in bands %}
       <tr>
-        <td>{{ b.label }}</td>
+        <td><span class="badge badge--{{ b.key }}">{{ b.label }}</span></td>
         <td>{{ b.status }}</td>
         <td class="num">{{ b.count }}</td>
       </tr>
@@ -51,6 +53,6 @@
   </table>
 </div>
 {% else %}
-<p class="empty">{% translate "This run has no results." %}</p>
+<p class="empty-state">{% translate "This run has no results." %}</p>
 {% endif %}
 {% endblock %}

@@ -6,7 +6,7 @@ Append newest entries at the top. Each entry: module · done · partial · decis
 - Branch `ui-design-brief`, based on `m6-auth-roles-audit`.
 - Done: `docs/ui-design-brief.md` (audience, tone, anti-patterns, type/spacing/colour tokens, contrast table, six band badges, tourist result states with the verbatim disclaimer, forms, tables, empty/error/loading, evidence print, HTMX conventions, Tamil). `src/static/css/app.css` replaces `base.css`. M6 templates (`base.html`, login, dashboard, 403, 404) moved to the new classes; all gettext strings unchanged; `base.html` gains blocks `extra_head`, `nav`, `main_class`. `tests/test_ui_stylesheet.py` checks tokens, no external assets, and recomputes every contrast pair listed in the brief.
 - Verified: `tasks.py lint` clean; `tasks.py test` 153 passed, 114 skipped (no DB here) [V]. Templates rendered outside the DB tests [V]. Not checked in a browser or with a screen reader [A].
-- Decisions: D56.
+- Decisions: D70.
 - Next: M8/M9 build their screens from the brief's component list.
 
 ## M7 — Upload + run endpoints (done locally; DB tests verified on SQLite only, PostgreSQL run pending)

@@ -2,7 +2,9 @@
 {% load i18n %}
 {% block title %}{{ title }} · {% translate "Verified Stays" %}{% endblock %}
 {% block content %}
-<h1>{{ title }}</h1>
+<div class="page-head">
+  <h1>{{ title }}</h1>
+</div>
 
 {% if kind == "listings" %}
 <p>{% translate "Upload a CSV file of listings to check against the registry. Required columns: platform, title, locality_text. Optional: listing_id, ref_url, pincode, lat, lng, claimed_licence_no, notes, district." %}</p>
@@ -17,21 +19,21 @@
 <p class="hint">{% blocktranslate with size=max_bytes|filesizeformat %}UTF-8 text, at most {{ size }} and {{ max_rows }} data rows. Nothing is saved until you confirm the preview.{% endblocktranslate %}</p>
 
 {% if no_registry %}
-<div class="alert" role="note">
+<div class="alert alert--warning" role="note">
   <p><strong>{% translate "No registry loaded yet." %}</strong> {% translate "You can upload listings now, but matching needs a registry. Ask an administrator to upload one." %}</p>
 </div>
 {% endif %}
 
 {% if errors %}
-<section class="alert" role="alert" aria-labelledby="errors-heading" tabindex="-1" id="errors">
+<section class="alert alert--error" role="alert" aria-labelledby="errors-heading" tabindex="-1" id="errors">
   <h2 id="errors-heading">{% translate "The file was not saved" %}</h2>
   {% if out_of_district %}
   <p>{% translate "The file names a district other than yours. The whole file was rejected and the attempt has been recorded in the audit log." %}</p>
   {% endif %}
   <p>{% blocktranslate count counter=error_count with name=source_name %}{{ name }}: {{ counter }} problem found. Nothing was saved. Correct the file and upload it again.{% plural %}{{ name }}: {{ counter }} problems found. Nothing was saved. Correct the file and upload it again.{% endblocktranslate %}</p>
-  <div class="table-scroll">
-    <table class="data">
-      <caption class="visually-hidden">{% translate "Problems by line" %}</caption>
+  <div class="table-wrap" tabindex="0" role="region" aria-labelledby="errors-caption">
+    <table class="table">
+      <caption class="visually-hidden" id="errors-caption">{% translate "Problems by line" %}</caption>
       <thead><tr><th scope="col">{% translate "Line" %}</th><th scope="col">{% translate "Column" %}</th><th scope="col">{% translate "Problem" %}</th></tr></thead>
       <tbody>
         {% for e in errors %}
@@ -44,9 +46,9 @@
 </section>
 {% endif %}
 
-<form method="post" action="{{ page_url }}" enctype="multipart/form-data" class="panel" novalidate>
+<form method="post" action="{{ page_url }}" enctype="multipart/form-data" novalidate>
   {% csrf_token %}
-  {% if form.non_field_errors %}<div class="alert" role="alert">{% for err in form.non_field_errors %}<p>{{ err }}</p>{% endfor %}</div>{% endif %}
+  {% if form.non_field_errors %}<div class="alert alert--error" role="alert">{% for err in form.non_field_errors %}<p>{{ err }}</p>{% endfor %}</div>{% endif %}
   <div class="field">
     <label for="{{ form.file.id_for_label }}">{{ form.file.label }}</label>
     <p class="hint" id="file-hint">{% translate "Choose a .csv file from your computer." %}</p>
@@ -68,17 +70,17 @@
   <button type="submit" class="button">{% translate "Check file" %}</button>
 </form>
 
-<h2>{% translate "Recent uploads" %}</h2>
+<h2 id="recent-heading">{% translate "Recent uploads" %}</h2>
 {% if recent %}
-<div class="table-scroll">
-  <table class="data">
+<div class="table-wrap" tabindex="0" role="region" aria-labelledby="recent-heading">
+  <table class="table">
     <thead>
       <tr>
         <th scope="col">{% translate "Batch" %}</th>
         <th scope="col">{% translate "File" %}</th>
         <th scope="col">{% translate "District" %}</th>
         <th scope="col">{% translate "Data set" %}</th>
-        <th scope="col">{% translate "Rows" %}</th>
+        <th scope="col" class="num">{% translate "Rows" %}</th>
         <th scope="col">{% translate "Uploaded by" %}</th>
         <th scope="col">{% translate "Uploaded" %}</th>
       </tr>
@@ -90,7 +92,7 @@
         <td>{{ b.source_name|default:"-" }}</td>
         <td>{% if b.district %}{{ b.district.name_en }}{% elif kind == "listings" %}{% translate "Several districts" %}{% else %}{% translate "All districts in the file" %}{% endif %}</td>
         <td>{{ b.dataset|default:_("Uploaded") }}</td>
-        <td>{{ b.row_count }}</td>
+        <td class="num">{{ b.row_count }}</td>
         <td>{% if b.uploader %}{{ b.uploader.get_username }}{% else %}{% translate "System load" %}{% endif %}</td>
         <td>{{ b.created_at|date:"Y-m-d H:i" }}</td>
       </tr>
@@ -99,6 +101,6 @@
   </table>
 </div>
 {% else %}
-<p class="empty">{% translate "No files uploaded yet." %}</p>
+<p class="empty-state">{% translate "No files uploaded yet." %}</p>
 {% endif %}
 {% endblock %}
