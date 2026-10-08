@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{{ listing.title }} · {% translate "Case" %} · {% translate "Verified Stays" %}{% endblock %}
+{% block content %}
+<p class="breadcrumb"><a href="{% url 'queue' %}">{% translate "Review queue" %}</a></p>
+<div class="page-head">
+  <h1>{{ listing.title }}</h1>
+  {% if result %}<p><span class="badge badge--{{ result.band }}">{{ band_label }}</span></p>{% endif %}
+  <p class="lede">{% translate "The band and score prioritise this listing for officer review. They are not a finding about the stay." %}</p>
+</div>
+
+{% if conflict %}
+<div class="alert alert--warning" role="alert">
+  <p class="alert__title">{% translate "Not saved: this case changed while you were viewing it." %}</p>
+  {% if conflict.run_changed %}
+  <p>{% translate "A newer matching run replaced the result you were looking at. Check the current result below, then decide again." %}</p>
+  {% endif %}
+  {% if conflict.latest %}
+  <p>{% blocktranslate with who=conflict.latest.reviewer.get_username when=conflict.latest.created_at|date:"Y-m-d H:i" what=conflict.latest.get_decision_display %}{{ who }} recorded "{{ what }}" at {{ when }}.{% endblocktranslate %} {% translate "Read their decision in the history below. Submit again only if you want to record a different decision." %}</p>
+  {% endif %}
+</div>
+{% endif %}
+{% if error %}
+<div class="alert alert--error" role="alert">
+  <p class="alert__title">{% translate "Not saved." %}</p>
+  <p><a href="#decision">{{ error }}</a></p>
+</div>
+{% endif %}
+
+<div class="case-grid">
+  <section aria-labelledby="listing-heading">
+    <h2 id="listing-heading">{% translate "Listing" %}</h2>
+    <dl class="facts">
+      <dt>{% translate "Title" %}</dt><dd>{{ listing.title }}</dd>
+      <dt>{% translate "Platform" %}</dt><dd>{{ listing.platform }}</dd>
+      <dt>{% translate "Listing ID in file" %}</dt><dd>{{ listing.external_id|default:"-" }}</dd>
+      <dt>{% translate "Reference URL (stored, not visited)" %}</dt><dd>{% if listing.ref_url %}<span class="mono">{{ listing.ref_url }}</span>{% else %}-{% endif %}</dd>
+      <dt>{% translate "Locality (as listed)" %}</dt><dd>{{ listing.locality_text }}</dd>
+      <dt>{% translate "Pincode" %}</dt><dd>{{ listing.pincode|default:"-" }}</dd>
+      <dt>{% translate "Coordinates" %}</dt><dd>{% if listing.lat is not None and listing.lng is not None %}{{ listing.lat }}, {{ listing.lng }}{% else %}-{% endif %}</dd>
+      <dt>{% translate "Claimed licence" %}</dt><dd>{% if listing.claimed_licence_no %}<span class="mono">{{ listing.claimed_licence_no }}</span>{% else %}{% translate "None" %}{% endif %}</dd>
+      <dt>{% translate "District" %}</dt><dd>{{ listing.district.name_en }}</dd>
+    </dl>
+  </section>
+  <section aria-labelledby="result-heading">
+    <h2 id="result-heading">{% translate "Current matching result" %}</h2>
+    {% if result %}
+    <dl class="facts">
+      <dt>{% translate "Band" %}</dt><dd>{{ band_label }}</dd>
+      <dt>{% translate "Status" %}</dt><dd>{{ result.get_status_display }}</dd>
+      <dt>{% translate "Score of top candidate" %}</dt><dd>{% if result.score is not None %}{{ result.score|floatformat:2 }}{% else %}-{% endif %}</dd>
+      <dt>{% translate "Reasons" %}</dt><dd>{% if reasons %}<ul class="plain">{% for r in reasons %}<li>{{ r }}</li>{% endfor %}</ul>{% else %}-{% endif %}</dd>
+      <dt>{% translate "Run" %}</dt><dd><a href="{% url 'run_detail' result.run_id %}">{% blocktranslate with id=result.run_id %}Run {{ id }}{% endblocktranslate %}</a>, {{ result.run.created_at|date:"Y-m-d H:i" }}</dd>
+      <dt>{% translate "Parameter version" %}</dt><dd><span class="mono">{{ result.run.params_version }}</span></dd>
+      <dt>{% translate "Licence validity judged on" %}</dt><dd>{{ result.run.as_of|date:"Y-m-d"|default:"-" }}</dd>
+    </dl>
+    {% else %}
+    <div class="empty-state">
+      <p>{% translate "This listing has not been through a matching run yet." %}</p>
+      <p><a href="{% url 'runs' %}">{% translate "Run matching" %}</a></p>
+    </div>
+    {% endif %}
+  </section>
+</div>
+
+{% if result %}
+<h2 id="candidates-heading">{% translate "Registry candidates" %}</h2>
+<p class="hint">{% translate "Each feature is a value from 0 to 1; a dash means the information is missing on one side and the feature was left out of the score." %}</p>
+{% for item in candidates %}{% with c=item.c entry=item.entry %}
+<section class="candidate{% if item.is_top %} is-current{% endif %}" aria-labelledby="cand-{{ c.pk }}">
+  <h3 id="cand-{{ c.pk }}">{% blocktranslate with rank=c.rank name=entry.name %}{{ rank }}. {{ name }}{% endblocktranslate %}{% if item.is_top %} <span class="muted">({% translate "used for the band" %})</span>{% endif %}</h3>
+  <dl class="facts">
+    <dt>{% translate "Licence number" %}</dt><dd><span class="mono">{{ entry.licence_no }}</span></dd>
+    <dt>{% translate "Locality" %}</dt><dd>{{ entry.locality }}</dd>
+    <dt>{% translate "Address" %}</dt><dd>{{ entry.address_en|default:"-" }}{% if entry.address_ta %}<br><span lang="ta">{{ entry.address_ta }}</span>{% endif %}</dd>
+    <dt>{% translate "Pincode" %}</dt><dd>{{ entry.pincode|default:"-" }}</dd>
+    <dt>{% translate "Category" %}</dt><dd>{{ entry.get_category_display|default:"-" }}</dd>
+    <dt>{% translate "Valid" %}</dt><dd>{{ entry.valid_from|date:"Y-m-d"|default:"-" }} – {{ entry.valid_to|date:"Y-m-d" }} ({{ entry.get_status_display }})</dd>
+    <dt>{% translate "Score" %}</dt><dd>{{ c.score|floatformat:2 }}</dd>
+    <dt>{% translate "Found by" %}</dt><dd>{{ item.blocked_by|default:"-" }}</dd>
+  </dl>
+  <table class="table table--compact">
+    <caption>{% translate "Feature values" %}</caption>
+    <thead><tr><th scope="col">{% translate "Feature" %}</th><th scope="col" class="num">{% translate "Value" %}</th></tr></thead>
+    <tbody>
+      {% for f in item.features %}
+      <tr><th scope="row">{{ f.label }}</th><td class="num">{% if f.value is not None %}{{ f.value|floatformat:2 }}{% else %}-{% endif %}</td></tr>
+      {% endfor %}
+      {% if item.detail.distance_km is not None %}<tr><th scope="row">{% translate "Distance in km" %}</th><td class="num">{{ item.detail.distance_km|floatformat:2 }}</td></tr>{% endif %}
+    </tbody>
+  </table>
+</section>
+{% endwith %}{% empty %}
+<div class="empty-state"><p>{% translate "No registry entry was close enough to be stored as a candidate." %}</p></div>
+{% endfor %}
+
+<h2 id="decision">{% translate "Decision" %}</h2>
+{% if decided_on_current_run %}
+<p class="status-line">{% blocktranslate with who=latest.reviewer.get_username when=latest.created_at|date:"Y-m-d H:i" what=latest.get_decision_display %}Decided on this run: "{{ what }}" by {{ who }} at {{ when }}. A new decision replaces it; the earlier one stays in the history.{% endblocktranslate %}</p>
+{% endif %}
+<form method="post" action="{% url 'case_decide' listing.pk %}" class="decision-form" novalidate>
+  {% csrf_token %}
+  <input type="hidden" name="run" value="{{ result.run_id }}">
+  <input type="hidden" name="version" value="{{ version }}">
+  <fieldset>
+    <legend>{% translate "Your decision" %}</legend>
+    {% for value, label in decision_options %}
+    <label class="choice"><input type="radio" name="decision" value="{{ value }}"{% if form.decision == value %} checked{% endif %}> {{ label }}</label>
+    {% endfor %}
+  </fieldset>
+  {% if candidates %}
+  <fieldset>
+    <legend>{% translate "Registry entry (for confirm or reject)" %}</legend>
+    {% for item in candidates %}
+    <label class="choice"><input type="radio" name="registry_entry" value="{{ item.entry.pk }}"{% if form.registry_entry == item.entry.pk|stringformat:"d" %} checked{% endif %}> {{ item.entry.name }} (<span class="mono">{{ item.entry.licence_no }}</span>)</label>
+    {% endfor %}
+  </fieldset>
+  {% endif %}
+  <div class="field">
+    <label for="reason">{% translate "Reason" %}</label>
+    <span class="field-hint" id="reason-hint">{% if can_mark_suspected %}{% blocktranslate with option=suspected_label n=max_reason %}Required for "{{ option }}"; optional otherwise. Write what you checked. At most {{ n }} characters.{% endblocktranslate %}{% else %}{% blocktranslate with n=max_reason %}Optional. At most {{ n }} characters.{% endblocktranslate %}{% endif %}</span>
+    <textarea id="reason" name="reason" maxlength="{{ max_reason }}" aria-describedby="reason-hint{% if error %} reason-error{% endif %}"{% if error %} aria-invalid="true"{% endif %}>{{ form.reason }}</textarea>
+    {% if error %}<span class="field-error" id="reason-error">{{ error }}</span>{% endif %}
+  </div>
+  <div class="actions">
+    <button type="submit" class="button">{% translate "Save decision" %}</button>
+  </div>
+</form>
+{% endif %}
+
+<h2 id="history-heading">{% translate "Decision history" %}</h2>
+{% if history %}
+<div class="table-wrap" tabindex="0" role="region" aria-labelledby="history-heading">
+  <table class="table">
+    <thead><tr>
+      <th scope="col">{% translate "When" %}</th><th scope="col">{% translate "Officer" %}</th><th scope="col">{% translate "Decision" %}</th>
+      <th scope="col">{% translate "Registry entry" %}</th><th scope="col">{% translate "Run" %}</th><th scope="col">{% translate "Reason" %}</th>
+    </tr></thead>
+    <tbody>
+      {% for r in history %}
+      <tr>
+        <td class="nowrap">{{ r.created_at|date:"Y-m-d H:i" }}</td>
+        <td>{{ r.reviewer.get_username }}</td>
+        <td>{{ r.get_decision_display }}</td>
+        <td>{% if r.registry_entry %}<span class="mono">{{ r.registry_entry.licence_no }}</span>{% else %}-{% endif %}</td>
+        <td>{{ r.run_id|default:"-" }}</td>
+        <td>{{ r.reason|default:"-"|linebreaksbr }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<p class="empty-state">{% translate "No decision recorded yet." %}</p>
+{% endif %}
+
+{% if confirmed_pairs %}
+<h2>{% translate "Confirmed pairs" %}</h2>
+<p class="hint">{% translate "Confirmed pairs are not flagged again on later runs while the registry entry stays valid." %}</p>
+<ul class="plain">{% for p in confirmed_pairs %}<li>{{ p.registry_entry.name }} (<span class="mono">{{ p.registry_entry.licence_no }}</span>)</li>{% endfor %}</ul>
+{% endif %}
+
+<h2 id="evidence-heading">{% translate "Evidence page" %}</h2>
+<p>{% translate "Creates a stored snapshot of this case (listing, candidates, scores, latest decision) with its SHA-256, and opens a printable page." %}</p>
+<form method="post" action="{% url 'case_evidence' listing.pk %}">
+  {% csrf_token %}
+  <div class="actions"><button type="submit" class="button button--secondary">{% translate "Create evidence page" %}</button></div>
+</form>
+{% if evidence_packs %}
+<ul class="link-list">
+  {% for e in evidence_packs %}<li><a href="{% url 'evidence_detail' e.pk %}">{% blocktranslate with when=e.created_at|date:"Y-m-d H:i" who=e.generated_by.get_username %}Evidence page of {{ when }} by {{ who }}{% endblocktranslate %}</a></li>{% endfor %}
+</ul>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% translate "Evidence page" %} · {{ listing_snap.title }} · {% translate "Verified Stays" %}{% endblock %}
+{% block content %}
+<p class="evidence-statement">{% translate "Supporting evidence for officer review, not a finding." %}</p>
+<p class="breadcrumb no-print"><a href="{{ case_url }}">{% translate "Back to the case" %}</a></p>
+<div class="page-head">
+  <h1>{% blocktranslate with title=listing_snap.title %}Evidence page: {{ title }}{% endblocktranslate %}</h1>
+  <p class="lede">{% translate "Synthetic demonstration data. Scores rank listings for review; they are not measured accuracy and not a decision." %}</p>
+</div>
+<p class="print-only">{% translate "Demonstration build. All data shown is synthetic." %}</p>
+
+<section aria-labelledby="snap-heading">
+  <h2 id="snap-heading">{% translate "Listing snapshot" %}</h2>
+  <dl class="facts">
+    <dt>{% translate "Title" %}</dt><dd>{{ listing_snap.title }}</dd>
+    <dt>{% translate "Platform" %}</dt><dd>{{ listing_snap.platform }}</dd>
+    <dt>{% translate "Listing ID in file" %}</dt><dd>{{ listing_snap.external_id|default:"-" }}</dd>
+    <dt>{% translate "Reference URL (stored, not visited)" %}</dt><dd>{% if listing_snap.ref_url %}<span class="mono">{{ listing_snap.ref_url }}</span>{% else %}-{% endif %}</dd>
+    <dt>{% translate "Locality (as listed)" %}</dt><dd>{{ listing_snap.locality_text }}</dd>
+    <dt>{% translate "Pincode" %}</dt><dd>{{ listing_snap.pincode|default:"-" }}</dd>
+    <dt>{% translate "Coordinates" %}</dt><dd>{% if listing_snap.lat and listing_snap.lng %}{{ listing_snap.lat }}, {{ listing_snap.lng }}{% else %}-{% endif %}</dd>
+    <dt>{% translate "Claimed licence" %}</dt><dd>{% if listing_snap.claimed_licence_no %}<span class="mono">{{ listing_snap.claimed_licence_no }}</span>{% else %}{% translate "None" %}{% endif %}</dd>
+    <dt>{% translate "District" %}</dt><dd>{{ listing_snap.district }}</dd>
+    <dt>{% translate "Data set" %}</dt><dd>{{ listing_snap.dataset|default:"-" }}</dd>
+    <dt>{% translate "Upload file SHA-256" %}</dt><dd><span class="mono">{{ listing_snap.batch_sha256|default:"-" }}</span></dd>
+  </dl>
+</section>
+
+<section aria-labelledby="result-heading">
+  <h2 id="result-heading">{% translate "Matching result" %}</h2>
+  {% if run %}
+  <dl class="facts">
+    <dt>{% translate "Band" %}</dt><dd><span class="badge badge--{{ result.band }}">{{ band_label }}</span></dd>
+    <dt>{% translate "Score of top candidate" %}</dt><dd>{% if result.score is not None %}{{ result.score|floatformat:2 }}{% else %}-{% endif %}</dd>
+    <dt>{% translate "Reasons" %}</dt><dd>{% if reasons %}<ul class="plain">{% for r in reasons %}<li>{{ r }}</li>{% endfor %}</ul>{% else %}-{% endif %}</dd>
+    <dt>{% translate "Run" %}</dt><dd>{{ run.id }} ({{ run.created_at }})</dd>
+    <dt>{% translate "Parameter version" %}</dt><dd><span class="mono">{{ run.params_version }}</span></dd>
+    <dt>{% translate "Parameter fingerprint" %}</dt><dd><span class="mono">{{ run.params_fingerprint|default:"-" }}</span></dd>
+    <dt>{% translate "Licence validity judged on" %}</dt><dd>{{ run.as_of|default:"-" }}</dd>
+    <dt>{% translate "Registry file SHA-256" %}</dt><dd><span class="mono">{{ run.registry_batch_sha256|default:"-" }}</span></dd>
+  </dl>
+  {% else %}
+  <p class="empty-state">{% translate "This listing had not been through a matching run when the snapshot was taken." %}</p>
+  {% endif %}
+</section>
+
+{% if candidates %}
+<section aria-labelledby="cand-heading">
+  <h2 id="cand-heading">{% translate "Candidate registry entries" %}</h2>
+  <div class="table-wrap">
+    <table class="table">
+      <thead><tr>
+        <th scope="col" class="num">{% translate "Rank" %}</th><th scope="col">{% translate "Name" %}</th>
+        <th scope="col">{% translate "Licence number" %}</th><th scope="col">{% translate "Locality" %}</th>
+        <th scope="col">{% translate "Pincode" %}</th><th scope="col">{% translate "Valid to" %}</th>
+        <th scope="col">{% translate "Registry status" %}</th><th scope="col" class="num">{% translate "Score" %}</th>
+      </tr></thead>
+      <tbody>
+        {% for c in candidates %}
+        <tr>
+          <td class="num">{{ c.rank }}</td>
+          <th scope="row">{{ c.registry_entry.name }}</th>
+          <td><span class="mono">{{ c.registry_entry.licence_no }}</span></td>
+          <td>{{ c.registry_entry.locality }}</td>
+          <td>{{ c.registry_entry.pincode|default:"-" }}</td>
+          <td class="nowrap">{{ c.registry_entry.valid_to }}</td>
+          <td>{{ c.registry_entry.status }}</td>
+          <td class="num">{{ c.score|floatformat:2 }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section aria-labelledby="feat-heading">
+  <h2 id="feat-heading">{% translate "Feature scores" %}</h2>
+  <p class="hint">{% translate "Values from 0 to 1; a dash means the information was missing and the feature was left out of the score." %}</p>
+  <div class="table-wrap">
+    <table class="table table--compact">
+      <thead><tr>
+        <th scope="col">{% translate "Candidate" %}</th>
+        {% for f in candidates.0.feature_rows %}<th scope="col" class="num">{{ f.label }}</th>{% endfor %}
+      </tr></thead>
+      <tbody>
+        {% for c in candidates %}
+        <tr>
+          <th scope="row">{{ c.rank }}. <span class="mono">{{ c.registry_entry.licence_no }}</span></th>
+          {% for f in c.feature_rows %}<td class="num">{% if f.value is not None %}{{ f.value|floatformat:2 }}{% else %}-{% endif %}</td>{% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endif %}
+
+<section aria-labelledby="decision-heading">
+  <h2 id="decision-heading">{% translate "Decision" %}</h2>
+  {% if decision %}
+  <dl class="facts">
+    <dt>{% translate "Decision" %}</dt><dd>{{ decision_label }}</dd>
+    <dt>{% translate "Officer" %}</dt><dd>{{ decision.reviewer }}</dd>
+    <dt>{% translate "When" %}</dt><dd>{{ decision.at }}</dd>
+    <dt>{% translate "Registry entry" %}</dt><dd>{% if decision.licence_no %}<span class="mono">{{ decision.licence_no }}</span>{% else %}-{% endif %}</dd>
+    <dt>{% translate "Reason" %}</dt><dd>{{ decision.reason|default:"-"|linebreaksbr }}</dd>
+  </dl>
+  {% else %}
+  <p>{% translate "No decision had been recorded when the snapshot was taken." %}</p>
+  {% endif %}
+</section>
+
+<section aria-labelledby="integrity-heading">
+  <h2 id="integrity-heading">{% translate "Snapshot record" %}</h2>
+  <dl class="facts">
+    <dt>{% translate "Snapshot SHA-256" %}</dt><dd><span class="mono">{{ pack.sha256 }}</span></dd>
+    <dt>{% translate "Check" %}</dt><dd>{% if hash_ok %}{% translate "The stored snapshot still produces this SHA-256." %}{% else %}<strong>{% translate "Problem: the stored snapshot does not produce this SHA-256." %}</strong>{% endif %}</dd>
+    <dt>{% translate "How the hash is computed" %}</dt><dd>{% translate "SHA-256 of the snapshot as JSON with sorted keys, no spaces, UTF-8." %}</dd>
+    <dt>{% translate "Generated by" %}</dt><dd>{{ pack.generated_by.get_username }}</dd>
+    <dt>{% translate "Generated at" %}</dt><dd>{{ snap.generated_at }}</dd>
+    <dt>{% translate "Evidence page number" %}</dt><dd>{{ pack.pk }}</dd>
+  </dl>
+</section>
+
+<div class="actions no-print">
+  <p class="hint">{% translate "To print or save as PDF, use your browser's Print command; navigation and buttons are left out of the printout." %}</p>
+</div>
+{% endblock %}

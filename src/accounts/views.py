@@ -12,7 +12,7 @@ from django.utils.translation import gettext as _
 
 import audit
 from accounts import throttle
-from accounts.permissions import authenticated_only, is_admin
+from accounts.permissions import Capability, authenticated_only, has_capability, is_admin
 from accounts.signals import ANONYMOUS_ACTOR
 
 
@@ -64,13 +64,18 @@ class LogoutView(auth_views.LogoutView):
 
 @authenticated_only
 def dashboard(request: HttpRequest) -> HttpResponse:
-    """Placeholder landing page after sign-in. The officer queue arrives in M8."""
+    """Landing page after sign-in: real counts for the user's scope (M8). Counts go through
+    accounts.scoping inside reviews.services, so an officer only sees their own district."""
+    from reviews.services import dashboard_counts  # lazy: accounts must not import reviews early
+
     user = request.user
+    allowed = has_capability(user, Capability.DECIDE_CASES)
     return render(
         request,
         "accounts/dashboard.html",
         {
             "is_admin": is_admin(user),
             "district": user.district,
+            "counts": dashboard_counts(user) if allowed else None,
         },
     )

@@ -2,6 +2,17 @@
 
 Append newest entries at the top. Each entry: module · done · partial · decisions · problems · next step · stage definition-of-done status.
 
+## M8 — Review queue, case detail, decisions, evidence (done locally; DB tests verified on SQLite only, PostgreSQL run pending)
+- Branch `m8-officer-ui` = `m7-upload-run` + merge of `ui-design-brief` (design system) + M8.
+- Merge: `base.css` dropped for `app.css`; M7 templates moved to the brief's classes (`.table`, `.table-wrap`, `.empty-state`, `.button--secondary`, `.alert--*`); M7 helper classes (`.status-summary`, `.breadcrumb`, `.link-list`, `.panel`, `.status-line`) re-added to `app.css` with tokens. Docs: both sides kept; D56 now exists twice (M7 upload limits and UI design system), not renumbered.
+- Done: `reviews/services.py` (current result per listing, queue with filters/counts, decision rules, optimistic concurrency, evidence snapshot + SHA-256, dashboard counts), `reviews/views.py` (queue, case, decide, evidence create/view; all `require_capability(DECIDE_CASES)` + `scoped()`/`get_scoped_or_404()`), `matching/labels.py` (translatable labels for reason/feature/blocking codes), migration `reviews/0002` (review `run`, `registry_entry`, index). Templates `reviews/queue.html`, `case.html`, `evidence.html`, `evidence_empty.html`; dashboard shows real counts for the user's scope; nav gains Dashboard and Review queue; run summary shows band badges and links to the queue. No HTMX, no JavaScript.
+- Tests: `tests/test_m8_reviews.py` (31): queue scoping per district, order, ties, filters, pagination, latest run only, empty state; case page content; other-district case/decide/evidence → 404 + audit; confirm/reject + pair add/remove + audit; candidate entry required; suspected needs reason (blank/whitespace refused) and officer role (admin → 403 + audit); unknown decisions; permission matrix; POST-only + CSRF; stale form and new run → 409; model refuses cross-district review; evidence content (O5 statement first, hash, synthetic label, decision) and other-district 404; dashboard counts; confirmed pair suppressed on a real second run of the dev demo listings.
+- Verified: `tasks.py lint` clean; `tasks.py test` 294 passed, 221 skipped (no DB); SQLite scratch settings (not committed) 511 passed, 4 skipped [V on SQLite]; `makemigrations --check` clean. Not checked in a browser, print preview or screen reader [A].
+- Decisions: D59-D61. Open questions: Q29 (needs-more-info option), Q30 (admins and suspected_unlicensed).
+- Partial: PostgreSQL run pending (row lock in `decide` is a no-op on SQLite). No Tamil translations (M10). Evidence "Print" is the browser command (no script button).
+- Next: M9 tourist check page; run the full suite on PostgreSQL/CI.
+- Stage 4 definition of done (officer part): upload → run → queue → decide → evidence works on seeded synthetic data [V on SQLite tests].
+
 ## M7 — Upload + run endpoints (done locally; DB tests verified on SQLite only, PostgreSQL run pending)
 - Branch `m7-upload-run` = M6 + M4 (merge commit, see next entry) + M7.
 - Done: `ingest/uploads.py` (check listings/registry for a user without writing; pending file in the DB cache for 30 min bound to user and kind; save batch + rows + one audit entry in one transaction; out-of-district audit). `ingest/views.py` (upload page, preview, confirm, cancel for listings and registry; `CappedUploadHandler` keeps at most 2 MB + 1 byte in memory; CSRF re-applied after the handler swap). `matching/views.py` (batch list + run list, start run (POST), run summary with counts per status and per band in queue order). Routes in `config/urls.py`; templates `ingest/upload.html`, `ingest/preview.html`, `matching/runs.html`, `matching/run_detail.html`; nav links in `base.html` and dashboard; table/form styles in `base.css` (plain, 44px targets, status shown as text + border, not colour alone). `csvtools`: 2 MB / 5,000 rows, formula-like cells rejected (CSV injection), all ingest messages via gettext. `load.py` shares row builders with the upload service.
@@ -19,6 +30,12 @@ Append newest entries at the top. Each entry: module · done · partial · decis
 - Docs: both sides kept. D45-D53 and Q18-Q19 now exist twice (M6 and M3/M4); not renumbered, noted at the top of `decisions.md` and in Q25.
 - Verified: SQLite scratch run 371 passed, 4 skipped (PostgreSQL-only); lint clean [V on SQLite].
 - Note for M5 (`m5-eval-tuning`): any code or migration that depends on `matching/0002_m4_run_batches_band_reasons` must point to `0003_m4_run_batches_band_reasons`; calls to `run_matching` on multi-district batches need `district=` or `run_matching_per_district`.
+## UI design system (before M8/M9)
+- Branch `ui-design-brief`, based on `m6-auth-roles-audit`.
+- Done: `docs/ui-design-brief.md` (audience, tone, anti-patterns, type/spacing/colour tokens, contrast table, six band badges, tourist result states with the verbatim disclaimer, forms, tables, empty/error/loading, evidence print, HTMX conventions, Tamil). `src/static/css/app.css` replaces `base.css`. M6 templates (`base.html`, login, dashboard, 403, 404) moved to the new classes; all gettext strings unchanged; `base.html` gains blocks `extra_head`, `nav`, `main_class`. `tests/test_ui_stylesheet.py` checks tokens, no external assets, and recomputes every contrast pair listed in the brief.
+- Verified: `tasks.py lint` clean; `tasks.py test` 153 passed, 114 skipped (no DB here) [V]. Templates rendered outside the DB tests [V]. Not checked in a browser or with a screen reader [A].
+- Decisions: D56.
+- Next: M8/M9 build their screens from the brief's component list.
 
 ## M6 — Auth, roles, district scoping, audit (done locally; DB tests verified on SQLite only, PostgreSQL run pending)
 - Branch `m6-auth-roles-audit`, based on `m2-schema-loaders` (not on M3-M5).

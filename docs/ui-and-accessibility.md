@@ -13,11 +13,8 @@ Admin: Registry upload · Audit log.
 - Tourist: Check → Result (4 outcomes) → optional Report.
 - Officer: Upload → preview/confirm → Run matching → Queue → Case → Decide → Evidence.
 
-## Design tokens [A — adjust during build]
-- Fonts: Noto Sans + Noto Sans Tamil; base 16px; line-height 1.5 (Latin), 1.7 (Tamil).
-- Spacing scale: 4px steps. Radius 6px. One accent colour; neutral greys.
-- Status styles: icon + text + colour (never colour alone).
-- Contrast: WCAG 2.1 AA (4.5:1 text).
+## Design tokens
+Defined in `docs/ui-design-brief.md` (binding) and implemented in `src/static/css/app.css` (D56). Summary: system font stack with Tamil fallbacks (Noto Sans Tamil / Nirmala UI, installed fonts only); base 16px; line-height 1.5 (Latin), 1.7 (Tamil); 4px spacing steps; radius 4px; one accent colour and neutral greys; status = text + shape + colour; WCAG 2.1 AA contrast verified by a test.
 
 ## Accessibility checklist
 - Semantic HTML; one `h1` per page; landmarks.

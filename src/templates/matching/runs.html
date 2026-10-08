@@ -7,8 +7,8 @@
 
 <h2>{% translate "Listing batches" %}</h2>
 {% if batches %}
-<div class="table-scroll">
-  <table class="data">
+<div class="table-wrap">
+  <table class="table">
     <thead>
       <tr>
         <th scope="col">{% translate "Batch" %}</th>
@@ -33,7 +33,7 @@
           <form method="post" action="{% url 'run_create' %}" class="inline">
             {% csrf_token %}
             <input type="hidden" name="batch" value="{{ b.pk }}">
-            <button type="submit" class="button small">{% blocktranslate with id=b.pk %}Run matching on batch {{ id }}{% endblocktranslate %}</button>
+            <button type="submit" class="button button--secondary">{% blocktranslate with id=b.pk %}Run matching on batch {{ id }}{% endblocktranslate %}</button>
           </form>
         </td>
       </tr>
@@ -43,13 +43,13 @@
 </div>
 {% if is_admin %}<p class="hint">{% translate "A batch with several districts creates one run per district." %}</p>{% endif %}
 {% else %}
-<p class="empty">{% translate "No listing batches yet." %} <a href="{% url 'upload_listings' %}">{% translate "Upload a listings CSV" %}</a></p>
+<p class="empty-state">{% translate "No listing batches yet." %} <a href="{% url 'upload_listings' %}">{% translate "Upload a listings CSV" %}</a></p>
 {% endif %}
 
 <h2>{% translate "Recent runs" %}</h2>
 {% if runs %}
-<div class="table-scroll">
-  <table class="data">
+<div class="table-wrap">
+  <table class="table">
     <thead>
       <tr>
         <th scope="col">{% translate "Run" %}</th>
@@ -77,6 +77,6 @@
   </table>
 </div>
 {% else %}
-<p class="empty">{% translate "No matching runs yet." %}</p>
+<p class="empty-state">{% translate "No matching runs yet." %}</p>
 {% endif %}
 {% endblock %}

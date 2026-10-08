@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% translate "Review queue" %} · {% translate "Verified Stays" %}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>{% translate "Review queue" %}</h1>
+  <p class="lede">{% translate "Listings in review order: licence issues first, then no candidate, then uncertain scores; lower scores first within a band. The queue prioritises listings for officer review. It is not a finding." %}</p>
+</div>
+
+<form method="get" action="{% url 'queue' %}" class="filters" aria-label="{% translate 'Filter the queue' %}">
+  <div class="field">
+    <label for="f-state">{% translate "Cases" %}</label>
+    <select id="f-state" name="state">
+      {% for value, label in state_choices %}<option value="{{ value }}"{% if value == filters.state %} selected{% endif %}>{{ label }}</option>{% endfor %}
+    </select>
+  </div>
+  <div class="field">
+    <label for="f-band">{% translate "Band" %}</label>
+    <select id="f-band" name="band">
+      <option value="">{% translate "All bands" %}</option>
+      {% for value, label in band_choices %}<option value="{{ value }}"{% if value == filters.band %} selected{% endif %}>{{ label }}</option>{% endfor %}
+    </select>
+  </div>
+  <div class="field">
+    <label for="f-status">{% translate "Status" %}</label>
+    <select id="f-status" name="status">
+      <option value="">{% translate "All statuses" %}</option>
+      {% for value, label in status_choices %}<option value="{{ value }}"{% if value == filters.status %} selected{% endif %}>{{ label }}</option>{% endfor %}
+    </select>
+  </div>
+  <div class="field">
+    <label for="f-locality">{% translate "Locality contains" %}</label>
+    <input type="search" id="f-locality" name="locality" value="{{ filters.locality }}" autocomplete="off">
+  </div>
+  <div class="actions">
+    <button type="submit" class="button">{% translate "Apply filters" %}</button>
+    <a href="{% url 'queue' %}">{% translate "Clear" %}</a>
+  </div>
+</form>
+
+<h2 id="bands-heading" class="visually-hidden">{% translate "Cases per band for these filters" %}</h2>
+<ul class="band-summary" aria-labelledby="bands-heading">
+  {% for b in band_summary %}
+  <li>{% if b.current %}<span aria-current="true"><span class="badge badge--{{ b.key }}">{{ b.label }}</span> {{ b.count }}</span>{% else %}<a href="{{ b.url }}"><span class="badge badge--{{ b.key }}">{{ b.label }}</span> {{ b.count }}</a>{% endif %}</li>
+  {% endfor %}
+</ul>
+
+<p role="status">{% blocktranslate count n=page.paginator.count %}{{ n }} case matches these filters.{% plural %}{{ n }} cases match these filters.{% endblocktranslate %}{% if filters.band %} {% blocktranslate with n=total_unbanded %}{{ n }} without the band filter.{% endblocktranslate %}{% endif %}</p>
+
+{% if rows %}
+<div class="table-wrap" tabindex="0" role="region" aria-labelledby="queue-caption">
+  <table class="table">
+    <caption id="queue-caption" class="visually-hidden">{% translate "Review queue" %}</caption>
+    <thead>
+      <tr>
+        <th scope="col">{% translate "Band" %}</th>
+        <th scope="col">{% translate "Listing" %}</th>
+        <th scope="col">{% translate "Locality (as listed)" %}</th>
+        <th scope="col">{% translate "Claimed licence" %}</th>
+        <th scope="col">{% translate "Top candidate" %}</th>
+        <th scope="col" class="num">{% translate "Score" %}</th>
+        <th scope="col">{% translate "Reasons" %}</th>
+        <th scope="col">{% translate "Decision on this run" %}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}{% with r=row.result %}
+      <tr>
+        <td><span class="badge badge--{{ r.band }}">{{ r.get_band_display }}</span></td>
+        <th scope="row"><a href="{% url 'case_detail' r.listing_id %}">{{ r.listing.title }}</a>{% if is_admin %}<br><span class="muted">{{ r.listing.district.name_en }}</span>{% endif %}</th>
+        <td>{{ r.listing.locality_text }}</td>
+        <td>{% if r.listing.claimed_licence_no %}<span class="mono">{{ r.listing.claimed_licence_no }}</span>{% else %}<span class="muted">{% translate "None" %}</span>{% endif %}</td>
+        <td>{% if r.top_registry_entry %}{{ r.top_registry_entry.name }}<br><span class="mono">{{ r.top_registry_entry.licence_no }}</span>{% else %}<span class="muted">{% translate "None" %}</span>{% endif %}</td>
+        <td class="num">{% if r.score is not None %}{{ r.score|floatformat:2 }}{% else %}-{% endif %}</td>
+        <td>{{ row.reasons }}</td>
+        <td>{% if row.decision %}{{ row.decision }}{% else %}<span class="muted">{% translate "Not decided" %}</span>{% endif %}</td>
+      </tr>
+      {% endwith %}{% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% if page.paginator.num_pages > 1 %}
+<nav class="pagination" aria-label="{% translate 'Queue pages' %}">
+  {% if page.has_previous %}<a href="?{% if page_query %}{{ page_query }}&amp;{% endif %}page={{ page.previous_page_number }}">{% translate "Previous" %}</a>{% endif %}
+  <span aria-current="page">{% blocktranslate with n=page.number total=page.paginator.num_pages %}Page {{ n }} of {{ total }}{% endblocktranslate %}</span>
+  {% if page.has_next %}<a href="?{% if page_query %}{{ page_query }}&amp;{% endif %}page={{ page.next_page_number }}">{% translate "Next" %}</a>{% endif %}
+</nav>
+{% endif %}
+{% else %}
+<div class="empty-state">
+  {% if filters.band or filters.status or filters.locality or filters.state != "open" %}
+  <p>{% translate "No cases match these filters." %}</p>
+  <p><a href="{% url 'queue' %}">{% translate "Clear the filters" %}</a></p>
+  {% else %}
+  <p>{% translate "No cases need review." %}</p>
+  <p><a href="{% url 'upload_listings' %}">{% translate "Upload listings" %}</a> · <a href="{% url 'runs' %}">{% translate "Run matching" %}</a></p>
+  {% endif %}
+</div>
+{% endif %}
+{% endblock %}

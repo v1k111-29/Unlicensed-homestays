@@ -17,20 +17,20 @@
 <p class="hint">{% blocktranslate with size=max_bytes|filesizeformat %}UTF-8 text, at most {{ size }} and {{ max_rows }} data rows. Nothing is saved until you confirm the preview.{% endblocktranslate %}</p>
 
 {% if no_registry %}
-<div class="alert" role="note">
+<div class="alert alert--warning" role="note">
   <p><strong>{% translate "No registry loaded yet." %}</strong> {% translate "You can upload listings now, but matching needs a registry. Ask an administrator to upload one." %}</p>
 </div>
 {% endif %}
 
 {% if errors %}
-<section class="alert" role="alert" aria-labelledby="errors-heading" tabindex="-1" id="errors">
+<section class="alert alert--error" role="alert" aria-labelledby="errors-heading" tabindex="-1" id="errors">
   <h2 id="errors-heading">{% translate "The file was not saved" %}</h2>
   {% if out_of_district %}
   <p>{% translate "The file names a district other than yours. The whole file was rejected and the attempt has been recorded in the audit log." %}</p>
   {% endif %}
   <p>{% blocktranslate count counter=error_count with name=source_name %}{{ name }}: {{ counter }} problem found. Nothing was saved. Correct the file and upload it again.{% plural %}{{ name }}: {{ counter }} problems found. Nothing was saved. Correct the file and upload it again.{% endblocktranslate %}</p>
-  <div class="table-scroll">
-    <table class="data">
+  <div class="table-wrap">
+    <table class="table">
       <caption class="visually-hidden">{% translate "Problems by line" %}</caption>
       <thead><tr><th scope="col">{% translate "Line" %}</th><th scope="col">{% translate "Column" %}</th><th scope="col">{% translate "Problem" %}</th></tr></thead>
       <tbody>
@@ -46,7 +46,7 @@
 
 <form method="post" action="{{ page_url }}" enctype="multipart/form-data" class="panel" novalidate>
   {% csrf_token %}
-  {% if form.non_field_errors %}<div class="alert" role="alert">{% for err in form.non_field_errors %}<p>{{ err }}</p>{% endfor %}</div>{% endif %}
+  {% if form.non_field_errors %}<div class="alert alert--error" role="alert">{% for err in form.non_field_errors %}<p>{{ err }}</p>{% endfor %}</div>{% endif %}
   <div class="field">
     <label for="{{ form.file.id_for_label }}">{{ form.file.label }}</label>
     <p class="hint" id="file-hint">{% translate "Choose a .csv file from your computer." %}</p>
@@ -70,8 +70,8 @@
 
 <h2>{% translate "Recent uploads" %}</h2>
 {% if recent %}
-<div class="table-scroll">
-  <table class="data">
+<div class="table-wrap">
+  <table class="table">
     <thead>
       <tr>
         <th scope="col">{% translate "Batch" %}</th>
@@ -99,6 +99,6 @@
   </table>
 </div>
 {% else %}
-<p class="empty">{% translate "No files uploaded yet." %}</p>
+<p class="empty-state">{% translate "No files uploaded yet." %}</p>
 {% endif %}
 {% endblock %}

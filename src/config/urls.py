@@ -6,6 +6,7 @@ from django.urls import include, path
 
 from ingest import views as ingest_views
 from matching import views as matching_views
+from reviews import views as review_views
 
 urlpatterns = [
     path("", include("accounts.urls")),
@@ -23,6 +24,11 @@ urlpatterns = [
     path("officer/runs/", matching_views.runs, name="runs"),
     path("officer/runs/start/", matching_views.run_create, name="run_create"),
     path("officer/runs/<int:pk>/", matching_views.run_detail, name="run_detail"),
+    path("officer/queue/", review_views.queue, name="queue"),
+    path("officer/cases/<int:pk>/", review_views.case_detail, name="case_detail"),
+    path("officer/cases/<int:pk>/decide/", review_views.case_decide, name="case_decide"),
+    path("officer/cases/<int:pk>/evidence/", review_views.case_evidence, name="case_evidence"),
+    path("officer/evidence/<int:pk>/", review_views.evidence_detail, name="evidence_detail"),
     path("admin/registry/", ingest_views.upload_registry, name="upload_registry"),
     path(
         "admin/registry/confirm/",
