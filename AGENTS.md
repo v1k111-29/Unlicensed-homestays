@@ -72,6 +72,8 @@ python tasks.py eval     # run matching evaluation on dev set (prints metrics, a
 python tasks.py seed     # generate synthetic data (seeded, reproducible) [done in M1]
 python tasks.py migrate  # apply migrations [M2]
 python tasks.py load     # load committed M1 dev+test sets into the DB; checks row counts [M2]
+python tasks.py messages # extract strings into src/locale/ta .po and compile .mo (pure Python) [M10]
+                         # messages --check: fail on a stale catalog or a missing Tamil string
 ```
 Every `make <target>` in other docs means `python tasks.py <target>`.
 

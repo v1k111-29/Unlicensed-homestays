@@ -3,10 +3,21 @@ from __future__ import annotations
 from typing import Any
 
 from django import forms
+from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
 
 from accounts.models import District
 from tourist.service import Query
+
+
+class DistrictChoiceField(forms.ModelChoiceField):
+    """District names in the page language: Tamil pages show the stored Tamil name first and
+    the English name after it (data displayed as stored; M10)."""
+
+    def label_from_instance(self, obj: District) -> str:
+        if get_language() == "ta" and obj.name_ta:
+            return f"{obj.name_ta} ({obj.name_en})"
+        return obj.name_en
 
 
 class CheckForm(forms.Form):
@@ -16,7 +27,7 @@ class CheckForm(forms.Form):
     licence = forms.CharField(label=_("Licence number"), max_length=64, required=False)
     name = forms.CharField(label=_("Name of the stay"), max_length=200, required=False)
     locality = forms.CharField(label=_("Locality (town or area)"), max_length=200, required=False)
-    district = forms.ModelChoiceField(
+    district = DistrictChoiceField(
         label=_("District"),
         queryset=District.objects.order_by("name_en"),
         required=False,

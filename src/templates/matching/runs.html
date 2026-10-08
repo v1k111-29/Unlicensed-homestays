@@ -10,7 +10,7 @@
 <h2 id="batches-heading">{% translate "Listing batches" %}</h2>
 {% if batches %}
 <div class="table-wrap" tabindex="0" role="region" aria-labelledby="batches-heading">
-  <table class="table">
+  <table class="table" aria-labelledby="batches-heading">
     <thead>
       <tr>
         <th scope="col">{% translate "Batch" %}</th>
@@ -51,7 +51,7 @@
 <h2 id="runs-heading">{% translate "Recent runs" %}</h2>
 {% if runs %}
 <div class="table-wrap" tabindex="0" role="region" aria-labelledby="runs-heading">
-  <table class="table">
+  <table class="table" aria-labelledby="runs-heading">
     <thead>
       <tr>
         <th scope="col">{% translate "Run" %}</th>

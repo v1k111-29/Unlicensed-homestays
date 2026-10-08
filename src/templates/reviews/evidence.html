@@ -49,7 +49,7 @@
 <section aria-labelledby="cand-heading">
   <h2 id="cand-heading">{% translate "Candidate registry entries" %}</h2>
   <div class="table-wrap">
-    <table class="table">
+    <table class="table" aria-labelledby="cand-heading">
       <thead><tr>
         <th scope="col" class="num">{% translate "Rank" %}</th><th scope="col">{% translate "Name" %}</th>
         <th scope="col">{% translate "Licence number" %}</th><th scope="col">{% translate "Locality" %}</th>
@@ -78,7 +78,7 @@
   <h2 id="feat-heading">{% translate "Feature scores" %}</h2>
   <p class="hint">{% translate "Values from 0 to 1; a dash means the information was missing and the feature was left out of the score." %}</p>
   <div class="table-wrap">
-    <table class="table table--compact">
+    <table class="table table--compact" aria-labelledby="feat-heading">
       <thead><tr>
         <th scope="col">{% translate "Candidate" %}</th>
         {% for f in candidates.0.feature_rows %}<th scope="col" class="num">{{ f.label }}</th>{% endfor %}

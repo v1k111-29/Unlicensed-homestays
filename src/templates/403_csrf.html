@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% comment %}Django's CSRF failure page (CSRF_FAILURE_VIEW renders 403_csrf.html when present).
+Usually a form left open past the session timeout.{% endcomment %}
+{% block title %}{% translate "The form has expired" %} · {% translate "Verified Stays" %}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>{% translate "The form has expired" %}</h1>
+</div>
+<div class="alert alert--error" role="alert">
+  <p>{% translate "This form could not be accepted, so nothing was saved. This usually happens when a page was open for a long time or you signed out in another tab." %}</p>
+</div>
+<p>{% translate "Go back, reload the page and submit the form again." %} {% url 'home' as home_url %}<a href="{{ home_url|default:'/' }}">{% translate "Go to the start page" %}</a></p>
+{% endblock %}

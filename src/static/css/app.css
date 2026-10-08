@@ -122,6 +122,7 @@ code, .mono { font-family: var(--font-mono); font-size: 0.9375em; overflow-wrap:
 .site-nav ul { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-4); list-style: none; margin: 0; padding: 0; }
 .site-nav a { display: inline-flex; align-items: center; min-height: var(--target); }
 .site-nav a[aria-current="page"] { font-weight: 600; color: var(--color-text); text-decoration-thickness: 3px; }
+.lang-switch a[aria-current="true"] { font-weight: 600; color: var(--color-text); text-decoration-thickness: 3px; }
 .who { color: var(--color-text-muted); }
 
 .notice-bar {
