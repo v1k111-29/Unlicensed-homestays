@@ -67,7 +67,8 @@ python tasks.py setup    # install deps into the EXISTING .venv (never create an
 python tasks.py run      # dev server
 python tasks.py test     # pytest
 python tasks.py lint     # ruff check + ruff format --check
-python tasks.py eval     # run matching evaluation on dev set (prints metrics)
+python tasks.py eval     # run matching evaluation on dev set (prints metrics, applies CI floors)
+                         # test set: single guarded run, already done (D56); never rerun
 python tasks.py seed     # generate synthetic data (seeded, reproducible) [done in M1]
 python tasks.py migrate  # apply migrations [M2]
 python tasks.py load     # load committed M1 dev+test sets into the DB; checks row counts [M2]

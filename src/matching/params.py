@@ -64,8 +64,19 @@ class MatchParams:
 
 PARAMS: dict[str, MatchParams] = {
     "m4-initial-1": MatchParams(version="m4-initial-1"),
+    # M5: tuned on the DEV set only, by widening the dev gap between true and false pairs and
+    # putting each threshold mid-gap (D55). The test set was not used for any choice.
+    "m5-tuned-1": MatchParams(
+        version="m5-tuned-1",
+        weights=Weights(
+            licence=0.30, name=0.40, address=0.10, distance=0.10, pincode=0.05, category=0.05
+        ),
+        t_low=0.75,
+        t_high=0.89,
+        licence_name_min=0.75,
+    ),
 }
-CURRENT_VERSION = "m4-initial-1"
+CURRENT_VERSION = "m5-tuned-1"
 
 
 def get_params(version: str = CURRENT_VERSION) -> MatchParams:

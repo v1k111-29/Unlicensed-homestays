@@ -552,4 +552,7 @@ def test_unknown_params_version() -> None:
         get_params("nope")
 
 
-PINNED_FINGERPRINTS = {"m4-initial-1": "83bd9f5d189fc545"}
+PINNED_FINGERPRINTS = {
+    "m4-initial-1": "83bd9f5d189fc545",
+    "m5-tuned-1": "1c56a640c4809d09",
+}
