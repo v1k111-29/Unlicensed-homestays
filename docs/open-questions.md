@@ -19,3 +19,6 @@
 | Q16 | Real platform exports may carry extra columns. Keep rejecting unknown columns (D41), or ignore them in M7 with a warning? | M7 | Reject (safer for privacy) | You |
 | Q17 | Registry re-upload semantics (O6): does a new registry upload replace the previous one or add to it? | M7 | Replace: latest registry batch is current; older batches kept for history | You |
 | Q12 | Command runner for `AGENTS.md` §7 (`make` not installed locally) | Stage 1 (M0) | **Answered:** stdlib `tasks.py` + thin Makefile (D29) | You |
+| Q18 | Tamil generic/street lexicon in `src/matching/normalise.py` (`TAMIL_LEXICON`) and the transliteration fixes: correct for real Tamil listings? | Stage 5 (Tamil review) | Machine-written, flagged needs review (D46) | You (Q3 reviewer) |
+| Q19 | "TN" in addresses: Tamil Nadu or "Town"? Resolver tries "Town" only when the text fails to resolve as written (D47). Real listings may differ | M4/M5 | Keep D47 behaviour | You |
+| Q20 | Gazetteer location in deployment: `Gazetteer.load()` reads `data/synthetic/*.csv` relative to the repo; Docker image must include `data/synthetic/` (check `.dockerignore` at M11) or the gazetteer moves to a DB table | M11 | Copy the CSVs into the image | Me |
