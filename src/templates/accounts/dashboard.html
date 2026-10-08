@@ -11,5 +11,14 @@
   <dt>{% translate "District" %}</dt>
   <dd>{% if is_admin %}{% translate "All districts" %}{% elif district %}{{ district.name_en }}{% if district.name_ta %} <span lang="ta">({{ district.name_ta }})</span>{% endif %}{% else %}{% translate "None assigned. Ask an administrator." %}{% endif %}</dd>
 </dl>
-<p>{% translate "Uploads, matching runs and the review queue will appear here." %}</p>
+{% url 'upload_listings' as upload_url %}{% url 'runs' as runs_url %}{% url 'upload_registry' as registry_url %}
+{% if upload_url %}
+<h2>{% translate "Next steps" %}</h2>
+<ul class="link-list">
+  <li><a href="{{ upload_url }}">{% translate "Upload a listings CSV" %}</a></li>
+  {% if runs_url %}<li><a href="{{ runs_url }}">{% translate "Run matching and see run summaries" %}</a></li>{% endif %}
+  {% if is_admin and registry_url %}<li><a href="{{ registry_url }}">{% translate "Upload a registry CSV" %}</a></li>{% endif %}
+</ul>
+{% endif %}
+<p class="hint">{% translate "The review queue arrives in a later module." %}</p>
 {% endblock %}

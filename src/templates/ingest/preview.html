@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% translate "Check before saving" %} · {{ title }} · {% translate "Verified Stays" %}{% endblock %}
+{% block content %}
+<h1>{% translate "Check before saving" %}</h1>
+<p class="status-line"><strong>{% translate "Not saved yet." %}</strong> {% translate "The file passed all checks. Review the summary and the first rows, then save or cancel." %}</p>
+
+<dl class="facts">
+  <dt>{% translate "File" %}</dt><dd>{{ source_name|default:"-" }}</dd>
+  <dt>{% translate "Rows" %}</dt><dd>{{ row_count }}</dd>
+  {% if kind == "listings" %}
+  <dt>{% translate "Match against" %}</dt><dd>{{ dataset_label }}</dd>
+  <dt>{% translate "Batch district" %}</dt><dd>{% if check.batch_district %}{{ check.batch_district.name_en }}{% else %}{% translate "Several districts" %}{% endif %}</dd>
+  {% endif %}
+  <dt>{% translate "Rows per district" %}</dt>
+  <dd><ul class="plain">{% for district, n in district_counts %}<li>{{ district.name_en }}: {{ n }}</li>{% endfor %}</ul></dd>
+  <dt>{% translate "File fingerprint (SHA-256)" %}</dt><dd><code class="hash">{{ check.sha256 }}</code></dd>
+</dl>
+
+<h2 id="sample-heading">{% blocktranslate count counter=sample|length with total=row_count %}First {{ counter }} row of {{ total }}{% plural %}First {{ counter }} rows of {{ total }}{% endblocktranslate %}</h2>
+<div class="table-scroll">
+  <table class="data" aria-labelledby="sample-heading">
+    <thead>
+      <tr>
+        <th scope="col">{% translate "Line" %}</th>
+        {% if kind == "listings" %}
+        <th scope="col">{% translate "Title" %}</th>
+        <th scope="col">{% translate "Locality" %}</th>
+        <th scope="col">{% translate "District" %}</th>
+        <th scope="col">{% translate "Pincode" %}</th>
+        <th scope="col">{% translate "Platform" %}</th>
+        <th scope="col">{% translate "Claimed licence" %}</th>
+        {% else %}
+        <th scope="col">{% translate "Licence number" %}</th>
+        <th scope="col">{% translate "Name" %}</th>
+        <th scope="col">{% translate "Locality" %}</th>
+        <th scope="col">{% translate "District" %}</th>
+        <th scope="col">{% translate "Valid to" %}</th>
+        <th scope="col">{% translate "Registry status" %}</th>
+        {% endif %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in sample %}{% with r=item.row %}
+      <tr>
+        <td>{{ r.line }}</td>
+        {% if kind == "listings" %}
+        <td>{{ r.title }}</td>
+        <td>{{ r.locality_text }}</td>
+        <td>{{ item.district.name_en }}</td>
+        <td>{{ r.pincode|default:"-" }}</td>
+        <td>{{ r.platform }}</td>
+        <td>{{ r.claimed_licence_no|default:"-" }}</td>
+        {% else %}
+        <td>{{ r.licence_no }}</td>
+        <td>{{ r.name }}</td>
+        <td>{{ r.locality }}</td>
+        <td>{{ item.district.name_en }}</td>
+        <td>{{ r.valid_to|date:"Y-m-d" }}</td>
+        <td>{{ r.status }}</td>
+        {% endif %}
+      </tr>
+      {% endwith %}{% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="actions">
+  <form method="post" action="{{ confirm_url }}" class="inline">
+    {% csrf_token %}
+    <input type="hidden" name="token" value="{{ token }}">
+    <button type="submit" class="button">{% blocktranslate count counter=row_count %}Save {{ counter }} row{% plural %}Save {{ counter }} rows{% endblocktranslate %}</button>
+  </form>
+  <form method="post" action="{{ cancel_url }}" class="inline">
+    {% csrf_token %}
+    <input type="hidden" name="token" value="{{ token }}">
+    <button type="submit" class="button secondary">{% translate "Cancel" %}</button>
+  </form>
+</div>
+<p class="hint">{% translate "This preview expires after 30 minutes." %}</p>
+{% endblock %}

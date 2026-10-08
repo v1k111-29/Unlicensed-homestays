@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from ingest import parsers
+from ingest import csvtools, parsers
 from ingest.csvtools import MAX_BYTES
 from matching.models import GroundTruth
 from registry.models import RegistryEntry
@@ -156,11 +156,40 @@ def test_oversized_file_rejected() -> None:
     assert "larger than" in _messages(parsed)[0]
 
 
-def test_formula_like_text_is_stored_as_text() -> None:
+@pytest.mark.parametrize(
+    "value", ["=HYPERLINK(1)", "+cmd|' /C calc'!A0", "-2+3", "@SUM(A1)", "-", "=1"]
+)
+def test_formula_like_cells_are_rejected(value: str) -> None:
+    """CSV injection (D56, M7 replaces M2's "stored as text"): the file is refused with a
+    line-level error, so such values never reach the database or a later export."""
     cells = REG_ROW.split(",")
-    cells[1] = "=HYPERLINK(1)"
+    cells[1] = value
     parsed = parsers.parse_registry(_csv(REG_HEADER, ",".join(cells)))
-    assert parsed.ok and parsed.rows[0].name == "=HYPERLINK(1)"
+    assert not parsed.ok
+    assert [(e.line, e.column) for e in parsed.errors] == [(2, "name")]
+    assert "formula" in parsed.errors[0].message
+
+
+def test_quoted_tab_prefixed_cell_is_rejected() -> None:
+    cells = REG_ROW.split(",")
+    cells[1] = '"\t=1"'  # surrounding whitespace is stripped, so the "=" is caught
+    parsed = parsers.parse_registry(_csv(REG_HEADER, ",".join(cells)))
+    assert [(e.line, e.column) for e in parsed.errors] == [(2, "name")]
+
+
+def test_negative_numbers_are_not_formulas() -> None:
+    cells = REG_ROW.split(",")
+    cells[6], cells[7] = "-11.4", "+76.7"
+    parsed = parsers.parse_registry(_csv(REG_HEADER, ",".join(cells)))
+    assert parsed.ok, _messages(parsed)
+
+
+def test_too_many_rows_rejected(monkeypatch) -> None:
+    monkeypatch.setattr(csvtools, "MAX_ROWS", 3)
+    rows = [REG_ROW.replace("00001", f"0000{i}") for i in range(1, 6)]
+    parsed = parsers.parse_registry(_csv(REG_HEADER, *rows))
+    assert not parsed.ok
+    assert any("more than 3 data rows" in m for m in _messages(parsed))
 
 
 def test_listing_district_required_only_when_asked() -> None:

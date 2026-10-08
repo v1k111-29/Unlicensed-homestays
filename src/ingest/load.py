@@ -1,18 +1,27 @@
 """Load parsed CSV files into the database. All-or-nothing per call (one transaction).
 
-Used by the `load_synthetic` management command (M2). M7 upload views will reuse the
-registry/listings functions with a real uploader.
+Used by the `load_synthetic` management command (M2). The M7 upload views use
+`ingest.uploads`, which shares the row builders below.
 """
 
+from collections.abc import Callable, Iterator
 from dataclasses import dataclass
 from pathlib import Path
 
 from django.db import transaction
+from django.utils.translation import gettext as _
 
 import audit
 from accounts.models import District
 from ingest.csvtools import LineError
-from ingest.parsers import Parsed, parse_ground_truth, parse_listings, parse_registry
+from ingest.parsers import (
+    ListingRow,
+    Parsed,
+    RegistryRow,
+    parse_ground_truth,
+    parse_listings,
+    parse_registry,
+)
 from listings.models import Listing
 from matching.models import GroundTruth
 from registry.models import RegistryEntry, UploadBatch
@@ -42,7 +51,7 @@ def _raise_if(source: str, errors: list[LineError]) -> None:
 def _districts(rows: list, source: str) -> dict[str, District]:
     by_name = {d.name_en: d for d in District.objects.all()}
     errors = [
-        LineError(r.line, "district", f"unknown district '{r.district}'")
+        LineError(r.line, "district", _("unknown district '%(name)s'") % {"name": r.district})
         for r in rows
         if r.district and r.district not in by_name
     ]
@@ -52,7 +61,7 @@ def _districts(rows: list, source: str) -> dict[str, District]:
 
 def _new_batch(kind: str, parsed: Parsed, source: str, dataset: str, **extra) -> UploadBatch:
     if UploadBatch.objects.filter(type=kind, dataset=dataset, file_sha256=parsed.sha256).exists():
-        raise LoadError(source, [LineError(0, "", f"already loaded into dataset '{dataset}'")])
+        raise LoadError(source, [LineError(0, "", already_loaded_message(dataset))])
     return UploadBatch.objects.create(
         type=kind,
         dataset=dataset,
@@ -63,32 +72,63 @@ def _new_batch(kind: str, parsed: Parsed, source: str, dataset: str, **extra) ->
     )
 
 
+def already_loaded_message(dataset: str) -> str:
+    if dataset:
+        return _("already loaded into dataset '%(dataset)s'") % {"dataset": dataset}
+    return _("this file has already been uploaded")
+
+
+def registry_objects(
+    rows: list[RegistryRow], batch: UploadBatch, districts: dict[str, District]
+) -> Iterator[RegistryEntry]:
+    for r in rows:
+        yield RegistryEntry(
+            licence_no=r.licence_no,
+            name=r.name,
+            address_en=r.address_en,
+            address_ta=r.address_ta,
+            locality=r.locality,
+            pincode=r.pincode,
+            lat=r.lat,
+            lng=r.lng,
+            category=r.category,
+            valid_from=r.valid_from,
+            valid_to=r.valid_to,
+            status=r.status,
+            batch=batch,
+            district=districts[r.district],
+        )
+
+
+def listing_objects(
+    rows: list[ListingRow], batch: UploadBatch, district_of: Callable[[ListingRow], District]
+) -> Iterator[Listing]:
+    for r in rows:
+        yield Listing(
+            source=Listing.Source.OFFICER_CSV,
+            external_id=r.external_id,
+            platform=r.platform,
+            ref_url=r.ref_url,
+            title=r.title,
+            locality_text=r.locality_text,
+            pincode=r.pincode,
+            lat=r.lat,
+            lng=r.lng,
+            claimed_licence_no=r.claimed_licence_no,
+            raw=r.raw,
+            batch=batch,
+            district=district_of(r),
+        )
+
+
 def load_registry(data: bytes, source: str, dataset: str, actor: str) -> UploadBatch:
     parsed = parse_registry(data)
     _raise_if(source, parsed.errors)
     with transaction.atomic():
         districts = _districts(parsed.rows, source)
         batch = _new_batch(UploadBatch.Type.REGISTRY, parsed, source, dataset)
-        RegistryEntry.objects.bulk_create(
-            RegistryEntry(
-                licence_no=r.licence_no,
-                name=r.name,
-                address_en=r.address_en,
-                address_ta=r.address_ta,
-                locality=r.locality,
-                pincode=r.pincode,
-                lat=r.lat,
-                lng=r.lng,
-                category=r.category,
-                valid_from=r.valid_from,
-                valid_to=r.valid_to,
-                status=r.status,
-                batch=batch,
-                district=districts[r.district],
-            )
-            for r in parsed.rows
-        )
-        audit.log(actor, "registry_upload", "upload_batch", batch.pk, _batch_meta(batch))
+        RegistryEntry.objects.bulk_create(registry_objects(parsed.rows, batch, districts))
+        audit.log(actor, "registry_upload", "upload_batch", batch.pk, batch_meta(batch))
     return batch
 
 
@@ -107,24 +147,9 @@ def load_listings(data: bytes, source: str, dataset: str, actor: str) -> UploadB
             district=districts[names.pop()] if len(names) == 1 else None,
         )
         Listing.objects.bulk_create(
-            Listing(
-                source=Listing.Source.OFFICER_CSV,
-                external_id=r.external_id,
-                platform=r.platform,
-                ref_url=r.ref_url,
-                title=r.title,
-                locality_text=r.locality_text,
-                pincode=r.pincode,
-                lat=r.lat,
-                lng=r.lng,
-                claimed_licence_no=r.claimed_licence_no,
-                raw=r.raw,
-                batch=batch,
-                district=districts[r.district],
-            )
-            for r in parsed.rows
+            listing_objects(parsed.rows, batch, lambda r: districts[r.district])
         )
-        audit.log(actor, "listings_upload", "upload_batch", batch.pk, _batch_meta(batch))
+        audit.log(actor, "listings_upload", "upload_batch", batch.pk, batch_meta(batch))
     return batch
 
 
@@ -184,7 +209,7 @@ def _rel(path: Path) -> str:
     return "/".join(parts[-3:])  # e.g. "out/dev/registry.csv"; no absolute local paths stored
 
 
-def _batch_meta(batch: UploadBatch) -> dict:
+def batch_meta(batch: UploadBatch) -> dict:
     return {
         "type": batch.type,
         "dataset": batch.dataset,
