@@ -1,15 +1,28 @@
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from accounts.models import District
 from listings.models import Listing
 from registry.models import RegistryEntry, UploadBatch
 
 
-class MatchRun(models.Model):
-    """One matching run. `params_version` makes results reproducible (AGENTS.md §8).
-    `thresholds` holds the full parameter snapshot of that version (M4)."""
+def check_same_district(run: "MatchRun", listing: Listing, entry: RegistryEntry | None) -> None:
+    """A run covers one district; its listings and candidate registry entries must all belong to
+    it (D51). Called by save(); services that use bulk_create must call it for every object."""
+    if listing.district_id != run.district_id:
+        raise ValidationError("listing district differs from the match run district")
+    if entry is not None and entry.district_id != listing.district_id:
+        raise ValidationError("registry entry district differs from the listing district")
 
+
+class MatchRun(models.Model):
+    """One matching run over one district. `params_version` makes results reproducible
+    (AGENTS.md §8); `thresholds` holds the full parameter snapshot of that version (M4).
+    The district is what officer scoping filters on (D51)."""
+
+    district = models.ForeignKey(District, on_delete=models.PROTECT, related_name="match_runs")
     params_version = models.CharField(max_length=32)
     thresholds = models.JSONField(default=dict)
     created_by = models.ForeignKey(
@@ -49,6 +62,10 @@ class MatchCandidate(models.Model):
             ),
         ]
 
+    def save(self, *args, **kwargs) -> None:
+        check_same_district(self.run, self.listing, self.registry_entry)
+        super().save(*args, **kwargs)
+
 
 class MatchResult(models.Model):
     """Prioritises a listing for human review. Never a finding (AGENTS.md rule 1)."""
@@ -85,6 +102,10 @@ class MatchResult(models.Model):
         constraints = [
             models.UniqueConstraint(fields=["run", "listing"], name="uniq_result_per_run"),
         ]
+
+    def save(self, *args, **kwargs) -> None:
+        check_same_district(self.run, self.listing, self.top_registry_entry)
+        super().save(*args, **kwargs)
 
 
 class GroundTruth(models.Model):

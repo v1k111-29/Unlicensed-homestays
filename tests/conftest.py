@@ -53,3 +53,118 @@ def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item
     skip = pytest.mark.skip(reason=f"needs PostgreSQL: {problem}")
     for item in db_items:
         item.add_marker(skip)
+
+
+# --- M6 shared fixtures (auth, roles, district scoping). Tests using them must carry the
+# `django_db` marker so they skip cleanly without a database. The login address throttle uses
+# the database cache, so its entries roll back with each test. Do not use `transactional_db`:
+# the audit_log TRUNCATE trigger makes its teardown fail on PostgreSQL. ---
+
+PASSWORD = "synthetic-test-pass-91"  # test-only value, not a real credential
+
+
+@pytest.fixture
+def password() -> str:
+    return PASSWORD
+
+
+@pytest.fixture
+def fast_hasher(settings) -> None:
+    settings.PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
+
+
+@pytest.fixture
+def districts(db) -> dict:
+    from accounts.models import District
+
+    return {
+        "nil": District.objects.get(name_en="Nilgiris"),
+        "mad": District.objects.get(name_en="Madurai"),
+    }
+
+
+@pytest.fixture
+def users(districts, fast_hasher) -> dict:
+    """Synthetic accounts: one officer per district, one admin, one inactive officer."""
+    from accounts.models import User
+
+    def make(username: str, role: str, district=None, **extra) -> User:
+        return User.objects.create_user(
+            username=username, password=PASSWORD, role=role, district=district, **extra
+        )
+
+    return {
+        "off_nil": make("officer_nil", "officer", districts["nil"]),
+        "off_mad": make("officer_mad", "officer", districts["mad"]),
+        "admin": make("admin_one", "admin"),
+        "inactive": make("officer_off", "officer", districts["nil"], is_active=False),
+    }
+
+
+@pytest.fixture
+def district_data(users, districts) -> dict:
+    """One row of every district-bearing model in each of the two districts."""
+    from datetime import date
+
+    from listings.models import Listing
+    from matching.models import GroundTruth, MatchCandidate, MatchResult, MatchRun
+    from registry.models import RegistryEntry, UploadBatch
+    from reviews.models import ConfirmedPair, EvidencePack, Review
+
+    rows: dict = {}
+    for key, district in districts.items():
+        officer = users[f"off_{key}"]
+        reg_batch = UploadBatch.objects.create(
+            type="registry", file_sha256=f"r{key}", row_count=1, dataset="m6-test"
+        )
+        lst_batch = UploadBatch.objects.create(
+            type="listings",
+            file_sha256=f"l{key}",
+            row_count=1,
+            uploader=officer,
+            district=district,
+            dataset="m6-test",
+        )
+        entry = RegistryEntry.objects.create(
+            licence_no=f"SYN-{key}-1",
+            name=f"Synthetic Stay {key}",
+            locality="Synthetic locality",
+            valid_to=date(2030, 1, 1),
+            batch=reg_batch,
+            district=district,
+        )
+        listing = Listing.objects.create(
+            platform="synthetic",
+            title=f"Synthetic listing {key}",
+            locality_text="Synthetic locality",
+            batch=lst_batch,
+            district=district,
+        )
+        run = MatchRun.objects.create(
+            district=district, params_version="m6-test", created_by=officer
+        )
+        rows[key] = {
+            "District": district,
+            "User": officer,
+            "UploadBatch": lst_batch,
+            "RegistryEntry": entry,
+            "Listing": listing,
+            "MatchRun": run,
+            "MatchCandidate": MatchCandidate.objects.create(
+                run=run, listing=listing, registry_entry=entry, score=0.5, rank=1
+            ),
+            "MatchResult": MatchResult.objects.create(
+                run=run, listing=listing, status="needs_review", top_registry_entry=entry
+            ),
+            "GroundTruth": GroundTruth.objects.create(
+                listing=listing, true_registry_entry=entry, type="clean"
+            ),
+            "Review": Review.objects.create(
+                listing=listing, reviewer=officer, decision="dismiss", reason="synthetic"
+            ),
+            "ConfirmedPair": ConfirmedPair.objects.create(listing=listing, registry_entry=entry),
+            "EvidencePack": EvidencePack.objects.create(
+                listing=listing, snapshot={}, sha256="0" * 64, generated_by=officer
+            ),
+        }
+    return rows

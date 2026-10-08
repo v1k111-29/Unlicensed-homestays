@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models import Q
+from django.db.models.functions import Lower
 from django.utils.translation import gettext_lazy as _
 
 
@@ -33,4 +34,6 @@ class User(AbstractUser):
                 condition=Q(role="admin") | Q(district__isnull=False),
                 name="officer_has_district",
             ),
+            # Usernames differing only in case would share one throttle key (D46).
+            models.UniqueConstraint(Lower("username"), name="uniq_username_ci"),
         ]

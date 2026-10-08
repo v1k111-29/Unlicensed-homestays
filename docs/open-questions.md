@@ -18,6 +18,8 @@
 | Q15 | Matching scope with two synthetic sets in one DB: should M4 match a listings batch against the registry batch of the same `dataset` only, or against "the current registry"? | M4 | Same `dataset` for synthetic sets; for real uploads, the latest registry batch (D40) | Me / you |
 | Q16 | Real platform exports may carry extra columns. Keep rejecting unknown columns (D41), or ignore them in M7 with a warning? | M7 | Reject (safer for privacy) | You |
 | Q17 | Registry re-upload semantics (O6): does a new registry upload replace the previous one or add to it? | M7 | Replace: latest registry batch is current; older batches kept for history | You |
+| Q18 | Login address throttle behind the host proxy: which header carries the real client IP on the chosen host, and how many proxies append to it? | M11 | Settings refuse to start without `DJANGO_CLIENT_IP_HEADER` outside DEBUG; set it (and `DJANGO_TRUSTED_PROXY_HOPS`) from the host docs at deploy (D50) | Me / you |
+| Q19 | Failed-login audit rows stored the typed username. Keep, or store a hash? | Before any pilot | **Answered:** HMAC only (D53) | Me |
 | Q12 | Command runner for `AGENTS.md` §7 (`make` not installed locally) | Stage 1 (M0) | **Answered:** stdlib `tasks.py` + thin Makefile (D29) | You |
 | Q18 | Tamil generic/street lexicon in `src/matching/normalise.py` (`TAMIL_LEXICON`) and the transliteration fixes: correct for real Tamil listings? | Stage 5 (Tamil review) | Machine-written, flagged needs review (D46) | You (Q3 reviewer) |
 | Q19 | "TN" in addresses: Tamil Nadu or "Town"? Resolver tries "Town" only when the text fails to resolve as written (D47). Real listings may differ | M4/M5 | Keep D47 behaviour | You |

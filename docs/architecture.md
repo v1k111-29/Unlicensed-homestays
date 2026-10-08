@@ -29,14 +29,14 @@ Uptime monitor → /healthz
 - `upload_batches(id, type[registry|listings], uploader_id, district_id, dataset, source_name, file_sha256, row_count, created_at)` — `dataset` labels synthetic sets (D40); unique (type, dataset, file_sha256)
 - `registry_entries(id, licence_no, name, address_en, address_ta, locality, pincode, lat, lng, category, valid_from, valid_to, status, batch_id, district_id)` — unique (batch, licence_no)
 - `listings(id, source[officer_csv|tourist_report], external_id, platform, ref_url, title, locality_text, pincode, lat, lng, claimed_licence_no, raw jsonb, batch_id, district_id)` — `external_id` = file row id (synthetic `listing_id`, D35)
-- `match_runs(id, params_version, thresholds jsonb, created_by, created_at, listing_batch_id, registry_batch_id, as_of)` — M4 added the last three (D54)
-- `match_candidates(id, run_id, listing_id, registry_id, score, features jsonb, rank)` — `features` holds each feature value, details and `blocked_by` (D51, D52)
-- `match_results(id, run_id, listing_id, status, band, reasons jsonb, top_registry_id, score, priority)` — M4 added `band`, `reasons` (D53)
+- `match_runs(id, district_id, params_version, thresholds jsonb, created_by, created_at, listing_batch_id, registry_batch_id, as_of)` — one district per run (D51, M6); M4 added the last three (D54, M4). Migrations: `matching/0002` district (M6), `matching/0003` batches/band/reasons (M4, renumbered at the M7 merge)
+- `match_candidates(id, run_id, listing_id, registry_id, score, features jsonb, rank)` — `features` holds each feature value, details and `blocked_by` (D51, D52 of M4)
+- `match_results(id, run_id, listing_id, status, band, reasons jsonb, top_registry_id, score, priority)` — M4 added `band`, `reasons` (D53 of M4)
 - `reviews(id, listing_id, reviewer_id, decision, reason, created_at)` — DB check: `suspected_unlicensed` needs a non-empty reason
 - `confirmed_pairs(listing_id, registry_id)`
 - `evidence_packs(id, listing_id, snapshot jsonb, sha256, generated_by, created_at)`
 - `ground_truth(listing_id, true_registry_id, type, noise)` — synthetic eval labels only; never read by the matcher (D35, D40)
-- `audit_log(id, actor, action, entity, entity_id, meta jsonb, ts)` — append-only (DB trigger blocks UPDATE/DELETE; model refuses update/delete; `actor` is text; restrict privileges where the host allows [A]) (D42)
+- `audit_log(id, actor, action, entity, entity_id, meta jsonb, ts)` — append-only (DB triggers block UPDATE/DELETE/TRUNCATE, D53; model refuses update/delete; `actor` is text; restrict privileges where the host allows [A]) (D42)
 
 Implemented in M2 (Django models + migrations under `src/<app>/`). Names above are logical; Django table names are `<app>_<model>` (e.g. `registry_registryentry`), except `audit_log`. CSV parsing and loading live in `src/ingest/` (D41).
 
@@ -45,7 +45,8 @@ Implemented in M2 (Django models + migrations under `src/<app>/`). Names above a
 |---|---|---|
 | `GET/POST /{lang}/check` | Public | Tourist check (rate-limited) |
 | `POST /{lang}/report` | Public | Stretch: tourist report with consent |
-| `GET/POST /login`, `/logout` | All | Session auth |
+| `GET/POST /login/`, `POST /logout/` | All | Session auth (M6; logout is POST-only, failed logins throttled, D46-D47) |
+| `GET /dashboard/` | Officer, Admin | Signed-in landing page (M6 placeholder; M8 fills it) |
 | `POST /officer/uploads` | Officer | Preview then confirm CSV |
 | `POST /officer/runs` | Officer | Run matching on a batch |
 | `GET /officer/queue` | Officer | Prioritised queue |
@@ -56,7 +57,8 @@ Implemented in M2 (Django models + migrations under `src/<app>/`). Names above a
 | `GET /healthz` | Monitor | Health |
 
 ## 5. Cross-cutting rules
-- Every officer query is filtered by `district_id` in a shared queryset helper (never per-view ad hoc).
+- Every officer query is filtered by `district_id` in a shared queryset helper (never per-view ad hoc): `accounts.scoping.scoped()` / `get_scoped_or_404()`; writes naming a district use `can_act_in_district()` (D48).
+- Every view is guarded by a capability: `accounts.permissions.require_capability` / `CapabilityRequiredMixin` (D45).
 - Every state change calls `audit.log(...)`.
 - Matching is deterministic and versioned (`params_version`).
 - i18n via gettext; URL language prefix.

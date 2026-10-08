@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
@@ -42,6 +43,11 @@ class ConfirmedPair(models.Model):
         constraints = [
             models.UniqueConstraint(fields=["listing", "registry_entry"], name="uniq_pair"),
         ]
+
+    def save(self, *args, **kwargs) -> None:
+        if self.registry_entry.district_id != self.listing.district_id:  # D51
+            raise ValidationError("registry entry district differs from the listing district")
+        super().save(*args, **kwargs)
 
 
 class EvidencePack(models.Model):

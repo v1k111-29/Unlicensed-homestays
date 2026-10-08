@@ -72,7 +72,8 @@ def _manage(*args: str) -> int:
 
 
 def migrate() -> int:
-    return _manage("migrate")
+    # createcachetable: the login address throttle uses the database cache (D46).
+    return _manage("migrate") or _manage("createcachetable")
 
 
 def run() -> int:
