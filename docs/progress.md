@@ -2,6 +2,15 @@
 
 Append newest entries at the top. Each entry: module · done · partial · decisions · problems · next step · stage definition-of-done status.
 
+## M12 — Pitch drafts (branch `m12-pitch`, from `main`; docs only, not pushed)
+- Done: `docs/pitch/concept-note.md` (problem, users, solution, how it works, human-in-the-loop safeguards, privacy/ethics, synthetic evaluation with caveats, limitations, business model [A] / roadmap / asks, V/E/A table); `docs/pitch/video-script-90s.md` (timed English voice-over, 203 words for 90 s at ~150 wpm, no scene above 2.5 words/s; scene-by-scene shot list on the seeded Nilgiris demo slice; wording rules; fallbacks); `docs/pitch/recording-checklist.md` (build/data, demo accounts via `create_account --password-env`, warm server, browser, notifications, retakes, on-screen checks, after recording).
+- Numbers used: only the recorded ones (`testing-and-evaluation.md` §3.2, `eval-test-run.json`): dev all 1.000 (stated as a sign the synthetic data is easy), test precision 1.000 (95/95), recall 0.864 (95/110), queue share 0.525. No market size, price or real-world accuracy claim; Q7 and Q8 items marked unverified.
+- Expected demo screen [V: pure engine run on `dev/demo_listings.csv` vs the dev registry, `m5-tuned-1`, as_of 2026-04-01, scratch script, not committed]: 13 Matched, 12 Needs review (4 licence details, 5 no match, 3 needs review). The web run must agree; checked in the recording checklist.
+- Partial: UI screens (M8-M10) and deployment (M11) not finished, so visuals are `[SCREENSHOT: ...]` placeholders and routes are [A]. Concept note "status" paragraph and placeholders need updating before submission. Video not recorded (Stage 6 DoD "video exported" UNMET; "note drafted with eval numbers + caveats" MET in draft; "script timed to 90s" MET on word count, not yet rehearsed).
+- Open questions: Q32 (tourist demo stays / which registry the check reads), Q33 (decision shown on the case page), Q34 (exact brief citations). Q2, Q7, Q8 still open.
+- Verified: `tasks.py lint` and `tasks.py test` unchanged by this docs-only change.
+- Next: after M8-M11, replace placeholders with screenshots, rehearse once with a stopwatch, answer Q8/Q32-Q34, record.
+
 ## Integration of M1-M7 and the UI brief (branch `integration`, from `main`; not pushed, `main` not moved)
 - Merged with `--no-ff`, in order: M1, M2, M3, M4, M5, M6, M7, `ui-design-brief`; fixes in separate commits after M6, M7 and the UI brief.
 - Code: matching migrations stay linear (`0001` → `0002_matchrun_district` (M6) → `0003_m4_run_batches_band_reasons` (M4)); `run_matching` needs `district=` or `run_matching_per_district` (as reconciled on `m7-upload-run`); params current `m5-tuned-1`; M5 eval harness unchanged (DB-free). M7 templates moved from `base.css` to the brief's `app.css` components; `app.css` gained `.site-nav ul`, `.plain`, `.messages` level tints, `.table tfoot` (tokens only, no new colour pair).
