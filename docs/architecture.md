@@ -29,9 +29,9 @@ Uptime monitor → /healthz
 - `upload_batches(id, type[registry|listings], uploader_id, district_id, dataset, source_name, file_sha256, row_count, created_at)` — `dataset` labels synthetic sets (D40); unique (type, dataset, file_sha256)
 - `registry_entries(id, licence_no, name, address_en, address_ta, locality, pincode, lat, lng, category, valid_from, valid_to, status, batch_id, district_id)` — unique (batch, licence_no)
 - `listings(id, source[officer_csv|tourist_report], external_id, platform, ref_url, title, locality_text, pincode, lat, lng, claimed_licence_no, raw jsonb, batch_id, district_id)` — `external_id` = file row id (synthetic `listing_id`, D35)
-- `match_runs(id, params_version, thresholds jsonb, created_by, created_at)`
-- `match_candidates(id, run_id, listing_id, registry_id, score, features jsonb, rank)`
-- `match_results(id, run_id, listing_id, status, top_registry_id, score, priority)`
+- `match_runs(id, params_version, thresholds jsonb, created_by, created_at, listing_batch_id, registry_batch_id, as_of)` — M4 added the last three (D54)
+- `match_candidates(id, run_id, listing_id, registry_id, score, features jsonb, rank)` — `features` holds each feature value, details and `blocked_by` (D51, D52)
+- `match_results(id, run_id, listing_id, status, band, reasons jsonb, top_registry_id, score, priority)` — M4 added `band`, `reasons` (D53)
 - `reviews(id, listing_id, reviewer_id, decision, reason, created_at)` — DB check: `suspected_unlicensed` needs a non-empty reason
 - `confirmed_pairs(listing_id, registry_id)`
 - `evidence_packs(id, listing_id, snapshot jsonb, sha256, generated_by, created_at)`
