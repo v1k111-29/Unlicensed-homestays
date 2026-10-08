@@ -13,6 +13,9 @@
 | Q9 | Free-tier limits and terms for Render, Neon, object storage | At signup | Treated as [A] | You |
 | Q10 | Python version and package pins | Stage 1 | **Answered:** 3.11 everywhere (D28); versions pinned at scaffold | Me |
 | Q11 | Which AI coding tool/agent will you use (affects how `AGENTS.md` is loaded)? | Stage 1 | **Answered:** Claude Code; `CLAUDE.md` imports `@AGENTS.md` (D26) | You |
-| Q13 | Local PostgreSQL: not installed [V]. Install natively or use Docker? | Stage 1 (M2) | None; decide at M2 | You |
+| Q13 | Local PostgreSQL: not installed [V]. Install natively or use Docker? | Stage 1 (M2) | **Answered:** native PostgreSQL via `DATABASE_URL`; Docker not required (D39). Install steps in `docs/progress.md` (M2) | You |
 | Q14 | Docker: not installed [V]. Dockerfile written, unbuilt. Install before M11? | Stage 5 (M11) | Build in CI only | You |
+| Q15 | Matching scope with two synthetic sets in one DB: should M4 match a listings batch against the registry batch of the same `dataset` only, or against "the current registry"? | M4 | Same `dataset` for synthetic sets; for real uploads, the latest registry batch (D40) | Me / you |
+| Q16 | Real platform exports may carry extra columns. Keep rejecting unknown columns (D41), or ignore them in M7 with a warning? | M7 | Reject (safer for privacy) | You |
+| Q17 | Registry re-upload semantics (O6): does a new registry upload replace the previous one or add to it? | M7 | Replace: latest registry batch is current; older batches kept for history | You |
 | Q12 | Command runner for `AGENTS.md` §7 (`make` not installed locally) | Stage 1 (M0) | **Answered:** stdlib `tasks.py` + thin Makefile (D29) | You |

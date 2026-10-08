@@ -53,13 +53,14 @@ verified-stays/
   src/
     config/                 # settings, urls, wsgi
     accounts/ registry/ listings/ matching/ reviews/ audit/ tourist/
+    ingest/                 # CSV parsing/validation + loaders (plain package, not an app)
     templates/ static/ locale/ta/
   tests/                    # unit, permissions, eval, smoke
   Dockerfile  .github/workflows/ (ci.yml, backup.yml)
 ```
 
 ## 7. Commands
-> **Planned** commands. Confirm and update this section once M0 is done.
+> Commands below exist as of M2, except `eval` (M5). DB targets need `DATABASE_URL` (in the shell or in the git-ignored `.env`, which `tasks.py` reads).
 > `tasks.py` (stdlib only) is the single source of commands. The `Makefile` is a thin wrapper that delegates each target to `python tasks.py <target>`, for Linux CI and the Dockerfile. On Windows run `python tasks.py <target>` using `.venv\Scripts\python.exe`. `make` is not installed locally.
 ```
 python tasks.py setup    # install deps into the EXISTING .venv (never create another)
@@ -68,7 +69,8 @@ python tasks.py test     # pytest
 python tasks.py lint     # ruff check + ruff format --check
 python tasks.py eval     # run matching evaluation on dev set (prints metrics)
 python tasks.py seed     # generate synthetic data (seeded, reproducible) [done in M1]
-python tasks.py migrate  # apply migrations
+python tasks.py migrate  # apply migrations [M2]
+python tasks.py load     # load committed M1 dev+test sets into the DB; checks row counts [M2]
 ```
 Every `make <target>` in other docs means `python tasks.py <target>`.
 
