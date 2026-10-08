@@ -176,7 +176,8 @@ def test_usernames_are_unique_ignoring_case(users) -> None:
 
 # --- every routed view is guarded or explicitly public ---
 
-PUBLIC_URL_NAMES = {"login", "logout"}  # logout is POST-only and only ends the caller's session
+# logout is POST-only and only ends the caller's session; tourist_check is the public M9 page.
+PUBLIC_URL_NAMES = {"login", "logout", "tourist_check"}
 
 
 def _walk(patterns, prefix: str = ""):

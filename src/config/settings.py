@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     "matching",
     "reviews",
     "audit",
+    "tourist",
 ]
 
 MIDDLEWARE = [
@@ -125,6 +126,10 @@ X_FRAME_OPTIONS = "DENY"
 # 5 failed logins within 15 minutes lock the account and the client address for the rest of
 # that window (essentialfeatures.md O1, D58).
 LOGIN_THROTTLE = {"max_failures": 5, "window_seconds": 15 * 60}
+
+# Public tourist check (M9, D75): at most this many checks per client address per window.
+# Counted in the database cache under an HMAC of the address; the address is never stored.
+TOURIST_THROTTLE = {"max_checks": 20, "window_seconds": 5 * 60}
 
 # Where the real client address comes from (D62). "REMOTE_ADDR" = direct connection; behind a
 # proxy, the header the proxy appends to, e.g. "HTTP_X_FORWARDED_FOR", plus the number of

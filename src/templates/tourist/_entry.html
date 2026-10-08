@@ -1,0 +1,14 @@
+{% load i18n %}<dl class="facts">
+  <dt>{% translate "Name" %}</dt>
+  <dd>{{ entry.name }}</dd>
+  <dt>{% translate "Locality" %}</dt>
+  <dd>{{ entry.locality }}</dd>
+  {% if entry.category %}<dt>{% translate "Category" %}</dt>
+  <dd>{{ entry.category }}</dd>{% endif %}
+  <dt>{% translate "Registry status" %}</dt>
+  <dd>{{ entry.status }}</dd>
+  <dt>{% translate "Licence period" %}</dt>
+  <dd>{% if entry.valid_from %}{% blocktranslate with start=entry.valid_from|date:"j M Y" end=entry.valid_to|date:"j M Y" %}{{ start }} to {{ end }}{% endblocktranslate %}{% else %}{% blocktranslate with end=entry.valid_to|date:"j M Y" %}Until {{ end }}{% endblocktranslate %}{% endif %}</dd>
+  <dt>{% translate "On the date checked" %}</dt>
+  <dd>{% if entry.valid_on_date %}{% translate "Valid" %}{% else %}{% translate "Not valid" %}{% endif %}</dd>
+</dl>

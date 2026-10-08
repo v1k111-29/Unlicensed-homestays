@@ -43,7 +43,7 @@ Implemented in M2 (Django models + migrations under `src/<app>/`). Names above a
 ## 4. API outline
 | Endpoint | Who | Purpose |
 |---|---|---|
-| `GET/POST /{lang}/check` | Public | Tourist check (rate-limited) |
+| `GET/POST /check/` (`/{lang}/` prefix in M10) | Public | Tourist check (M9: rate-limited, no cookies, logs result type + time only; D74-D76) |
 | `POST /{lang}/report` | Public | Stretch: tourist report with consent |
 | `GET/POST /login/`, `POST /logout/` | All | Session auth (M6; logout is POST-only, failed logins throttled, D58-D59) |
 | `GET /dashboard/` | Officer, Admin | Signed-in landing page (M6 placeholder; M8 fills it) |

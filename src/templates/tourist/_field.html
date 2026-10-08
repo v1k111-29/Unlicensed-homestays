@@ -1,0 +1,12 @@
+{% load i18n %}<div class="field">
+  <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+  {% if hint %}<span class="field-hint" id="{{ field.id_for_label }}-hint">{{ hint }}</span>{% endif %}
+  {% if field.name == "district" %}
+  <select name="{{ field.html_name }}" id="{{ field.id_for_label }}"{% if hint or field.errors %} aria-describedby="{% if hint %}{{ field.id_for_label }}-hint{% endif %}{% if field.errors %} {{ field.id_for_label }}-error{% endif %}"{% endif %}{% if field.errors %} aria-invalid="true"{% endif %}>
+    {% for value, label in field.field.choices %}<option value="{{ value }}"{% if field.value|stringformat:"s" == value|stringformat:"s" %} selected{% endif %}>{{ label }}</option>{% endfor %}
+  </select>
+  {% else %}
+  <input type="text" name="{{ field.html_name }}" id="{{ field.id_for_label }}" value="{{ field.value|default_if_none:'' }}" maxlength="{{ field.field.max_length }}" autocomplete="off"{% if field.name == "licence" %} autocapitalize="characters" spellcheck="false"{% endif %}{% if hint or field.errors %} aria-describedby="{% if hint %}{{ field.id_for_label }}-hint{% endif %}{% if field.errors %} {{ field.id_for_label }}-error{% endif %}"{% endif %}{% if field.errors %} aria-invalid="true"{% endif %}>
+  {% endif %}
+  {% if field.errors %}<span class="field-error" id="{{ field.id_for_label }}-error">{{ field.errors|join:" " }}</span>{% endif %}
+</div>
