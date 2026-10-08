@@ -2,7 +2,9 @@
 {% load i18n %}
 {% block title %}{% translate "Dashboard" %} · {% translate "Verified Stays" %}{% endblock %}
 {% block content %}
-<h1>{% translate "Dashboard" %}</h1>
+<div class="page-head">
+  <h1>{% translate "Dashboard" %}</h1>
+</div>
 <dl class="facts">
   <dt>{% translate "Signed in as" %}</dt>
   <dd>{{ user.get_username }}</dd>

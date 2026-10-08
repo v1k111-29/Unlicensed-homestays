@@ -2,6 +2,10 @@
 {% load i18n %}
 {% block title %}{% translate "Page not found" %} · {% translate "Verified Stays" %}{% endblock %}
 {% block content %}
-<h1>{% translate "Page not found" %}</h1>
-<p>{% translate "The page does not exist, or it is not available to your account." %}</p>
+<div class="page-head">
+  <h1>{% translate "Page not found" %}</h1>
+</div>
+<div class="alert alert--info">
+  <p>{% translate "The page does not exist, or it is not available to your account." %}</p>
+</div>
 {% endblock %}

@@ -2,6 +2,13 @@
 
 Append newest entries at the top. Each entry: module · done · partial · decisions · problems · next step · stage definition-of-done status.
 
+## UI design system (before M8/M9)
+- Branch `ui-design-brief`, based on `m6-auth-roles-audit`.
+- Done: `docs/ui-design-brief.md` (audience, tone, anti-patterns, type/spacing/colour tokens, contrast table, six band badges, tourist result states with the verbatim disclaimer, forms, tables, empty/error/loading, evidence print, HTMX conventions, Tamil). `src/static/css/app.css` replaces `base.css`. M6 templates (`base.html`, login, dashboard, 403, 404) moved to the new classes; all gettext strings unchanged; `base.html` gains blocks `extra_head`, `nav`, `main_class`. `tests/test_ui_stylesheet.py` checks tokens, no external assets, and recomputes every contrast pair listed in the brief.
+- Verified: `tasks.py lint` clean; `tasks.py test` 153 passed, 114 skipped (no DB here) [V]. Templates rendered outside the DB tests [V]. Not checked in a browser or with a screen reader [A].
+- Decisions: D56.
+- Next: M8/M9 build their screens from the brief's component list.
+
 ## M7 — Upload + run endpoints (done locally; DB tests verified on SQLite only, PostgreSQL run pending)
 - Branch `m7-upload-run` = M6 + M4 (merge commit, see next entry) + M7.
 - Done: `ingest/uploads.py` (check listings/registry for a user without writing; pending file in the DB cache for 30 min bound to user and kind; save batch + rows + one audit entry in one transaction; out-of-district audit). `ingest/views.py` (upload page, preview, confirm, cancel for listings and registry; `CappedUploadHandler` keeps at most 2 MB + 1 byte in memory; CSRF re-applied after the handler swap). `matching/views.py` (batch list + run list, start run (POST), run summary with counts per status and per band in queue order). Routes in `config/urls.py`; templates `ingest/upload.html`, `ingest/preview.html`, `matching/runs.html`, `matching/run_detail.html`; nav links in `base.html` and dashboard; table/form styles in `base.css` (plain, 44px targets, status shown as text + border, not colour alone). `csvtools`: 2 MB / 5,000 rows, formula-like cells rejected (CSV injection), all ingest messages via gettext. `load.py` shares row builders with the upload service.
