@@ -11,7 +11,7 @@ Prepared for the Tamil Nadu Tourism Innovation Challenge 2026. Built by one deve
 ## 1. Problem and evidence
 
 - Tamil Nadu has a policy aim of registering every homestay and lodge [V from brief].
-- District officers have been directed to cross-check listings on booking sites against the licence registry [V from brief: court direction]. The brief also mentions sealed homestays and reporting via WhatsApp [V from brief]. *[HUMAN: insert the exact citation/wording from the brief here; this draft does not restate details it cannot check (Q34).]*
+- District officers have been directed to cross-check listings on booking sites against the licence registry [V from brief: court direction]. The brief also mentions sealed homestays and reporting via WhatsApp [V from brief]. *[HUMAN: insert the exact citation/wording from the brief here; this draft does not restate details it cannot check (Q47).]*
 - Matching a listing to a registry entry is hard to do by hand: listing titles are abbreviated, misspelled or reordered; one place has several names (Ooty / Udhagamandalam / உதகமண்டலம்); some details are written in Tamil; pincodes and coordinates are often missing or approximate [A: based on the synthetic noise model, `docs/synthetic-data-spec.md`; not measured on real listings].
 - Existing tools found for this task target Western short-let ordinances; none was found for Indian addresses or Tamil text [V from brief; **not re-checked — Q8**].
 

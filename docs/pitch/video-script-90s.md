@@ -36,7 +36,7 @@ Scene 1 and scene 2 claims are from the challenge brief [V from brief]; scene 2'
 |---|---|---|---|
 | S1 | `/dashboard/` as `officer_nilgiris` | Static, slow pan | District "Nilgiris", synthetic banner |
 | S2 | Two CSV rows or the case page candidate table | Static | Listing "Amber Court Cottage", Udhagamandalam ↔ registry "Amber Court Cottage", Ooty |
-| S3 | `/ta/check` (Tamil) | Type licence `SYN-NLG-49713-B`, submit | Matched: Clover Loft Inn, Kotagiri, lodge, valid 2023-10-06 to 2028-07-10 [V: dev registry row]. Which registry the tourist page reads is decided in M9 (Q32) |
+| S3 | `/ta/check` (Tamil) | Type licence `SYN-NLG-49713-B`, submit | Matched: Clover Loft Inn, Kotagiri, lodge, valid 2023-10-06 to 2028-07-10 [V: dev registry row]. Which registry the tourist page reads is decided in M9 (Q45) |
 | S4 | `/ta/check` or `/en/check` | Name "Jasmine Meadow Residency", locality "Coonoor", submit | Not found + disclaimer. [V: no such registry entry; the nearest name, "Jasmine Ridge Cottage", is in Ooty.] Confirm it does not return "Several similar" |
 | S5 | `/officer/uploads/` | Choose `data/synthetic/out/dev/demo_listings.csv`; Match against `synthetic-dev`; preview; Confirm | Preview with 25 rows, then saved message |
 | S6 | `/officer/runs/` → Start → `/officer/runs/{id}/` | Start run | Summary: 13 Matched, 12 Needs review (4 high priority licence, 5 no match, 3 needs review) [V: pure engine run on the demo slice with `m5-tuned-1`, as_of 2026-04-01; screen must agree] |
@@ -46,7 +46,7 @@ Scene 1 and scene 2 claims are from the challenge brief [V from brief]; scene 2'
 | S10 | `/admin/audit` as admin (separate browser profile, already signed in) | Filter to today | Rows for upload, match run, decision, evidence |
 | S11 | Title/end cards | Edit only | Texts as in scenes 4-5 |
 
-**Decision in S8.** Rehearse with the human: which decision the demo shows. The demo plan (`demo-and-pitch.md`, step 5) asks for "Mark suspected unlicensed" with a reason. Suggested fictional reason text: *"Claimed licence SYN-NLG-92353-Q shows as expired on 2026-03-11 in the registry. Refer for field verification."* The voice-over stays "The officer decides and writes a reason." (Q33)
+**Decision in S8.** Rehearse with the human: which decision the demo shows. The demo plan (`demo-and-pitch.md`, step 5) asks for "Mark suspected unlicensed" with a reason. Suggested fictional reason text: *"Claimed licence SYN-NLG-92353-Q shows as expired on 2026-03-11 in the registry. Refer for field verification."* The voice-over stays "The officer decides and writes a reason." (Q46)
 
 ## Fallbacks
 - If the queue/case UI (M8) is not ready: record S1, S5, S6 only and show `[SCREENSHOT: ...]` mock-ups clearly labelled "Design preview" — do not present mock-ups as working software.

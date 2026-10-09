@@ -2,14 +2,22 @@
 
 Append newest entries at the top. Each entry: module · done · partial · decisions · problems · next step · stage definition-of-done status.
 
+## Integration of M10, M11 and M12 (branch `integration-3`, from `main`; not pushed, `main` not moved)
+- Merged with `--no-ff` in order: `m10-i18n-a11y` (clean), `m11-deploy` (conflicts in decisions, open questions, progress, `urls.py`, route-walk allowlist), `m12-pitch` (conflicts in open questions, progress). All progress entries kept.
+- Renumbering: M10 keeps D77-D80, Q38-Q40 (and its answered Q37). M11 D77-D83 → D81-D87, Q38-Q41 → Q41-Q44; M11's own Q37 row dropped (M10 answered it). M12 Q32-Q34 → Q45-Q47. Applied to every line each branch added (docs, runbooks, pitch docs, `.env.example`, `render.yaml`, workflows, Dockerfile, scripts, code comments, tests); notes in `decisions.md` header and Q25.
+- Code: `urls.py` keeps `/livez` `/healthz` outside `i18n_patterns` (next to M10's `/en/` redirect); `HealthCheckMiddleware` stays first, so health answers before locale, host check and HTTPS redirect. Route-walk allowlist: `home`, `english_prefix`, `livez`, `healthz`. The committed `django.mo` reaches the image through `COPY src` (allowlist `.dockerignore` keeps it; no gettext in the image); CI docker smoke test now also fetches `/ta/check/` and checks a Tamil string.
+- Fixes: `tests/test_integration_m10_m11.py` (health before language/host/HTTPS logic, CSP on `/ta/` pages, 404 and the M10 500 handler, `.mo` in the image); `tests/conftest.py` resets the active language after every test (a `/ta/` request leaked Tamil into later loader-error tests, order-dependent).
+- Verified: lint clean; `messages --check` up to date; SQLite scratch (not committed) 625 passed after M10, 674 passed after M11 + fixes and after M12, 4 skipped each; without a DB 401 passed, 277 skipped; eval gate passed (synthetic); `makemigrations --check --dry-run` no changes (SQLite); `seed` output unchanged [V, local]. Not verified: PostgreSQL run, Docker build (CI only).
+- Next: push `integration-3`, confirm CI (including the `docker` job), then move `main`.
+
 ## M12 — Pitch drafts (branch `m12-pitch`, from `main`; docs only, not pushed)
 - Done: `docs/pitch/concept-note.md` (problem, users, solution, how it works, human-in-the-loop safeguards, privacy/ethics, synthetic evaluation with caveats, limitations, business model [A] / roadmap / asks, V/E/A table); `docs/pitch/video-script-90s.md` (timed English voice-over, 203 words for 90 s at ~150 wpm, no scene above 2.5 words/s; scene-by-scene shot list on the seeded Nilgiris demo slice; wording rules; fallbacks); `docs/pitch/recording-checklist.md` (build/data, demo accounts via `create_account --password-env`, warm server, browser, notifications, retakes, on-screen checks, after recording).
 - Numbers used: only the recorded ones (`testing-and-evaluation.md` §3.2, `eval-test-run.json`): dev all 1.000 (stated as a sign the synthetic data is easy), test precision 1.000 (95/95), recall 0.864 (95/110), queue share 0.525. No market size, price or real-world accuracy claim; Q7 and Q8 items marked unverified.
 - Expected demo screen [V: pure engine run on `dev/demo_listings.csv` vs the dev registry, `m5-tuned-1`, as_of 2026-04-01, scratch script, not committed]: 13 Matched, 12 Needs review (4 licence details, 5 no match, 3 needs review). The web run must agree; checked in the recording checklist.
 - Partial: UI screens (M8-M10) and deployment (M11) not finished, so visuals are `[SCREENSHOT: ...]` placeholders and routes are [A]. Concept note "status" paragraph and placeholders need updating before submission. Video not recorded (Stage 6 DoD "video exported" UNMET; "note drafted with eval numbers + caveats" MET in draft; "script timed to 90s" MET on word count, not yet rehearsed).
-- Open questions: Q32 (tourist demo stays / which registry the check reads), Q33 (decision shown on the case page), Q34 (exact brief citations). Q2, Q7, Q8 still open.
+- Open questions: Q45 (tourist demo stays / which registry the check reads), Q46 (decision shown on the case page), Q47 (exact brief citations). Q2, Q7, Q8 still open.
 - Verified: `tasks.py lint` and `tasks.py test` unchanged by this docs-only change.
-- Next: after M8-M11, replace placeholders with screenshots, rehearse once with a stopwatch, answer Q8/Q32-Q34, record.
+- Next: after M8-M11, replace placeholders with screenshots, rehearse once with a stopwatch, answer Q8/Q45-Q47, record.
 
 ## M11 — Deploy, backup, observability (PREPARED only; nothing deployed, built or restored)
 - Branch `m11-deploy` from `main`. Scope: everything that needs no account or credential. No account created, no secret entered, no URL live, no image built, no backup taken, no restore tested.

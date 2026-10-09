@@ -5,7 +5,7 @@
 ## 1. Build and data (day before)
 - [ ] The build to record has M8 (queue, case, evidence), M9 (tourist check), M10 (Tamil) and M11 (deploy) merged, CI green on `main`. Note the commit hash here: `________`.
 - [ ] Database is fresh for the take (see section 6 on retakes): `python tasks.py migrate` then `python tasks.py load` → six "OK" lines (dev 162/300/300, test 108/200/200).
-- [ ] The tourist check returns **Matched** for licence `SYN-NLG-49713-B` (Clover Loft Inn, Kotagiri) and **Not found** for "Jasmine Meadow Residency", Coonoor (not "Several similar"). If not, pick other demo stays and update the script (Q32).
+- [ ] The tourist check returns **Matched** for licence `SYN-NLG-49713-B` (Clover Loft Inn, Kotagiri) and **Not found** for "Jasmine Meadow Residency", Coonoor (not "Several similar"). If not, pick other demo stays and update the script (Q45).
 - [ ] Demo listings file copied to a neutral folder (e.g. `C:\demo\demo_listings.csv`) so the file picker does not show a personal Windows user path. Source: `data/synthetic/out/dev/demo_listings.csv` (25 Nilgiris rows).
 
 ## 2. Demo accounts (synthetic people only)
