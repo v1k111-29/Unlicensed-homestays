@@ -386,6 +386,8 @@ def test_blocklist_check_catches_real_names() -> None:
     assert gen.is_blocked("Savoy Cottage", blocklist)
     assert gen.is_blocked("Green Valley Homestay", blocklist)
     assert gen.is_blocked("Fern Hill Lodge", blocklist)
+    assert gen.is_blocked("Westin Grove Cottage", blocklist)  # D90 brand additions
+    assert gen.is_blocked("Hilton Homestay", blocklist)
     assert not gen.is_blocked("Cedar Nook Homestay", blocklist)
 
 

@@ -105,7 +105,10 @@ note. If judges get a login, create a separate account for them and deactivate i
 
 `render.yaml` sets `DJANGO_CLIENT_IP_HEADER=HTTP_X_FORWARDED_FOR` and
 `DJANGO_TRUSTED_PROXY_HOPS=1` [A: Render's proxy appends the real client address as the last
-`X-Forwarded-For` entry]. The address itself is never stored or logged (D58, D75). Check the
+`X-Forwarded-For` entry]. The address itself is never stored or logged (D58, D75, D88). The
+tourist check limit (20 per 5 minutes) is counted per Gunicorn worker in process memory (D88):
+with `WEB_CONCURRENCY=2` one address can get up to 40 checks per window, and a restart resets
+the counters. Check the
 behaviour without looking at any address:
 
 1. From your phone on mobile data, sign in 5 times with a wrong password for a made-up
@@ -171,7 +174,7 @@ To disable again, delete the variable (or set it to anything but `true`).
 | `DJANGO_SECURE_SSL_REDIRECT` | not set | no | Default `1`; `0` only for a local plain-HTTP container |
 | `DJANGO_HSTS_SECONDS` | not set | no | Default one year |
 | `DJANGO_LOG_LEVEL` | Render | no | `INFO` |
-| `WEB_CONCURRENCY`, `GUNICORN_TIMEOUT` | Render / default | no | Gunicorn workers (2) and timeout (60 s) |
+| `WEB_CONCURRENCY`, `GUNICORN_TIMEOUT` | Render / default | no | Gunicorn workers (2) and timeout (60 s). The tourist rate limit is per worker (D88): more workers = a looser limit |
 | `PORT` | set by Render [A] | no | Gunicorn port; 8000 when unset |
 | `RENDER_DEPLOY_HOOK_URL` | GitHub secret | yes | Section 8 |
 | `ENABLE_RENDER_DEPLOY` | GitHub variable | no | Section 8 |

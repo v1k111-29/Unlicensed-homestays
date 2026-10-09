@@ -4,6 +4,11 @@ from django.utils.translation import gettext_lazy as _
 
 from accounts.models import District
 
+# Data sets that no web flow may use: the synthetic test set is run once, at the end of tuning,
+# by the eval harness only (AGENTS.md rule 9). Listings uploads never join it, officer runs
+# never use it, and the tourist check never searches it. One constant for all of them.
+RESERVED_DATASETS = frozenset({"synthetic-test"})
+
 
 class UploadBatch(models.Model):
     """One accepted CSV file (registry or listings). Rejected files create no batch."""

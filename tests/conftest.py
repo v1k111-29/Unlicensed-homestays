@@ -55,6 +55,17 @@ def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item
         item.add_marker(skip)
 
 
+@pytest.fixture(autouse=True)
+def _clear_tourist_throttle():
+    """The tourist rate limit lives in a per-process memory cache (D88), which does not roll
+    back with the test transaction; start and end every test with an empty counter."""
+    from django.core.cache import caches
+
+    caches["tourist_throttle"].clear()
+    yield
+    caches["tourist_throttle"].clear()
+
+
 # --- M6 shared fixtures (auth, roles, district scoping). Tests using them must carry the
 # `django_db` marker so they skip cleanly without a database. The login address throttle uses
 # the database cache, so its entries roll back with each test. Do not use `transactional_db`:

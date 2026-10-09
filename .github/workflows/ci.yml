@@ -73,7 +73,7 @@ jobs:
         run: >-
           docker run --detach --name vs --network host
           -e DATABASE_URL=postgres://verified_stays:ci-only-not-secret@localhost:5432/verified_stays
-          -e DJANGO_SECRET_KEY=ci-only-not-secret
+          -e DJANGO_SECRET_KEY=ci-only-not-secret-0123456789-0123456789-0123456789
           -e DJANGO_ALLOWED_HOSTS=localhost
           -e DJANGO_CLIENT_IP_HEADER=REMOTE_ADDR
           -e DJANGO_SECURE_SSL_REDIRECT=0

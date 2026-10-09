@@ -47,6 +47,16 @@ ttdc
 vivanta
 woodlands
 zostel
+# Hotel brands added after the audit (D90). Only brands that share no word with the generator's
+# word lists, so data/synthetic/out stays byte-identical (the test set was run once, rule 9).
+# Kingfisher, Orchid, Sapphire, Hornbill are in the word lists and in test names: Q48.
+hilton
+ibis
+novotel
+sheraton
+trident
+welcomhotel
+westin
 # Common generic names likely used by real stays
 blue hills
 green valley

@@ -32,12 +32,9 @@ from ingest.csvtools import LineError
 from ingest.load import already_loaded_message, batch_meta, listing_objects, registry_objects
 from ingest.parsers import ListingRow, parse_listings, parse_registry
 from listings.models import Listing
-from registry.models import RegistryEntry, UploadBatch
+from registry.models import RESERVED_DATASETS, RegistryEntry, UploadBatch
 
 PENDING_SECONDS = 30 * 60  # same as the idle session timeout
-# Data sets that a listings upload may never join: the synthetic test set is run once, at the
-# end of tuning, by the eval harness only (AGENTS.md rule 9).
-RESERVED_DATASETS = frozenset({"synthetic-test"})
 _TOKEN = re.compile(r"^[A-Za-z0-9_-]{20,64}$")
 _KEY = "upload-pending:{}"
 

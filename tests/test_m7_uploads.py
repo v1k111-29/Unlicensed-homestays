@@ -118,6 +118,24 @@ def test_cancel_discards_the_pending_file(users) -> None:
     assert _saved() == (0, 0, 0)
 
 
+def test_cancel_leaves_other_users_and_other_kind_pending_files(users) -> None:
+    """Cancel discards only the caller's own pending upload of that kind."""
+    nil = _client(users["off_nil"])
+    token = _token(nil.post(UPLOAD, {"file": _file(_listings()), "dataset": ""}))
+    # Another officer posting the token to cancel does not discard it.
+    _client(users["off_mad"]).post(CANCEL, {"token": token}, follow=True)
+    assert nil.post(CONFIRM, {"token": token}).status_code == 302
+    assert UploadBatch.objects.filter(type="listings").count() == 1
+
+    # A registry token sent to the listings cancel URL (wrong kind) is not discarded either.
+    admin = _client(users["admin"])
+    data = _csv(REG_HEADER, "SYN-NLG-90001-A,Synthetic Lodge,Ooty,Nilgiris,2030-01-01,643001")
+    reg_token = _token(admin.post(REG_UPLOAD, {"file": _file(data, "registry.csv")}))
+    admin.post(CANCEL, {"token": reg_token}, follow=True)
+    assert admin.post(REG_CONFIRM, {"token": reg_token}).status_code == 302
+    assert UploadBatch.objects.filter(type="registry").count() == 1
+
+
 def test_token_of_another_user_is_refused(users) -> None:
     token = _token(
         _client(users["off_nil"]).post(UPLOAD, {"file": _file(_listings()), "dataset": ""})

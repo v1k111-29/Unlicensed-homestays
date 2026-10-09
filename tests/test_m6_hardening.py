@@ -96,7 +96,7 @@ def _import_settings(extra_env: dict[str, str], code: str = "import config.setti
     env = {k: v for k, v in os.environ.items() if not k.startswith(("DJANGO_", "DATABASE_"))}
     env.update(
         DJANGO_DEBUG="0",
-        DJANGO_SECRET_KEY="x-test-only",
+        DJANGO_SECRET_KEY="x-test-only-" + "0123456789" * 5,
         DJANGO_ALLOWED_HOSTS="a.example",
         PYTHONPATH=str(ROOT / "src"),
     )

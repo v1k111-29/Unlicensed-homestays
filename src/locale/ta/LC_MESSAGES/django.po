@@ -1507,8 +1507,8 @@ msgid "About this check"
 msgstr "இந்தச் சரிபார்ப்பு பற்றி"
 
 #: templates/tourist/check.html
-msgid "The answer only says whether the registry contains the stay. We keep the type of answer and the time of the check. We do not keep what you type, your address or any other identifier, and this page sets no cookies."
-msgstr "பதிவேட்டில் அந்தத் தங்குமிடம் உள்ளதா என்பதை மட்டுமே பதில் சொல்கிறது. பதிலின் வகையையும் சரிபார்த்த நேரத்தையும் மட்டும் வைத்திருக்கிறோம். நீங்கள் தட்டச்சு செய்வதையோ, உங்கள் முகவரியையோ, வேறு எந்த அடையாளத்தையோ வைத்திருப்பதில்லை; இந்தப் பக்கம் குக்கீகளை அமைப்பதில்லை."
+msgid "The answer only says whether the registry contains the stay. We store only the type of answer and the time of the check. What you type, your internet address and any other identifier are not stored in our database or logs; a short-lived in-memory counter limits repeated checks. This page sets no cookies."
+msgstr "பதிவேட்டில் அந்தத் தங்குமிடம் உள்ளதா என்பதை மட்டுமே பதில் சொல்கிறது. பதிலின் வகையையும் சரிபார்த்த நேரத்தையும் மட்டுமே சேமிக்கிறோம். நீங்கள் தட்டச்சு செய்வது, உங்கள் இணைய முகவரி, வேறு எந்த அடையாளமும் எங்கள் தரவுத்தளத்திலோ பதிவுக் கோப்புகளிலோ சேமிக்கப்படுவதில்லை; திரும்பத் திரும்பச் சரிபார்ப்பதைக் கட்டுப்படுத்த, சிறிது நேரம் மட்டும் நினைவகத்தில் இருக்கும் ஒரு எண்ணிக்கை பயன்படுகிறது. இந்தப் பக்கம் குக்கீகளை அமைப்பதில்லை."
 
 #: tourist/forms.py
 msgid "Name of the stay"

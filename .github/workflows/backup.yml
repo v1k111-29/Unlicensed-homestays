@@ -85,7 +85,10 @@ jobs:
           bin="/usr/lib/postgresql/${PG_MAJOR}/bin"
           file="verified-stays-$(date -u +%Y%m%dT%H%M%SZ).dump"
           start=$(date +%s)
-          "$bin/pg_dump" --format=custom --no-owner --no-privileges --file "$file" \
+          # django_cache rows (login address HMACs, pending uploads) are short-lived and must
+          # not reach backups (D88); the empty table itself is still dumped.
+          "$bin/pg_dump" --format=custom --no-owner --no-privileges \
+            --exclude-table-data=django_cache --file "$file" \
             --dbname "$BACKUP_DATABASE_URL"
           "$bin/pg_restore" --list "$file" > /dev/null # the archive is readable
           sha256sum "$file" > "$file.sha256"

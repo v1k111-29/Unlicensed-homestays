@@ -56,7 +56,7 @@ Implemented in M2 (Django models + migrations under `src/<app>/`). Names above a
 | `GET /officer/cases/{listing_id}/`, `POST .../decide/` | Officer, Admin | Case detail + decision (POST only; 409 on a stale form; D71-D72) |
 | `GET/POST /officer/cases/{listing_id}/evidence/`, `GET /officer/evidence/{id}/` | Officer, Admin | Create (POST) and view a stored, hashed evidence snapshot (D73) |
 | `GET/POST /admin/registry/`, `POST /admin/registry/confirm/`, `POST /admin/registry/cancel/` | Admin | Registry CSV: preview, then confirm (M7) |
-| `GET /admin/audit` | Admin | Audit log |
+| `GET /admin/audit` | Admin | Audit log (**not built**; roadmap. The log is stored append-only in the database only) |
 | `GET /healthz` | Monitor | Health incl. database `SELECT 1`: 200/503 with `{"status": ...}` only (M11, D81) |
 | `GET /livez` | Host / Docker health check | Process liveness, no database (M11, D81) |
 

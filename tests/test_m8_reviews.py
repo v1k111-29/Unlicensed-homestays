@@ -537,6 +537,51 @@ def test_evidence_page_other_district_404(users, cases) -> None:
     ).exists()
 
 
+def test_case_evidence_get_redirects_to_newest_pack_and_post_adds_one(users, cases) -> None:
+    listing = cases["nil"]["listings"][0]
+    client = _client(users["off_nil"])
+    first = client.post(f"/officer/cases/{listing.pk}/evidence/")
+    second = client.post(f"/officer/cases/{listing.pk}/evidence/")
+    packs = list(EvidencePack.objects.order_by("id"))
+    assert len(packs) == 2 and first["Location"] != second["Location"]
+    latest = client.get(f"/officer/cases/{listing.pk}/evidence/")
+    assert latest["Location"] == f"/officer/evidence/{packs[1].pk}/"
+    # Each pack is audited once; a GET is not a state change.
+    assert AuditLog.objects.filter(action="evidence.create").count() == 2
+    # Another listing of the same district still has no pack.
+    other = cases["nil"]["listings"][1]
+    empty = client.get(f"/officer/cases/{other.pk}/evidence/")
+    assert empty.status_code == 200 and "No evidence page has been created" in (
+        empty.content.decode()
+    )
+
+
+def test_evidence_detail_reports_a_changed_snapshot(users, cases) -> None:
+    listing = cases["nil"]["listings"][0]
+    client = _client(users["off_nil"])
+    client.post(f"/officer/cases/{listing.pk}/evidence/")
+    pack = EvidencePack.objects.get()
+    ok = client.get(f"/officer/evidence/{pack.pk}/").content.decode()
+    assert "still produces this SHA-256" in ok and "does not produce" not in ok
+    changed = {**pack.snapshot, "statement": "edited after the fact"}
+    EvidencePack.objects.filter(pk=pack.pk).update(snapshot=changed)
+    body = client.get(f"/officer/evidence/{pack.pk}/").content.decode()
+    assert "Problem: the stored snapshot does not produce this SHA-256." in body
+
+
+def test_evidence_detail_get_only_unknown_and_anonymous(users, cases) -> None:
+    listing = cases["nil"]["listings"][0]
+    client = _client(users["off_nil"])
+    client.post(f"/officer/cases/{listing.pk}/evidence/")
+    pack = EvidencePack.objects.get()
+    assert client.post(f"/officer/evidence/{pack.pk}/").status_code == 405
+    assert client.get("/officer/evidence/999999/").status_code == 404
+    anon = Client().get(f"/officer/evidence/{pack.pk}/")
+    assert anon.status_code == 302 and "/login/" in anon["Location"]
+    assert Client().post(f"/officer/cases/{listing.pk}/evidence/").status_code == 302
+    assert EvidencePack.objects.count() == 1
+
+
 def test_evidence_print_css_present() -> None:
     css = (Path(__file__).resolve().parents[1] / "src" / "static" / "css" / "app.css").read_text(
         encoding="utf-8"

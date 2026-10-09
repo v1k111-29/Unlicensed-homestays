@@ -270,8 +270,28 @@ def test_no_ip_or_query_stored_anywhere(registry) -> None:
             cursor.execute(f'SELECT * FROM "{table}"')  # noqa: S608 (test, table names from DB)
             dump.extend(repr(row) for row in cursor.fetchall())
     blob = "\n".join(dump)
-    for needle in (SECRET_IP, "Zephyrine", "SyntheticAgent"):
+    for needle in (SECRET_IP, "Zephyrine", "SyntheticAgent", "tourist-check-ip"):
         assert needle not in blob, needle
+
+
+def test_rate_limit_counter_is_in_process_memory_only(registry) -> None:
+    """D88: the address HMAC lives in the per-process memory cache, never in a database table
+    (so it cannot reach django_cache or a backup)."""
+    from django.conf import settings
+    from django.core.cache import caches
+    from django.test import RequestFactory
+
+    from tourist import throttle
+
+    backend = settings.CACHES[throttle.CACHE_ALIAS]["BACKEND"]
+    assert backend == "django.core.cache.backends.locmem.LocMemCache"
+    _post(Client(), licence="SYN-NLG-90001-A")
+    key = throttle.cache_key(RequestFactory().post(URL, REMOTE_ADDR=SECRET_IP))
+    assert caches[throttle.CACHE_ALIAS].get(key) == 1
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT cache_key FROM django_cache")
+        keys = [row[0] for row in cursor.fetchall()]
+    assert not any("tourist" in k for k in keys), keys
 
 
 def test_no_cookies_set(registry) -> None:

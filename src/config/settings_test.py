@@ -2,7 +2,8 @@
 
 import os
 
-os.environ.setdefault("DJANGO_SECRET_KEY", "test-only-not-a-secret")
+# 50+ characters: production settings refuse shorter keys outside DEBUG (D89). Test only.
+os.environ.setdefault("DJANGO_SECRET_KEY", "test-only-not-a-secret-" + "0123456789" * 3)
 os.environ.setdefault("DJANGO_CLIENT_IP_HEADER", "REMOTE_ADDR")
 os.environ.setdefault("DJANGO_ALLOWED_HOSTS", "testserver")
 # The test client speaks plain HTTP; HTTPS redirect is checked by its own tests.
