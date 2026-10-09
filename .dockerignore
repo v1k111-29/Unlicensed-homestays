@@ -1,7 +1,12 @@
-.venv
-.git
-.env
-__pycache__
-.pytest_cache
-.ruff_cache
-docs
+# Allowlist (M11): send only what the Dockerfile copies. Keeps .env, .git, .venv, tests, docs
+# and local files out of the build context and the image.
+*
+!requirements.txt
+!src
+!data/synthetic/gazetteer.csv
+!data/synthetic/localities.csv
+!data/synthetic/out
+!scripts/docker-start.sh
+**/__pycache__
+**/*.pyc
+**/*.sqlite3

@@ -94,7 +94,12 @@ def test_client_ip_hops_and_fallback(rf, settings) -> None:
 
 def _import_settings(extra_env: dict[str, str], code: str = "import config.settings"):
     env = {k: v for k, v in os.environ.items() if not k.startswith(("DJANGO_", "DATABASE_"))}
-    env.update(DJANGO_DEBUG="0", DJANGO_SECRET_KEY="x-test-only", PYTHONPATH=str(ROOT / "src"))
+    env.update(
+        DJANGO_DEBUG="0",
+        DJANGO_SECRET_KEY="x-test-only",
+        DJANGO_ALLOWED_HOSTS="a.example",
+        PYTHONPATH=str(ROOT / "src"),
+    )
     env.update(extra_env)
     return subprocess.run([sys.executable, "-c", code], env=env, capture_output=True, text=True)
 
@@ -178,8 +183,17 @@ def test_usernames_are_unique_ignoring_case(users) -> None:
 
 # logout is POST-only and only ends the caller's session; tourist_check is the public M9 page;
 # home (M10) only redirects to the tourist check or, once signed in, to the dashboard;
-# english_prefix (M10) only redirects /en/<path> to /<path> on this site.
-PUBLIC_URL_NAMES = {"login", "logout", "tourist_check", "home", "english_prefix"}
+# english_prefix (M10) only redirects /en/<path> to /<path> on this site;
+# livez/healthz are the M11 health endpoints (no data, no state change, D77).
+PUBLIC_URL_NAMES = {
+    "login",
+    "logout",
+    "tourist_check",
+    "home",
+    "english_prefix",
+    "livez",
+    "healthz",
+}
 
 
 def _walk(patterns, prefix: str = ""):
@@ -228,7 +242,8 @@ def test_route_walk_covers_officer_admin_and_public_routes() -> None:
         "evidence_detail",
         "upload_registry",
     }
-    assert guarded | {"tourist_check"} <= names, sorted((guarded | {"tourist_check"}) - names)
+    public = {"tourist_check", "livez", "healthz"}
+    assert guarded | public <= names, sorted((guarded | public) - names)
     # Officer/admin routes are never on the public allowlist and carry a guard themselves.
     assert not guarded & PUBLIC_URL_NAMES
     assert [n for n in sorted(guarded) if not _is_guarded(entries[n].callback)] == []

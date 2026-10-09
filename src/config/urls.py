@@ -10,6 +10,7 @@ Routes that must not depend on the language (health checks in M11) go outside i1
 from django.conf.urls.i18n import i18n_patterns
 from django.urls import include, path, re_path
 
+from config import health
 from config import views as site_views
 from ingest import views as ingest_views
 from matching import views as matching_views
@@ -17,6 +18,9 @@ from reviews import views as review_views
 from tourist import views as tourist_views
 
 urlpatterns = [
+    # Public (allowlisted). Normally answered by config.health.HealthCheckMiddleware first (D77).
+    path("livez", health.livez, name="livez"),
+    path("healthz", health.healthz, name="healthz"),
     # public (allowlisted): /en/... redirects to the unprefixed English page
     re_path(r"^en/(?P<rest>.*)$", site_views.english_prefix, name="english_prefix"),
 ]

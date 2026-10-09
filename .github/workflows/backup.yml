@@ -1,0 +1,151 @@
+name: Backup
+# M11 (D83): nightly pg_dump of the hosted database to a private Cloudflare R2 bucket.
+# Credentials come only from GitHub Actions secrets (names below; values are never in the
+# repository). Tools are the runner's own: PostgreSQL client from apt, the preinstalled AWS CLI
+# (S3-compatible R2 API). No Python dependency. See docs/backup-restore.md.
+#
+# Secrets (Settings > Secrets and variables > Actions > Secrets):
+#   BACKUP_DATABASE_URL   Neon connection string (direct, not pooled; sslmode=require)
+#   R2_ACCOUNT_ID         Cloudflare account id (forms the R2 endpoint)
+#   R2_ACCESS_KEY_ID      R2 API token access key id (Object Read & Write, this bucket only)
+#   R2_SECRET_ACCESS_KEY  R2 API token secret access key
+#   R2_BUCKET             bucket name
+# Until all five exist the job ends with a warning and dumps nothing.
+
+on:
+  schedule:
+    - cron: "30 20 * * *" # 20:30 UTC = 02:00 IST
+  workflow_dispatch:
+    inputs:
+      restore_test:
+        description: "Then restore the new dump from R2 into a throwaway PostgreSQL and print row counts"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: backup
+  cancel-in-progress: false
+
+env:
+  # pg_dump must be the server's major version or newer; 17 also dumps a 16 server.
+  PG_MAJOR: "17"
+  AWS_DEFAULT_REGION: auto
+  # Newer AWS CLI versions send checksums R2 may not accept [A]; send them only when required.
+  AWS_REQUEST_CHECKSUM_CALCULATION: when_required
+  AWS_RESPONSE_CHECKSUM_VALIDATION: when_required
+
+jobs:
+  dump:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    outputs:
+      configured: ${{ steps.config.outputs.configured }}
+      object: ${{ steps.dump.outputs.file }}
+    env:
+      BACKUP_DATABASE_URL: ${{ secrets.BACKUP_DATABASE_URL }}
+      R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+      R2_BUCKET: ${{ secrets.R2_BUCKET }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+    steps:
+      - name: Check configuration
+        id: config
+        run: |
+          missing=""
+          [ -n "$BACKUP_DATABASE_URL" ] || missing="$missing BACKUP_DATABASE_URL"
+          [ -n "$R2_ACCOUNT_ID" ] || missing="$missing R2_ACCOUNT_ID"
+          [ -n "$R2_BUCKET" ] || missing="$missing R2_BUCKET"
+          [ -n "$AWS_ACCESS_KEY_ID" ] || missing="$missing R2_ACCESS_KEY_ID"
+          [ -n "$AWS_SECRET_ACCESS_KEY" ] || missing="$missing R2_SECRET_ACCESS_KEY"
+          if [ -n "$missing" ]; then
+            echo "::warning::Backup not configured, nothing dumped. Missing secrets:$missing (docs/backup-restore.md)"
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install PostgreSQL client
+        if: steps.config.outputs.configured == 'true'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-common
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+          sudo apt-get install -y -qq "postgresql-client-${PG_MAJOR}"
+          "/usr/lib/postgresql/${PG_MAJOR}/bin/pg_dump" --version
+          aws --version
+
+      - name: Dump database
+        id: dump
+        if: steps.config.outputs.configured == 'true'
+        run: |
+          set -euo pipefail
+          bin="/usr/lib/postgresql/${PG_MAJOR}/bin"
+          file="verified-stays-$(date -u +%Y%m%dT%H%M%SZ).dump"
+          start=$(date +%s)
+          "$bin/pg_dump" --format=custom --no-owner --no-privileges --file "$file" \
+            --dbname "$BACKUP_DATABASE_URL"
+          "$bin/pg_restore" --list "$file" > /dev/null # the archive is readable
+          sha256sum "$file" > "$file.sha256"
+          echo "dump $(du -h "$file" | cut -f1) in $(( $(date +%s) - start ))s"
+          echo "file=$file" >> "$GITHUB_OUTPUT"
+
+      - name: Upload to R2
+        if: steps.config.outputs.configured == 'true'
+        run: |
+          set -euo pipefail
+          endpoint="https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com"
+          file="${{ steps.dump.outputs.file }}"
+          for f in "$file" "$file.sha256"; do
+            aws s3 cp "$f" "s3://${R2_BUCKET}/daily/$f" --endpoint-url "$endpoint" --only-show-errors
+          done
+          echo "uploaded daily/$file"
+
+  # Manual only (Run workflow > restore_test). Downloads the dump just uploaded from R2 and
+  # restores it into a throwaway PostgreSQL 17 service container on the runner. It proves the
+  # R2 copy is restorable; it does not replace the documented restore drill (backup-restore.md).
+  restore-test:
+    needs: dump
+    if: github.event_name == 'workflow_dispatch' && inputs.restore_test && needs.dump.outputs.configured == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: restore
+          POSTGRES_PASSWORD: restore-only-not-secret
+          POSTGRES_DB: restore_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U restore"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+      R2_BUCKET: ${{ secrets.R2_BUCKET }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      RESTORE_DATABASE_URL: postgres://restore:restore-only-not-secret@localhost:5432/restore_test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-common
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+          sudo apt-get install -y -qq "postgresql-client-${PG_MAJOR}"
+      - name: Download dump from R2
+        run: |
+          set -euo pipefail
+          endpoint="https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com"
+          file="${{ needs.dump.outputs.object }}"
+          for f in "$file" "$file.sha256"; do
+            aws s3 cp "s3://${R2_BUCKET}/daily/$f" "$f" --endpoint-url "$endpoint" --only-show-errors
+          done
+      - name: Restore and count rows
+        run: PG_BIN="/usr/lib/postgresql/${PG_MAJOR}/bin" bash scripts/restore-test.sh "${{ needs.dump.outputs.object }}"
