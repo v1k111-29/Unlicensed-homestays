@@ -1,6 +1,6 @@
 # AGENTS.md — Instructions for AI coding agents and contributors
 
-> Project: **Verified Stays** · Status: planning complete, build not started
+> Project: **Verified Stays** · Status: modules M0–M12 built and merged on `main` (CI green); nothing deployed yet (hosting, backup and demo accounts are pending human setup); video not recorded
 > Labels used across all docs: **[V]** verified, **[E]** estimated, **[A]** assumed.
 
 ## 1. What this project is
@@ -60,7 +60,7 @@ verified-stays/
 ```
 
 ## 7. Commands
-> Commands below exist as of M2, except `eval` (M5). DB targets need `DATABASE_URL` (in the shell or in the git-ignored `.env`, which `tasks.py` reads).
+> All commands below exist (M0–M10). DB targets need `DATABASE_URL` (in the shell or in the git-ignored `.env`, which `tasks.py` reads).
 > `tasks.py` (stdlib only) is the single source of commands. The `Makefile` is a thin wrapper that delegates each target to `python tasks.py <target>`, for Linux CI and the Dockerfile. On Windows run `python tasks.py <target>` using `.venv\Scripts\python.exe`. `make` is not installed locally.
 ```
 python tasks.py setup    # install deps into the EXISTING .venv (never create another)

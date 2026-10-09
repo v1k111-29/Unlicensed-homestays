@@ -23,7 +23,7 @@ from ingest.load import load_synthetic_set
 from listings.models import Listing
 from matching import engine
 from matching.features import FEATURES
-from matching.models import MatchCandidate, MatchResult, MatchRun
+from matching.models import MatchCandidate, MatchResult, MatchRun, check_same_district
 from matching.params import CURRENT_VERSION, get_params
 from matching.services import MatchingError, run_matching, run_matching_per_district
 from registry.models import RegistryEntry, UploadBatch
@@ -259,3 +259,96 @@ def test_wrong_batch_types_and_datasets_are_refused(dev_batches) -> None:
     )
     with pytest.raises(MatchingError):
         run_matching(orphan, actor="system:test")
+
+
+# ----------------------------------------- district boundary of officer runs (D63)
+
+
+def _cross_district_setup(users, districts) -> tuple[UploadBatch, RegistryEntry, RegistryEntry]:
+    """A Nilgiris listing whose exact twin (licence, name, locality) is registered in Madurai,
+    plus a similar Nilgiris entry. All synthetic, made up for this test."""
+    reg = UploadBatch.objects.create(type="registry", file_sha256="a1" * 32, row_count=2)
+    twin = RegistryEntry.objects.create(
+        licence_no="SYN-MDU-70001-A",
+        name="Zephyrine Brook Homestay",
+        locality="Ooty",
+        valid_to=date(2030, 1, 1),
+        batch=reg,
+        district=districts["mad"],
+    )
+    own = RegistryEntry.objects.create(
+        licence_no="SYN-NLG-70002-B",
+        name="Zephyrine Brook Cottage",
+        locality="Ooty",
+        valid_to=date(2030, 1, 1),
+        batch=reg,
+        district=districts["nil"],
+    )
+    lst = UploadBatch.objects.create(
+        type="listings",
+        file_sha256="a2" * 32,
+        row_count=1,
+        uploader=users["off_nil"],
+        district=districts["nil"],
+    )
+    Listing.objects.create(
+        platform="synthetic",
+        title="Zephyrine Brook Homestay",
+        locality_text="Ooty",
+        claimed_licence_no="SYN-MDU-70001-A",
+        batch=lst,
+        district=districts["nil"],
+    )
+    return lst, twin, own
+
+
+@db
+def test_officer_run_never_includes_other_district_registry_entries(users, districts) -> None:
+    lst, twin, own = _cross_district_setup(users, districts)
+    run = run_matching(lst, actor=users["off_nil"], registry_batch=twin.batch)
+    assert run.district == districts["nil"]
+    cands = MatchCandidate.objects.filter(run=run)
+    assert cands.exists()  # the Nilgiris entry is still compared
+    assert twin.pk not in set(cands.values_list("registry_entry_id", flat=True))
+    assert set(cands.values_list("registry_entry__district", flat=True)) == {districts["nil"].pk}
+    assert MatchResult.objects.get(run=run).top_registry_entry_id != twin.pk
+
+
+@db
+def test_run_refuses_a_cross_district_candidate_from_the_engine(
+    users, districts, monkeypatch
+) -> None:
+    """bulk_create skips save(). The service only loads its own district's registry entries, so an
+    engine outcome naming another district's entry cannot be stored: it fails (unknown entry),
+    the whole run rolls back and nothing is saved. check_same_district itself refuses the pair."""
+    import dataclasses
+
+    from django.core.exceptions import ValidationError
+
+    lst, twin, _own = _cross_district_setup(users, districts)
+    real_match = engine.match
+
+    def leaky_match(*args, **kwargs):
+        leaked = engine.Candidate(
+            registry_id=twin.pk,
+            licence_no=twin.licence_no,
+            score=0.99,
+            rank=1,
+            blocked_by=(),
+            features={},
+        )
+        return [
+            dataclasses.replace(o, candidates=(leaked,), top_registry_id=twin.pk)
+            for o in real_match(*args, **kwargs)
+        ]
+
+    monkeypatch.setattr(engine, "match", leaky_match)
+    with pytest.raises((KeyError, ValidationError)):
+        run_matching(lst, actor=users["off_nil"], registry_batch=twin.batch)
+    assert not MatchRun.objects.exists()
+    assert not MatchCandidate.objects.exists() and not MatchResult.objects.exists()
+    # The guard the service calls before bulk_create refuses the cross-district pair directly.
+    run = MatchRun(district=districts["nil"], params_version="t")
+    with pytest.raises(ValidationError):
+        check_same_district(run, Listing.objects.get(batch=lst), twin)
+    check_same_district(run, Listing.objects.get(batch=lst), _own)  # same district: no error

@@ -1,11 +1,11 @@
 # Recording Checklist — 90-second video (DRAFT)
 
-> Use with `video-script-90s.md`. Draft written before M8-M11 are finished: commands marked [A] must be re-checked against the final build. Q2 default: screen recording + English voice-over; recording tool not chosen yet.
+> Use with `video-script-90s.md`. M8-M11 are merged on `main` (CI green); nothing is deployed and the video is not recorded. Commands marked [A] must be re-checked against the deployed build. Q2 default: screen recording + English voice-over; recording tool not chosen yet.
 
 ## 1. Build and data (day before)
 - [ ] The build to record has M8 (queue, case, evidence), M9 (tourist check), M10 (Tamil) and M11 (deploy) merged, CI green on `main`. Note the commit hash here: `________`.
 - [ ] Database is fresh for the take (see section 6 on retakes): `python tasks.py migrate` then `python tasks.py load` → six "OK" lines (dev 162/300/300, test 108/200/200).
-- [ ] The tourist check returns **Matched** for licence `SYN-NLG-49713-B` (Clover Loft Inn, Kotagiri) and **Not found** for "Jasmine Meadow Residency", Coonoor (not "Several similar"). If not, pick other demo stays and update the script (Q45).
+- [ ] The tourist check returns **Found in the registry** for licence `SYN-NLG-49713-B` (Clover Loft Inn, Kotagiri) and **Not found** for "Jasmine Meadow Residency", Coonoor (not "Several similar"). If not, pick other demo stays and update the script (Q45).
 - [ ] Demo listings file copied to a neutral folder (e.g. `C:\demo\demo_listings.csv`) so the file picker does not show a personal Windows user path. Source: `data/synthetic/out/dev/demo_listings.csv` (25 Nilgiris rows).
 
 ## 2. Demo accounts (synthetic people only)
@@ -22,7 +22,7 @@ $env:DEMO_OFFICER_PW = "<choose>"; $env:DEMO_ADMIN_PW = "<choose>"
 
 ## 3. Warm server (30 minutes before)
 - [ ] Open `/healthz` and wait for a success response (free tiers may sleep when idle [A, Q9]).
-- [ ] Load every page in the demo path once: `/ta/check`, `/en/check`, `/login/`, `/dashboard/`, `/officer/uploads/`, `/officer/runs/`, `/officer/queue`, a case page, an evidence page, `/admin/audit` [A: final routes from M8-M9].
+- [ ] Load every page in the demo path once: `/ta/check/`, `/check/`, `/login/`, `/dashboard/`, `/officer/uploads/`, `/officer/runs/`, `/officer/queue/`, a case page, an evidence page [V: routes in `src/config/urls.py`]. There is no audit-log screen, so none is shown.
 - [ ] Uptime ping is running so the server does not sleep between rehearsal and take.
 - [ ] Do the rehearsal run on a **separate** database or before the reset in section 6 (an upload of the same file is refused the second time).
 - [ ] Sign in **just before** recording: idle sessions expire after 30 minutes.
@@ -30,11 +30,11 @@ $env:DEMO_OFFICER_PW = "<choose>"; $env:DEMO_ADMIN_PW = "<choose>"
 
 ## 4. Browser
 - [ ] Clean browser profile (or guest window): no extensions, no bookmarks bar, no saved-password or autofill pop-ups, no history suggestions in the address bar.
-- [ ] Two profiles/windows: officer (`officer_nilgiris`) and admin (`demo_admin`, for the audit log), each already signed in. A third, signed-out window for the tourist check.
+- [ ] One officer window (`officer_nilgiris`), already signed in, and a second, signed-out window for the tourist check. The admin account is not shown on camera.
 - [ ] Window 1920×1080 (or 1366×768); browser zoom 125% so text is readable in the video; check that Tamil text does not clip at that zoom.
 - [ ] Tourist window opened at the `/ta/` URL prefix; officer windows in English.
 - [ ] Cookie or consent prompts handled beforehand (none expected on our own app).
-- [ ] Tourist check rate limit: rehearsal checks count against it; leave time for it to reset before the take [A: limit set in M9].
+- [ ] Tourist check rate limit: rehearsal checks count against it; leave time for it to reset before the take [V: 20 checks per 5 minutes per address, counted in memory per server worker (D88); a server restart also resets it].
 
 ## 5. Computer and audio
 - [ ] Windows Focus / Do not disturb on; notifications off.

@@ -9,7 +9,7 @@
 | Upload listings | ✘ | ✔ (own district) | ✔ |
 | Run matching / decide cases | ✘ | ✔ (own district) | ✔ |
 | Upload registry | ✘ | ✘ | ✔ |
-| View audit log | ✘ | ✘ | ✔ |
+| View audit log | ✘ | ✘ | ✔ (database access only; no screen yet, roadmap) |
 | Manage users | ✘ | ✘ | ✔ |
 District scoping is enforced in a shared queryset helper and covered by permission tests.
 
@@ -22,6 +22,8 @@ Events: login (success/fail), upload, registry upload, match run, decision, evid
 ## 4. Privacy
 - Demo uses synthetic data only.
 - Tourist checks store result type + timestamp only; no IP/identifier.
+- Tourist rate limit (D88, revises D75): counted in a per-process in-memory cache keyed by HMAC(SECRET_KEY, address). Neither the address nor its HMAC is written to any table, log or backup. Weaker guarantee: each Gunicorn worker counts separately (2 workers in `render.yaml` → up to 2 × 20 checks per address per 5 minutes) and a restart resets the counters.
+- Login address throttle (D58/D65) keeps HMAC(SECRET_KEY, address) in the database cache table `django_cache` for at most 15 minutes. Backups exclude that table's rows (`pg_dump --exclude-table-data=django_cache`, D88), so no address HMAC reaches R2.
 - Public fields only on tourist results (name, locality, category, validity).
 - Short purpose notice on the tourist and report pages.
 - Retention rule (to document before any pilot): [TBD — see open questions].

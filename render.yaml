@@ -35,6 +35,7 @@ services:
         value: "1"
       - key: DJANGO_LOG_LEVEL
         value: INFO
-      # 512 MB free instance [A]: two Gunicorn workers.
+      # 512 MB free instance [A]: two Gunicorn workers. The tourist rate limit is per worker
+      # (D88), so 2 workers allow up to 2 x 20 checks per address per 5 minutes.
       - key: WEB_CONCURRENCY
         value: "2"

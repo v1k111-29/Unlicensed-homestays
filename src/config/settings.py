@@ -20,6 +20,13 @@ if not SECRET_KEY:
     if not DEBUG:
         raise ImproperlyConfigured("Set DJANGO_SECRET_KEY (or DJANGO_DEBUG=1 for local work).")
     SECRET_KEY = "insecure-local-debug-only"
+elif not DEBUG and (len(SECRET_KEY) < 50 or "change-me" in SECRET_KEY.lower()):
+    # A placeholder or short key would make sessions, CSRF and the address HMACs guessable
+    # (D89). DEBUG keeps any key for local work.
+    raise ImproperlyConfigured(
+        "DJANGO_SECRET_KEY is a placeholder or shorter than 50 characters. Generate a random "
+        "value (see .env.example)."
+    )
 
 
 def _env_list(name: str) -> list[str]:
@@ -165,8 +172,9 @@ if not DEBUG:
 # that window (essentialfeatures.md O1, D58).
 LOGIN_THROTTLE = {"max_failures": 5, "window_seconds": 15 * 60}
 
-# Public tourist check (M9, D75): at most this many checks per client address per window.
-# Counted in the database cache under an HMAC of the address; the address is never stored.
+# Public tourist check (M9, D75, D88): at most this many checks per client address per window,
+# per Gunicorn worker. Counted in the per-process memory cache "tourist_throttle" (below) under
+# an HMAC of the address; nothing about the address is written to the database.
 TOURIST_THROTTLE = {"max_checks": 20, "window_seconds": 5 * 60}
 
 # Where the real client address comes from (D62). "REMOTE_ADDR" = direct connection; behind a
@@ -186,13 +194,20 @@ if not DEBUG:
         # Behind a TLS-terminating proxy that sets this header (and strips client copies).
         SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
-# Database cache: shared by all workers, so the address limit is global (D58). The table is
-# created by `python tasks.py migrate` (createcachetable) and by the test runner.
+# "default": database cache, shared by all workers, so the login address limit is global
+# (D58) and pending uploads survive between workers (D68). The table is created by
+# `python tasks.py migrate` (createcachetable) and by the test runner; backups skip its rows
+# (D88). "tourist_throttle": per-process memory only, so the tourist address HMAC never reaches
+# a table or a backup; the limit is per worker (D88).
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.db.DatabaseCache",
         "LOCATION": "django_cache",
-    }
+    },
+    "tourist_throttle": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "tourist-throttle",
+    },
 }
 
 # --- Logging (M11, D84): JSON lines on stdout, personal data scrubbed (config.logs). No

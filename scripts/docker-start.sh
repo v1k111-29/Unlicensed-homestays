@@ -7,7 +7,8 @@
 set -eu
 
 python manage.py migrate --noinput
-# Database cache for the login and tourist throttles (D58, D75); no-op when it exists.
+# Database cache for the login throttle and pending uploads (D58, D68); no-op when it exists.
+# The tourist rate limit is per-process memory, one counter per worker (D88).
 python manage.py createcachetable
 
 # No --access-logfile: Gunicorn's access log would write client addresses (AGENTS.md rule 5).

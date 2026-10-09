@@ -10,9 +10,13 @@
 `.github/workflows/backup.yml` (D87):
 
 - **When:** nightly at 20:30 UTC (02:00 IST), and on demand (Actions > Backup > Run workflow).
-- **What:** `pg_dump --format=custom --no-owner --no-privileges` of the hosted Neon database
-  (all tables: users with password hashes, synthetic registry and listings, runs, reviews,
-  evidence, `audit_log`, `tourist_checks`). The archive is listed with `pg_restore --list` to
+- **What:** `pg_dump --format=custom --no-owner --no-privileges --exclude-table-data=django_cache`
+  of the hosted Neon database (all tables: users with password hashes, synthetic registry and
+  listings, runs, reviews, evidence, `audit_log`, `tourist_checks`). The rows of the
+  `django_cache` table are left out (D88): they are short-lived login-throttle address HMACs
+  and pending uploads, and must not be kept for 30 days in R2. The empty table is still in the
+  dump, so a restore needs no `createcachetable`. The tourist rate limit is never in the
+  database at all (per-process memory, D88). The archive is listed with `pg_restore --list` to
   prove it is readable, and a `.sha256` file is written next to it.
 - **Where:** private Cloudflare R2 bucket, key `daily/verified-stays-<UTC timestamp>.dump`
   (+ `.sha256`).
@@ -110,7 +114,8 @@ Counts may be higher on the live side if people used the site after the dump.
 
 ## 5. Privacy and limits
 
-- Dumps hold argon2 password hashes, HMACs and the synthetic data set; the bucket stays
+- Dumps hold argon2 password hashes, the audit username HMACs and the synthetic data set (no
+  address HMACs: `django_cache` rows are excluded, D88); the bucket stays
   private and the token is scoped to it. Data is synthetic only (rule 3).
 - Dumps are not encrypted beyond R2's storage encryption [A]. Before any real data: encrypt the
   dump in the workflow and define retention (Q6) - not needed for the synthetic demo.

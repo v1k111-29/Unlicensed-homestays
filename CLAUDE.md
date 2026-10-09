@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Claude-specific notes
 
-- Repo state: M0–M2 done (scaffold, synthetic generator, Django schema + CSV loaders); one branch per module. Local PostgreSQL may be absent: DB tests then skip; CI runs them with `REQUIRE_DB=1`. Git repo on `main`, remote `origin` = github.com/v1k111-29/Unlicensed-homestays. Work flow: 7 stages, modules M0–M12 (`implementationsplan.md` §2, `docs/workflow-and-prompts.md` §5). One module per session. Docs use no dates or hour budgets.
+- Repo state: M0–M12 merged on `main`; deploy accounts (Render, Neon, R2) and the restore test are pending human setup (`docs/deploy-runbook.md`, `docs/backup-restore.md`). One branch per change. Local PostgreSQL may be absent: DB tests then skip; CI runs them with `REQUIRE_DB=1`. Git repo on `main`, remote `origin` = github.com/v1k111-29/Unlicensed-homestays. Work flow: 7 stages, modules M0–M12 (`implementationsplan.md` §2, `docs/workflow-and-prompts.md` §5). One module per session. Docs use no dates or hour budgets.
 - Update `docs/progress.md` (newest entry on top) after each work session.
 - Platform: Windows. Shell tools: PowerShell and Git Bash.
 - Environment: use existing `.venv` at repo root. Never create another. Interpreter: `.venv\Scripts\python.exe` (Git Bash: `.venv/Scripts/python.exe`). Do not rely on `activate`.

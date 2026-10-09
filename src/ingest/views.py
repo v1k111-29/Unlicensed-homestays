@@ -268,7 +268,11 @@ def _confirm(request: HttpRequest, kind: str) -> HttpResponse:
 
 
 def _cancel(request: HttpRequest, kind: str) -> HttpResponse:
-    uploads.discard(request.POST.get("token", ""))
+    # Only the user's own pending upload of this kind may be discarded; another user's token
+    # or a token of the other kind is left alone (the message is the same either way).
+    item = uploads.pending(request.user, kind, request.POST.get("token", ""))
+    if item is not None:
+        uploads.discard(item.token)
     messages.info(request, _("Upload cancelled. Nothing was saved."))
     return redirect(KIND_CONFIG[kind]["page"])
 

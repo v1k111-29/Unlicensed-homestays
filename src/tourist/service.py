@@ -33,13 +33,11 @@ from matching.params import CURRENT_VERSION, MatchParams, get_params
 from matching.records import ListingRecord
 from matching.services import _registry_record as registry_record
 from matching.services import default_as_of, default_gazetteer
-from registry.models import RegistryEntry, UploadBatch
+from registry.models import RESERVED_DATASETS, RegistryEntry, UploadBatch
 from tourist.models import TouristCheck
 
 Result = TouristCheck.Result
 
-# Never offered to tourists: the held-out test set (rule 9) belongs to evaluation only.
-RESERVED_DATASETS = ("synthetic-test",)
 MAX_SHOWN = 5  # entries listed for "several possible matches"
 
 
