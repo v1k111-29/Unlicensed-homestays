@@ -168,3 +168,13 @@ def district_data(users, districts) -> dict:
             ),
         }
     return rows
+
+
+@pytest.fixture(autouse=True)
+def _reset_language():
+    """LocaleMiddleware activates the request language for the whole thread; a test that
+    requests a /ta/ page would otherwise leave later tests (e.g. error-message checks) in Tamil."""
+    from django.utils import translation
+
+    yield
+    translation.activate(settings.LANGUAGE_CODE)
