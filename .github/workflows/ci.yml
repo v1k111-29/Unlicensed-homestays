@@ -46,7 +46,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  # M11 (D79): build the production image and smoke-test it against a throwaway PostgreSQL.
+  # M11 (D83): build the production image and smoke-test it against a throwaway PostgreSQL.
   # The image is never pushed to any registry. Docker is not installed on the dev machine
   # (Q14), so this job is the only place the Dockerfile is built.
   docker:
@@ -98,6 +98,10 @@ jobs:
           css=$(grep -o '/static/css/app\.[0-9a-f]*\.css' page.html | sort -u)
           test "$(printf '%s\n' "$css" | wc -l)" = "1" && test -n "$css"
           curl --fail --silent --show-error --output /dev/null "http://localhost:8000$css"
+          # Tamil comes from the committed django.mo (D78; the image has no gettext).
+          curl --fail --silent --show-error --output ta.html http://localhost:8000/ta/check/
+          grep -q 'lang="ta"' ta.html
+          grep -q 'முதன்மை உள்ளடக்கத்துக்குச் செல்' ta.html
           # Runtime data files are in the image (Q20): gazetteer loads, synthetic dev set loads.
           docker exec vs python -c "from matching.gazetteer import Gazetteer; Gazetteer.load()"
           docker exec vs python manage.py load_synthetic --set dev
@@ -113,7 +117,7 @@ jobs:
         if: always()
         run: docker logs vs || true
 
-  # M11 (D82): deploy on main through a Render deploy hook. DISABLED BY DEFAULT: it runs only
+  # M11 (D86): deploy on main through a Render deploy hook. DISABLED BY DEFAULT: it runs only
   # when the repository variable ENABLE_RENDER_DEPLOY is set to "true" (Settings > Secrets and
   # variables > Actions > Variables) and the secret RENDER_DEPLOY_HOOK_URL exists. Neither is
   # set by this repository; see docs/deploy-runbook.md section 8 before enabling.

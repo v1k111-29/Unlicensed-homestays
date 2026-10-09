@@ -7,7 +7,7 @@
 
 ## 1. What runs
 
-`.github/workflows/backup.yml` (D83):
+`.github/workflows/backup.yml` (D87):
 
 - **When:** nightly at 20:30 UTC (02:00 IST), and on demand (Actions > Backup > Run workflow).
 - **What:** `pg_dump --format=custom --no-owner --no-privileges` of the hosted Neon database
@@ -24,7 +24,7 @@
 ## 2. One-time setup (human)
 
 1. **Cloudflare account** > R2. If enabling R2 asks for a payment method, stop and decide first
-   (AGENTS.md §11: no paid service without agreement; Q40). The free allowance [A] is far above
+   (AGENTS.md §11: no paid service without agreement; Q43). The free allowance [A] is far above
    what a few small dumps use.
 2. **Bucket:** create `verified-stays-backups` (any name), location hint Asia-Pacific [A].
    Leave public access **off**.

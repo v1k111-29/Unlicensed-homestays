@@ -1,5 +1,5 @@
 name: Backup
-# M11 (D83): nightly pg_dump of the hosted database to a private Cloudflare R2 bucket.
+# M11 (D87): nightly pg_dump of the hosted database to a private Cloudflare R2 bucket.
 # Credentials come only from GitHub Actions secrets (names below; values are never in the
 # repository). Tools are the runner's own: PostgreSQL client from apt, the preinstalled AWS CLI
 # (S3-compatible R2 API). No Python dependency. See docs/backup-restore.md.

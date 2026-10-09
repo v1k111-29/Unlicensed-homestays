@@ -50,10 +50,10 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    # First: answers /livez and /healthz before host checks, HTTPS redirect and sessions (D77).
+    # First: answers /livez and /healthz before host checks, HTTPS redirect and sessions (D81).
     "config.health.HealthCheckMiddleware",
     "django.middleware.security.SecurityMiddleware",
-    # Static files from the image (D79); directly after SecurityMiddleware per WhiteNoise docs.
+    # Static files from the image (D83); directly after SecurityMiddleware per WhiteNoise docs.
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "config.security.SecurityHeadersMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -114,7 +114,7 @@ STATIC_URL = "static/"
 STATIC_ROOT = REPO_ROOT / "staticfiles"
 STATICFILES_DIRS = [SRC_DIR / "static"]
 # Hashed, compressed files built by `collectstatic` in the Docker image and served by
-# WhiteNoise with far-future cache headers (D79). Tests use plain storage (settings_test).
+# WhiteNoise with far-future cache headers (D83). Tests use plain storage (settings_test).
 STORAGES = {
     "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
     "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
@@ -139,14 +139,14 @@ SESSION_ABSOLUTE_SECONDS = 8 * 60 * 60
 CSRF_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SAMESITE = "Lax"
 
-# Security headers. CSP and Permissions-Policy: config.security (D78); the policy strings are
+# Security headers. CSP and Permissions-Policy: config.security (D82); the policy strings are
 # the defaults there and can be replaced here as CONTENT_SECURITY_POLICY / PERMISSIONS_POLICY.
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_REFERRER_POLICY = "same-origin"
 SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin"
 X_FRAME_OPTIONS = "DENY"
 if not DEBUG:
-    # HTTPS only (M11, D78). DJANGO_SECURE_SSL_REDIRECT=0 only for a local plain-HTTP container
+    # HTTPS only (M11, D82). DJANGO_SECURE_SSL_REDIRECT=0 only for a local plain-HTTP container
     # run; the hosted service keeps the default. /livez and /healthz are answered before the
     # redirect (config.health), so local probes and the host's health check work over HTTP.
     SECURE_SSL_REDIRECT = os.environ.get("DJANGO_SECURE_SSL_REDIRECT", "1") == "1"
@@ -195,7 +195,7 @@ CACHES = {
     }
 }
 
-# --- Logging (M11, D80): JSON lines on stdout, personal data scrubbed (config.logs). No
+# --- Logging (M11, D84): JSON lines on stdout, personal data scrubbed (config.logs). No
 # request objects, client addresses or form data are written. Gunicorn's access log stays off
 # (scripts/docker-start.sh), so the app writes no tourist addresses (AGENTS.md rule 5). ---
 LOG_LEVEL = os.environ.get("DJANGO_LOG_LEVEL", "INFO").upper()

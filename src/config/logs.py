@@ -1,4 +1,4 @@
-"""Structured (JSON lines) logging with personal data scrubbed (M11, D80).
+"""Structured (JSON lines) logging with personal data scrubbed (M11, D84).
 
 Sentry is not added (dependency not approved; cut order item 4). Errors go to stdout as one
 JSON object per line, which the host's log viewer keeps. Two layers keep personal data out:

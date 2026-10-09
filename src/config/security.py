@@ -1,4 +1,4 @@
-"""Response security headers that Django 5.2 does not set itself (M11, D78).
+"""Response security headers that Django 5.2 does not set itself (M11, D82).
 
 Django 5.2 has no built-in Content-Security-Policy (it arrives in Django 6, which needs Python
 3.12). The policy is strict: everything from this origin only, no inline scripts or styles, no

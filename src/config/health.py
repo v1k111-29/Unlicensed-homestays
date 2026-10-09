@@ -1,8 +1,8 @@
-"""Health endpoints (M11, D77). Public, no auth, no sensitive information.
+"""Health endpoints (M11, D81). Public, no auth, no sensitive information.
 
 - ``/livez``: the process answers. Never touches the database. Used by the Docker HEALTHCHECK
   and the Render health check, which poll often: a database check there would keep the free
-  Neon database awake around the clock (D77, Q9).
+  Neon database awake around the clock (D81, Q9).
 - ``/healthz``: the process answers and the database runs ``SELECT 1``. Used by the uptime
   monitor. 200 ``{"status": "ok"}`` or 503 ``{"status": "unavailable"}``; the reason is
   logged (exception class only), never returned.

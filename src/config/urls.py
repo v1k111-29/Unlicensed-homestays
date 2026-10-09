@@ -18,7 +18,7 @@ from reviews import views as review_views
 from tourist import views as tourist_views
 
 urlpatterns = [
-    # Public (allowlisted). Normally answered by config.health.HealthCheckMiddleware first (D77).
+    # Public (allowlisted). Normally answered by config.health.HealthCheckMiddleware first (D81).
     path("livez", health.livez, name="livez"),
     path("healthz", health.healthz, name="healthz"),
     # public (allowlisted): /en/... redirects to the unprefixed English page

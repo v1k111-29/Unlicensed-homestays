@@ -1,4 +1,4 @@
-# Render Blueprint (M11, D81). NOT APPLIED: the human creates the Render account and applies
+# Render Blueprint (M11, D85). NOT APPLIED: the human creates the Render account and applies
 # this file by following docs/deploy-runbook.md. Free-tier behaviour and limits are [A] (Q9).
 #
 # Environment variable NAMES only. Secrets are never written here:
@@ -13,9 +13,9 @@ services:
     region: singapore
     dockerfilePath: ./Dockerfile
     dockerContext: .
-    # Liveness only: Render polls this often; /healthz (database) would keep Neon awake (D77).
+    # Liveness only: Render polls this often; /healthz (database) would keep Neon awake (D81).
     healthCheckPath: /livez
-    # Deploys are started by hand (dashboard) until the CI deploy job is enabled (D82).
+    # Deploys are started by hand (dashboard) until the CI deploy job is enabled (D86).
     autoDeploy: false
     envVars:
       - key: DJANGO_SECRET_KEY
@@ -28,7 +28,7 @@ services:
         sync: false
       - key: DJANGO_DEBUG
         value: "0"
-      # Render's proxy appends the client address to X-Forwarded-For [A]; verify (Q38).
+      # Render's proxy appends the client address to X-Forwarded-For [A]; verify (Q41).
       - key: DJANGO_CLIENT_IP_HEADER
         value: HTTP_X_FORWARDED_FOR
       - key: DJANGO_TRUSTED_PROXY_HOPS

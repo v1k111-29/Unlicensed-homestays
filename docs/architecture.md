@@ -8,10 +8,10 @@ Officer / Admin ─────┼─► Web app (Docker: Django + Gunicorn + Wh
                      │          ├─ listings/ registry/ reviews/
                      │          ├─ matching/   normalise → candidates → score
                      │          └─ audit/      append-only writer
-                     │          └─► JSON logs on stdout, scrubbed (no Sentry, D80)
-GitHub Actions: lint → tests → eval gate → docker build+smoke → deploy (disabled, D82);
-                nightly pg_dump → Cloudflare R2 [A] (D83)
-Uptime monitor → /healthz (DB check); Render + Docker health check → /livez (no DB) (D77)
+                     │          └─► JSON logs on stdout, scrubbed (no Sentry, D84)
+GitHub Actions: lint → tests → eval gate → docker build+smoke → deploy (disabled, D86);
+                nightly pg_dump → Cloudflare R2 [A] (D87)
+Uptime monitor → /healthz (DB check); Render + Docker health check → /livez (no DB) (D81)
 ```
 Deployment files and steps: `docs/deploy-runbook.md` (M11; prepared, not deployed) and
 `docs/backup-restore.md`.
@@ -57,8 +57,8 @@ Implemented in M2 (Django models + migrations under `src/<app>/`). Names above a
 | `GET/POST /officer/cases/{listing_id}/evidence/`, `GET /officer/evidence/{id}/` | Officer, Admin | Create (POST) and view a stored, hashed evidence snapshot (D73) |
 | `GET/POST /admin/registry/`, `POST /admin/registry/confirm/`, `POST /admin/registry/cancel/` | Admin | Registry CSV: preview, then confirm (M7) |
 | `GET /admin/audit` | Admin | Audit log |
-| `GET /healthz` | Monitor | Health incl. database `SELECT 1`: 200/503 with `{"status": ...}` only (M11, D77) |
-| `GET /livez` | Host / Docker health check | Process liveness, no database (M11, D77) |
+| `GET /healthz` | Monitor | Health incl. database `SELECT 1`: 200/503 with `{"status": ...}` only (M11, D81) |
+| `GET /livez` | Host / Docker health check | Process liveness, no database (M11, D81) |
 
 ## 5. Cross-cutting rules
 - Every officer query is filtered by `district_id` in a shared queryset helper (never per-view ad hoc): `accounts.scoping.scoped()` / `get_scoped_or_404()`; writes naming a district use `can_act_in_district()` (D60).

@@ -9,12 +9,12 @@ What the repository already provides:
 
 | File | Purpose |
 |---|---|
-| `Dockerfile`, `.dockerignore`, `scripts/docker-start.sh` | Production image: non-root user, WhiteNoise static files, Gunicorn; migrations at container start (D79) |
-| `render.yaml` | Render Blueprint: one free Docker web service, environment variable names only (D81) |
-| `.github/workflows/ci.yml` job `docker` | Builds the image and smoke-tests it against PostgreSQL in CI; never pushed (D79) |
-| `.github/workflows/ci.yml` job `deploy` | Render deploy hook, **disabled by default** (section 8, D82) |
-| `.github/workflows/backup.yml` | Nightly `pg_dump` to Cloudflare R2 (D83) |
-| `/livez`, `/healthz` | Liveness (no database) and health with a database check (D77) |
+| `Dockerfile`, `.dockerignore`, `scripts/docker-start.sh` | Production image: non-root user, WhiteNoise static files, Gunicorn; migrations at container start (D83) |
+| `render.yaml` | Render Blueprint: one free Docker web service, environment variable names only (D85) |
+| `.github/workflows/ci.yml` job `docker` | Builds the image and smoke-tests it against PostgreSQL in CI; never pushed (D83) |
+| `.github/workflows/ci.yml` job `deploy` | Render deploy hook, **disabled by default** (section 8, D86) |
+| `.github/workflows/backup.yml` | Nightly `pg_dump` to Cloudflare R2 (D87) |
+| `/livez`, `/healthz` | Liveness (no database) and health with a database check (D81) |
 
 ## 1. Free-tier facts to verify at signup (Q9) [A]
 
@@ -25,7 +25,7 @@ Write the real numbers into this table when you sign up; change the plan if one 
 | Render web service (free) | Sleeps after ~15 min without inbound traffic; first request after sleep takes ~30-60 s; ~750 instance hours / month; 512 MB RAM; no shell and no pre-deploy command on free | Cold starts in the demo (R7); migrations therefore run at container start; data load and accounts are done from your PC |
 | Render region | Singapore is the closest region; no India region | Latency only; data is synthetic |
 | Neon (free) | One project, ~0.5 GB storage; compute scales to zero after ~5 min idle; monthly compute-hour allowance; point-in-time history of a few hours to a day | `/healthz` wakes the database, so the uptime monitor interval decides compute use (section 6) |
-| Cloudflare R2 | ~10 GB storage and generous operation counts free; no egress fee; activating R2 may ask for a payment method | Backups (`docs/backup-restore.md`); a payment method on file needs your OK (AGENTS.md §11, Q40) |
+| Cloudflare R2 | ~10 GB storage and generous operation counts free; no egress fee; activating R2 may ask for a payment method | Backups (`docs/backup-restore.md`); a payment method on file needs your OK (AGENTS.md §11, Q43) |
 | UptimeRobot (or similar) | Free HTTP monitors, 5-minute minimum interval | Keeps Render awake during the demo window |
 | GitHub Actions | Free minutes for a public repository | CI, Docker build, nightly backup |
 
@@ -101,7 +101,7 @@ Remove-Item Env:VS_NEW_PASSWORD, Env:DATABASE_URL
 Passwords: long and unique, kept in your password manager; never shown in the video or the
 note. If judges get a login, create a separate account for them and deactivate it afterwards.
 
-## 5. Client address behind Render's proxy (Q27, Q38)
+## 5. Client address behind Render's proxy (Q27, Q41)
 
 `render.yaml` sets `DJANGO_CLIENT_IP_HEADER=HTTP_X_FORWARDED_FOR` and
 `DJANGO_TRUSTED_PROXY_HOPS=1` [A: Render's proxy appends the real client address as the last
@@ -116,7 +116,7 @@ behaviour without looking at any address:
    the header wrong): try `DJANGO_TRUSTED_PROXY_HOPS=2`, redeploy, repeat.
 3. Spoofed `X-Forwarded-For` prefixes are ignored by design (only the entry the trusted proxy
    appended counts); this is covered by `tests/test_m6_hardening.py`, not re-checked live.
-4. Record the result in `docs/open-questions.md` Q38 and `docs/progress.md`.
+4. Record the result in `docs/open-questions.md` Q41 and `docs/progress.md`.
 
 ## 6. Uptime monitor
 
@@ -128,7 +128,7 @@ behaviour without looking at any address:
    allowance: point the monitor at `/livez` (keeps Render awake, lets Neon sleep; the first
    database query after sleep is slower [A]) or pause the monitor outside demo and judging
    windows.
-4. Render's own health check uses `/livez` (no database) so it never keeps Neon awake (D77).
+4. Render's own health check uses `/livez` (no database) so it never keeps Neon awake (D81).
 
 Before recording the video or a live demo: open `/healthz` and `/check/` once, then sign in,
 so neither service is cold (R7).
@@ -179,11 +179,11 @@ To disable again, delete the variable (or set it to anything but `true`).
 
 ## 10. Logs and errors
 
-- No Sentry (D80, cut order item 4). The app writes JSON lines to stdout (`config.logs`); IP
+- No Sentry (D84, cut order item 4). The app writes JSON lines to stdout (`config.logs`); IP
   and e-mail addresses, phone numbers, credentials in URLs and `password=`-style values are
   scrubbed, and request objects are never written. Gunicorn's access log is off.
 - Render's dashboard shows these logs. Render's own edge/proxy may keep request logs with
-  client addresses outside the app [A]; that is the host's data, not ours (Q39).
+  client addresses outside the app [A]; that is the host's data, not ours (Q42).
 - A 500 shows Django's plain error page (`DEBUG=0`); the traceback is in the log, scrubbed.
 
 ## 11. Rollback

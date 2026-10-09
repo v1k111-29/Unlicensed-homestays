@@ -23,7 +23,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SECRET_LIKE_TEXT = "postgres://vs:hunter2-pass@db.internal.example:5432/vs"
 
 
-# --- /livez and /healthz (D77) ---
+# --- /livez and /healthz (D81) ---
 
 
 def test_health_routes_are_named_and_unprefixed() -> None:
@@ -84,7 +84,7 @@ def test_health_rejects_other_methods(client, path) -> None:
     assert response["Allow"] == "GET, HEAD"
 
 
-# --- security headers and CSP (D78) ---
+# --- security headers and CSP (D82) ---
 
 
 def test_middleware_order() -> None:
@@ -201,7 +201,7 @@ def test_check_deploy_passes_with_production_env() -> None:
     assert result.returncode == 0, result.stdout + result.stderr
 
 
-# --- logging without personal data (D80) ---
+# --- logging without personal data (D84) ---
 
 
 @pytest.mark.parametrize(
@@ -301,7 +301,7 @@ def test_settings_route_all_logs_through_the_scrubbing_handler() -> None:
 
 
 def test_no_error_tracking_dependency() -> None:
-    """Sentry is not approved (D80, cut order item 4)."""
+    """Sentry is not approved (D84, cut order item 4)."""
     requirements = (ROOT / "requirements.txt").read_text(encoding="utf-8").lower()
     assert "sentry" not in requirements
 
