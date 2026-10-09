@@ -15,11 +15,12 @@ It never declares a stay unlicensed. It does not scrape booking platforms. It do
 ## Documentation map
 See `AGENTS.md` §2. Start with `implementationsplan.md`.
 
-## Quick start
-> Planned; confirm after scaffolding.
+## Quick start (Windows)
+Needs Python 3.11 in the repo `.venv` and a reachable PostgreSQL (local install or a free Neon database; `start.bat` prints the steps if none is found).
 ```
-make setup && make seed && make migrate && make run
+start.bat
 ```
+It creates a local `.env`, migrates, loads the synthetic data once, creates local demo accounts (passwords in the git-ignored `.dev-accounts.txt`), starts the server and opens `http://127.0.0.1:8000/`. There is no separate client: the app is server-rendered. Hosting for the demo (free tiers): `docs/deploy-runbook.md`.
 
 ## Licence and data notice
 Licence: **TBD** (see `docs/open-questions.md`). All data in this repository is synthetic and fictional.
