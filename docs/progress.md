@@ -2,6 +2,15 @@
 
 Append newest entries at the top. Each entry: module · done · partial · decisions · problems · next step · stage definition-of-done status.
 
+## UI redesign (branch `ui-redesign`, from `main` `7eb9a3c`; not pushed)
+- Asked by the human: raise the UI to a modern public-service portal. D92 (revises D70); brief §2-5, §10, §15 rewritten with a recomputed contrast table (46 pairs, all AA, tested).
+- Done: new tokens (warm off-white, white panels, maroon accent, gold highlights, blue focus, 12px radius, two shadows); top bar (synthetic notice, language switch, account); sticky header with a project-drawn mark and stacked English/Tamil names; dark footer with link groups and "Not an official government service"; hand-written inline SVG icons (`templates/icons/`). Tourist page: hero on a self-drawn SVG texture with the form card in it, radio chips for licence vs name/place (CSS `:has()`, no JS), statistics strip from real registry counts (hidden without a registry), four-step "How it works", privacy notes. Officer: dashboard tiles with real counts, metric cards, panels; queue/case/uploads/runs/evidence restyled through shared components; print stylesheet still plain. Login: card + "who signs in" aside. 403/404/CSRF/500: status card.
+- Code/context only: `tourist.service.registry_summary()` and `mode`/`stats` in the tourist view (+4 tests). No view, URL, permission, audit or business-rule change. 40 new strings with machine Tamil (marked needs review); 3 strings removed.
+- Dev database: to screenshot officer pages, `demo_listings.csv` was uploaded as `demo_officer_nilgiris`, one matching run started and one evidence page created (synthetic, local app flows).
+- Screenshots: 44 JPEGs in `docs/screenshots/` (headless Chrome via a scratch CDP script). Local only: the folder is git-ignored by the human's choice.
+- Not observed: real-browser keyboard/focus walk, 200% zoom, screen reader, Safari/Firefox; upload preview page (needs a POST) not screenshotted.
+- Next: human review of the look; Tamil review of the new strings (Q3); push and CI.
+
 ## Audit fixes (branch `audit-fixes`, from `main` `d4d9e07`; not pushed)
 - Findings from a read-only audit of `main`, decisions given by the human. D88-D91, Q48-Q49.
 - Privacy (D88): tourist rate limit moved from the database cache to a per-process `LocMemCache` alias `tourist_throttle` (no address HMAC in any table or backup; limit now per Gunicorn worker: 2 workers → up to 2 × 20 checks / 5 min; restart resets). Login throttle stays in `django_cache`; `backup.yml` now dumps with `--exclude-table-data=django_cache`. Docs: security-and-privacy §1/§4, backup-restore, deploy-runbook §5/§9, render.yaml, docker-start.sh comments. Tests clear the memory cache around each test; new test checks the backend and that no tourist key reaches `django_cache`.
