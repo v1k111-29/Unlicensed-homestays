@@ -2,6 +2,15 @@
 
 Append newest entries at the top. Each entry: module · done · partial · decisions · problems · next step · stage definition-of-done status.
 
+## Backend audit (branch `docs-rule2-disclaimer`, from `main` `821da7b`)
+- Read-only audit of the backend against AGENTS.md rules 1-10 and the matching spec. No code defects found; every service and view the demo needs is built and tested (`run_matching`, `decide`, `create_evidence`, uploads, queue, case, registry upload, audit-log screen, login signals and throttle).
+- Suspected matching defects checked on the DEV set only [V, synthetic]: locality aliases (Udhagamandalam, Tamil script, Udhagai) do resolve to the canonical locality inside the address feature. The address feature gives 1.0 to 85% (1,640/1,924) of stored false pairs in the same locality, but no false pair reaches T_high (highest 0.852 vs 0.89 with `m5-tuned-1`) and the name gate keeps hard negatives out (45/45). Parked: changing weights would need a new held-out test set (D56, Q26). A reported baseline of precision 0.69 / recall 0.73 could not be reproduced from any committed params version.
+- Dev scores of 1.000 come from the dev noise being easy for the normaliser (the untuned `m4-initial-1` already scored 1.000), not from leaked ground truth or test-set tuning; the single test run shows recall 0.864. Already caveated in testing-and-evaluation.md and the concept note.
+- Done: AGENTS.md rule 2 now names the disclaimer as its only exception (D95). Admin audit-log screen and the redesign push were already merged on `main` by PRs #2 and #3 (CI green).
+- Problem (human): the local `.env` `DATABASE_URL` pointed at Neon, so `tasks.py test` created `test_neondb` there and a stale copy blocked the run (708 errors). The human is fixing `.env`.
+- Verified: `tasks.py lint` clean; scratch SQLite settings 704 passed, 4 skipped (PostgreSQL-only); `makemigrations --check` no changes; `seed` output unchanged; `eval` gate passed (dev, synthetic). Not done: end-to-end officer walk in the browser (needs a working local database).
+- Next: human fixes `.env`; walk the officer flow on seeded data.
+
 ## UI redesign: merge of `main` (admin screens) into `ui-redesign`
 - Merged `main` `9e721b8` (admin screens, gitleaks CI fix) into the PR branch; no rebase. The redesign decision was D92 on this branch and D92 on `main` (account screens): the redesign is now **D94**; every redesign reference (brief, app.css, icons, tourist service/view, tests, .gitignore, ui-and-accessibility, the progress entry below) was renumbered. D92 (accounts) and D93 (audit) unchanged.
 - Admin screens moved onto the redesign components, no new CSS and no new colour pair (contrast table unchanged): nav links Audit log / Accounts with icons (admin only), dashboard tiles for both screens (replace main's "Next steps" link list), "Administration" eyebrow on all four admin pages, breadcrumb back to Accounts, create form and one-time password facts in `.panel`, icons on buttons, status column with check / lock icon next to the text. Behaviour, URLs, guards, audit calls unchanged.
