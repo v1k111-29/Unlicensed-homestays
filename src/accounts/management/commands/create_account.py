@@ -5,18 +5,17 @@
 
 The password is read from the environment variable named by --password-env, or prompted for.
 It is never accepted on the command line (shell history). Audit-logged as a user change.
+The rules (username, role/district, password validators) live in `accounts.services` and are
+shared with the admin account screen (D92).
 """
 
 import getpass
 import os
 
-from django.contrib.auth.password_validation import validate_password
-from django.core.exceptions import ValidationError
 from django.core.management.base import BaseCommand, CommandError
-from django.db import transaction
 
-import audit
-from accounts.models import District, User
+from accounts.models import User
+from accounts.services import AccountError, check_account_fields, create_account
 
 ACTOR = "system:create_account"
 
@@ -33,19 +32,11 @@ class Command(BaseCommand):
     def handle(self, *args, **options) -> None:
         username: str = options["username"]
         role: str = options["role"]
-        if User.objects.filter(username__iexact=username).exists():
-            raise CommandError(f"user '{username}' already exists")
-
-        district = None
-        if role == User.Role.OFFICER:
-            if not options["district"]:
-                raise CommandError("--district is required for officers")
-            try:
-                district = District.objects.get(name_en__iexact=options["district"])
-            except District.DoesNotExist:
-                raise CommandError(f"unknown district '{options['district']}'") from None
-        elif options["district"]:
-            raise CommandError("admins are not tied to a district; omit --district")
+        try:
+            # Check the fields before asking for a password.
+            check_account_fields(username, role, options["district"])
+        except AccountError as exc:
+            raise CommandError(f"{exc.field or 'account'}: {exc.message}") from None
 
         if options["password_env"]:
             password = os.environ.get(options["password_env"], "")
@@ -56,20 +47,16 @@ class Command(BaseCommand):
             if password != getpass.getpass("Password (again): "):
                 raise CommandError("passwords do not match")
 
-        user = User(username=username, role=role, district=district)
         try:
-            validate_password(password, user)
-        except ValidationError as exc:
-            raise CommandError("; ".join(exc.messages)) from None
-        user.set_password(password)
-
-        with transaction.atomic():
-            user.save()
-            audit.log(
+            create_account(
                 ACTOR,
-                "user_created",
-                "user",
-                user.pk,
-                {"role": role, "district": district.name_en if district else None},
+                username,
+                role,
+                options["district"],
+                password,
+                action="user_created",
+                via="command",
             )
-        self.stdout.write(f"created {role} '{username}'")
+        except AccountError as exc:
+            raise CommandError(f"{exc.field or 'account'}: {exc.message}") from None
+        self.stdout.write(f"created {role} '{username.strip()}'")
