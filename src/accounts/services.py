@@ -11,6 +11,7 @@ through the web (capability MANAGE_USERS); the command runs as `system:create_ac
 from __future__ import annotations
 
 import secrets
+import string
 from typing import Any
 
 from django.contrib.auth.password_validation import validate_password
@@ -29,9 +30,10 @@ from accounts.throttle import USERNAME_KEY_LEN
 USERNAME_MAX = USERNAME_KEY_LEN
 _username_validator = ASCIIUsernameValidator()
 
-# One-time passwords: 4 groups of 5 characters from 54 unambiguous letters and digits
-# (about 115 bits). Shown once on the confirmation page; never stored in clear.
-_PASSWORD_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789"
+# One-time passwords: 4 groups of 5 characters from 57 unambiguous letters and digits
+# (about 117 bits). Shown once on the confirmation page; never stored in clear.
+_AMBIGUOUS = frozenset("IOl01")
+_PASSWORD_ALPHABET = "".join(c for c in string.ascii_letters + string.digits if c not in _AMBIGUOUS)
 _PASSWORD_GROUPS = 4
 _PASSWORD_GROUP_LEN = 5
 
