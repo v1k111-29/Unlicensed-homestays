@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% translate "Audit log" %} · {% translate "Verified Stays" %}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>{% translate "Audit log" %}</h1>
+  <p class="lede">{% translate "Read-only record of sign-ins, uploads, matching runs, decisions and account changes, newest first. Entries cannot be changed or removed." %}</p>
+</div>
+
+{% if invalid %}
+<div class="alert alert--error" role="alert">
+  <p>{% translate "Some filters are not valid. Correct them and apply the filters again." %}</p>
+</div>
+{% endif %}
+
+<form method="get" action="{% url 'audit_log' %}" class="filters" aria-label="{% translate 'Filter the audit log' %}" novalidate>
+  {% for field in form %}
+  <div class="field">
+    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+    {% if field.errors %}<p class="field-error" id="{{ field.html_name }}-error">{% for err in field.errors %}{{ err }} {% endfor %}</p>{% endif %}
+    {% if field.name == "action" or field.name == "entity" %}
+    <select id="{{ field.id_for_label }}" name="{{ field.html_name }}"{% if field.errors %} aria-invalid="true" aria-describedby="{{ field.html_name }}-error"{% endif %}>
+      {% for value, label in field.field.choices %}<option value="{{ value }}"{% if value == field.value %} selected{% endif %}>{{ label }}</option>{% endfor %}
+    </select>
+    {% elif field.name == "actor" %}
+    <input type="search" id="{{ field.id_for_label }}" name="{{ field.html_name }}" value="{{ field.value|default:'' }}" maxlength="150" autocomplete="off"{% if field.errors %} aria-invalid="true" aria-describedby="{{ field.html_name }}-error"{% endif %}>
+    {% else %}
+    <input type="date" id="{{ field.id_for_label }}" name="{{ field.html_name }}" value="{{ field.value|default:'' }}"{% if field.errors %} aria-invalid="true" aria-describedby="{{ field.html_name }}-error"{% endif %}>
+    {% endif %}
+  </div>
+  {% endfor %}
+  <div class="actions">
+    <button type="submit" class="button">{% translate "Apply filters" %}</button>
+    <a href="{% url 'audit_log' %}">{% translate "Clear" %}</a>
+  </div>
+</form>
+
+{% if not invalid %}
+<p role="status">{% blocktranslate count n=page.paginator.count %}{{ n }} entry matches these filters.{% plural %}{{ n }} entries match these filters.{% endblocktranslate %}</p>
+{% endif %}
+
+{% if rows %}
+<div class="table-wrap" tabindex="0" role="region" aria-labelledby="audit-caption">
+  <table class="table table--compact">
+    <caption id="audit-caption" class="visually-hidden">{% translate "Audit log entries, newest first" %}</caption>
+    <thead>
+      <tr>
+        <th scope="col">{% translate "Time" %}</th>
+        <th scope="col">{% translate "Actor" %}</th>
+        <th scope="col">{% translate "Action" %}</th>
+        <th scope="col">{% translate "Entity" %}</th>
+        <th scope="col">{% translate "Entity ID" %}</th>
+        <th scope="col">{% translate "Details (shortened)" %}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}{% with e=row.entry %}
+      <tr>
+        <td class="nowrap">{{ e.ts|date:"Y-m-d H:i:s" }}</td>
+        <td>{{ e.actor }}</td>
+        <td class="mono">{{ e.action }}</td>
+        <td class="mono">{{ e.entity }}</td>
+        <td>{% if e.entity_id %}{% if row.hashed %}<span class="muted">{% translate "hashed" %}</span> <span class="mono">{{ e.entity_id|truncatechars:13 }}</span>{% else %}<span class="mono">{{ e.entity_id }}</span>{% endif %}{% else %}-{% endif %}</td>
+        <td class="mono">{{ row.meta|default:"-" }}</td>
+      </tr>
+      {% endwith %}{% endfor %}
+    </tbody>
+  </table>
+</div>
+<p class="hint">{% translate "Times are India Standard Time. Failed and throttled sign-ins store a keyed hash of the username, never the typed name or an address." %}</p>
+
+{% if page.paginator.num_pages > 1 %}
+<nav class="pagination" aria-label="{% translate 'Audit log pages' %}">
+  {% if page.has_previous %}<a href="?{% if page_query %}{{ page_query }}&amp;{% endif %}page={{ page.previous_page_number }}">{% translate "Previous" %}</a>{% endif %}
+  <span aria-current="page">{% blocktranslate with n=page.number total=page.paginator.num_pages %}Page {{ n }} of {{ total }}{% endblocktranslate %}</span>
+  {% if page.has_next %}<a href="?{% if page_query %}{{ page_query }}&amp;{% endif %}page={{ page.next_page_number }}">{% translate "Next" %}</a>{% endif %}
+</nav>
+{% endif %}
+{% elif not invalid %}
+<div class="empty-state">
+  {% if filtered %}
+  <p>{% translate "No audit entries match these filters." %}</p>
+  <p><a href="{% url 'audit_log' %}">{% translate "Clear the filters" %}</a></p>
+  {% else %}
+  <p>{% translate "No audit entries yet." %}</p>
+  {% endif %}
+</div>
+{% endif %}
+{% endblock %}

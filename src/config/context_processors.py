@@ -16,6 +16,9 @@ POST_ONLY_FALLBACK = {
     "upload_listings_cancel": "upload_listings",
     "upload_registry_confirm": "upload_registry",
     "upload_registry_cancel": "upload_registry",
+    "account_disable": "account_list",
+    "account_enable": "account_list",
+    "account_reset_password": "account_list",
 }
 
 
@@ -27,8 +30,12 @@ def _same_page_in(request: HttpRequest, code: str) -> str:
     except Resolver404:
         match = None
     if match is not None and match.url_name in POST_ONLY_FALLBACK:
+        target = POST_ONLY_FALLBACK[match.url_name]
         with override(code):
-            return reverse(POST_ONLY_FALLBACK[match.url_name], kwargs=match.kwargs)
+            try:
+                return reverse(target, kwargs=match.kwargs)
+            except NoReverseMatch:  # the fallback page takes no id (e.g. the account list)
+                return reverse(target)
     if match is None:
         with override(code):
             try:

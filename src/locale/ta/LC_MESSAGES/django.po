@@ -13,6 +13,40 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Review-Status: machine translation, needs review by a native speaker\n"
 
+#: accounts/manage_views.py templates/accounts/manage_list.html templates/accounts/manage_password.html templates/registration/login.html
+msgid "Username"
+msgstr "பயனர் பெயர்"
+
+#: accounts/manage_views.py templates/accounts/dashboard.html templates/accounts/manage_list.html templates/accounts/manage_password.html
+msgid "Role"
+msgstr "பங்கு"
+
+#: accounts/manage_views.py templates/accounts/dashboard.html templates/accounts/manage_list.html templates/accounts/manage_password.html templates/ingest/preview.html templates/ingest/upload.html templates/matching/run_detail.html templates/matching/runs.html templates/reviews/case.html templates/reviews/evidence.html tourist/forms.py
+msgid "District"
+msgstr "மாவட்டம்"
+
+#: accounts/manage_views.py
+msgid "No district (administrators)"
+msgstr "மாவட்டம் இல்லை (நிர்வாகிகள்)"
+
+#: accounts/manage_views.py accounts/services.py
+msgid "Enter a username."
+msgstr "பயனர்பெயரை உள்ளிடவும்."
+
+#: accounts/manage_views.py accounts/services.py
+msgid "Choose a role."
+msgstr "ஒரு பங்கைத் தேர்ந்தெடுக்கவும்."
+
+#: accounts/manage_views.py
+#, python-format
+msgid "Account %(name)s enabled."
+msgstr "%(name)s கணக்கு இயக்கப்பட்டது."
+
+#: accounts/manage_views.py
+#, python-format
+msgid "Account %(name)s disabled. It can no longer sign in."
+msgstr "%(name)s கணக்கு முடக்கப்பட்டது. இனி அதனால் உள்நுழைய முடியாது."
+
 #: accounts/middleware.py
 msgid "Your session has expired. Please sign in again."
 msgstr "உங்கள் அமர்வு காலாவதியாகிவிட்டது. மீண்டும் உள்நுழையவும்."
@@ -25,9 +59,78 @@ msgstr "நிர்வாகி"
 msgid "Officer"
 msgstr "அலுவலர்"
 
+#: accounts/services.py
+msgid "An account with this username already exists."
+msgstr "இந்தப் பயனர்பெயருடன் ஒரு கணக்கு ஏற்கெனவே உள்ளது."
+
+#: accounts/services.py
+msgid "Officers need a district."
+msgstr "அலுவலர்களுக்கு ஒரு மாவட்டம் தேவை."
+
+#: accounts/services.py
+msgid "Administrators are not tied to a district."
+msgstr "நிர்வாகிகள் எந்த மாவட்டத்துடனும் இணைக்கப்படுவதில்லை."
+
+#: accounts/services.py
+msgid "Unknown district."
+msgstr "தெரியாத மாவட்டம்."
+
+#: accounts/services.py
+#, python-format
+msgid "Use at most %(max)d characters."
+msgstr "அதிகபட்சம் %(max)d எழுத்துகளைப் பயன்படுத்தவும்."
+
+#: accounts/services.py
+msgid "Use only English letters, digits and the characters @ . + - _"
+msgstr "ஆங்கில எழுத்துகள், இலக்கங்கள் மற்றும் @ . + - _ குறிகளை மட்டும் பயன்படுத்தவும்"
+
+#: accounts/services.py
+msgid "You cannot disable your own account."
+msgstr "உங்கள் சொந்தக் கணக்கை நீங்கள் முடக்க முடியாது."
+
+#: accounts/services.py
+msgid "The last active administrator cannot be disabled."
+msgstr "செயலில் உள்ள கடைசி நிர்வாகியை முடக்க முடியாது."
+
 #: accounts/views.py
 msgid "You have been signed out."
 msgstr "நீங்கள் வெளியேறிவிட்டீர்கள்."
+
+#: audit/views.py templates/audit/log.html templates/matching/runs.html
+msgid "Action"
+msgstr "செயல்"
+
+#: audit/views.py
+msgid "Actor contains"
+msgstr "செயல்பட்டவர் பெயரில் உள்ளது"
+
+#: audit/views.py templates/audit/log.html
+msgid "Entity"
+msgstr "பொருள் வகை"
+
+#: audit/views.py
+msgid "From date"
+msgstr "தொடக்கத் தேதி"
+
+#: audit/views.py
+msgid "To date"
+msgstr "இறுதித் தேதி"
+
+#: audit/views.py
+msgid "Enter a date as YYYY-MM-DD."
+msgstr "தேதியை YYYY-MM-DD வடிவில் உள்ளிடவும்."
+
+#: audit/views.py
+msgid "The end date is before the start date."
+msgstr "இறுதித் தேதி தொடக்கத் தேதிக்கு முன் உள்ளது."
+
+#: audit/views.py
+msgid "All actions"
+msgstr "அனைத்துச் செயல்களும்"
+
+#: audit/views.py
+msgid "All entities"
+msgstr "அனைத்துப் பொருள் வகைகளும்"
 
 #: config/django_strings.py
 #, python-format
@@ -401,7 +504,7 @@ msgstr "விருந்தினர் இல்லம்"
 msgid "Lodge"
 msgstr "விடுதி"
 
-#: registry/models.py
+#: registry/models.py templates/accounts/manage_list.html
 msgid "Active"
 msgstr "நடப்பில் உள்ளது"
 
@@ -470,7 +573,7 @@ msgstr "அனைத்தும்"
 msgid "Access denied"
 msgstr "அணுகல் மறுக்கப்பட்டது"
 
-#: templates/403.html templates/403_csrf.html templates/404.html templates/500.html templates/accounts/dashboard.html templates/base.html templates/ingest/preview.html templates/ingest/upload.html templates/matching/run_detail.html templates/matching/runs.html templates/registration/login.html templates/reviews/case.html templates/reviews/evidence.html templates/reviews/evidence_empty.html templates/reviews/queue.html templates/tourist/check.html
+#: templates/403.html templates/403_csrf.html templates/404.html templates/500.html templates/accounts/dashboard.html templates/accounts/manage_create.html templates/accounts/manage_list.html templates/accounts/manage_password.html templates/audit/log.html templates/base.html templates/ingest/preview.html templates/ingest/upload.html templates/matching/run_detail.html templates/matching/runs.html templates/registration/login.html templates/reviews/case.html templates/reviews/evidence.html templates/reviews/evidence_empty.html templates/reviews/queue.html templates/tourist/check.html
 msgid "Verified Stays"
 msgstr "சரிபார்க்கப்பட்ட தங்குமிடங்கள்"
 
@@ -534,15 +637,7 @@ msgstr "முடிவுகள் அலுவலர் மதிப்பா�
 msgid "Signed in as"
 msgstr "உள்நுழைந்தவர்"
 
-#: templates/accounts/dashboard.html
-msgid "Role"
-msgstr "பங்கு"
-
-#: templates/accounts/dashboard.html templates/ingest/preview.html templates/ingest/upload.html templates/matching/run_detail.html templates/matching/runs.html templates/reviews/case.html templates/reviews/evidence.html tourist/forms.py
-msgid "District"
-msgstr "மாவட்டம்"
-
-#: templates/accounts/dashboard.html tourist/forms.py
+#: templates/accounts/dashboard.html templates/accounts/manage_list.html templates/accounts/manage_password.html tourist/forms.py
 msgid "All districts"
 msgstr "அனைத்து மாவட்டங்களும்"
 
@@ -614,6 +709,212 @@ msgstr "பொருத்தத்தை இயக்கி ஓட்டச் 
 #: templates/accounts/dashboard.html
 msgid "Upload a registry CSV"
 msgstr "பதிவேட்டு CSV-ஐப் பதிவேற்று"
+
+#: templates/accounts/dashboard.html
+msgid "Read the audit log"
+msgstr "தணிக்கைப் பதிவைப் படிக்கவும்"
+
+#: templates/accounts/dashboard.html
+msgid "Manage accounts"
+msgstr "கணக்குகளை நிர்வகிக்கவும்"
+
+#: templates/accounts/manage_create.html templates/accounts/manage_list.html
+msgid "Create an account"
+msgstr "ஒரு கணக்கை உருவாக்கவும்"
+
+#: templates/accounts/manage_create.html
+msgid "Synthetic demo accounts only; never a real person's name. The system creates a one-time password and shows it once on the next page."
+msgstr "செயற்கை செயல்விளக்கக் கணக்குகள் மட்டும்; உண்மையான நபரின் பெயர் ஒருபோதும் கூடாது. அமைப்பு ஒருமுறை கடவுச்சொல்லை உருவாக்கி, அடுத்த பக்கத்தில் ஒரு முறை மட்டும் காட்டும்."
+
+#: templates/accounts/manage_create.html
+msgid "The account was not created. Correct the marked fields."
+msgstr "கணக்கு உருவாக்கப்படவில்லை. குறிக்கப்பட்ட புலங்களைத் திருத்தவும்."
+
+#: templates/accounts/manage_create.html
+msgid "At most 64 characters: English letters, digits and @ . + - _ only. Must differ from every existing username, ignoring capitals."
+msgstr "அதிகபட்சம் 64 எழுத்துகள்: ஆங்கில எழுத்துகள், இலக்கங்கள் மற்றும் @ . + - _ மட்டும். பெரிய, சிறிய எழுத்து வேறுபாட்டைக் கணக்கில் கொள்ளாமல், ஏற்கெனவே உள்ள எல்லாப் பயனர்பெயர்களிலிருந்தும் வேறுபட வேண்டும்."
+
+#: templates/accounts/manage_create.html
+msgid "Required for officers. Leave empty for administrators, who see all districts."
+msgstr "அலுவலர்களுக்குத் தேவை. அனைத்து மாவட்டங்களையும் பார்க்கும் நிர்வாகிகளுக்குக் காலியாக விடவும்."
+
+#: templates/accounts/manage_create.html
+msgid "Create account"
+msgstr "கணக்கை உருவாக்கு"
+
+#: templates/accounts/manage_create.html templates/accounts/manage_password.html
+msgid "Back to accounts"
+msgstr "கணக்குகளுக்குத் திரும்பு"
+
+#: templates/accounts/manage_list.html templates/base.html
+msgid "Accounts"
+msgstr "கணக்குகள்"
+
+#: templates/accounts/manage_list.html
+msgid "Officer and administrator accounts for all districts. Synthetic demo accounts only. Accounts are disabled, never deleted, so the audit log keeps its names."
+msgstr "அனைத்து மாவட்டங்களுக்கான அலுவலர் மற்றும் நிர்வாகி கணக்குகள். செயற்கை செயல்விளக்கக் கணக்குகள் மட்டும். தணிக்கைப் பதிவில் பெயர்கள் நிலைத்திருக்கக் கணக்குகள் முடக்கப்படுகின்றன, ஒருபோதும் நீக்கப்படுவதில்லை."
+
+#: templates/accounts/manage_list.html templates/matching/run_detail.html templates/reviews/case.html templates/reviews/queue.html
+msgid "Status"
+msgstr "நிலை"
+
+#: templates/accounts/manage_list.html
+msgid "Last sign-in"
+msgstr "கடைசி உள்நுழைவு"
+
+#: templates/accounts/manage_list.html
+msgid "Actions"
+msgstr "செயல்கள்"
+
+#: templates/accounts/manage_list.html
+msgid "(you)"
+msgstr "(நீங்கள்)"
+
+#: templates/accounts/manage_list.html
+msgid "Disabled"
+msgstr "முடக்கப்பட்டது"
+
+#: templates/accounts/manage_list.html
+msgid "Never"
+msgstr "இதுவரை இல்லை"
+
+#: templates/accounts/manage_list.html
+msgid "Disable"
+msgstr "முடக்கு"
+
+#: templates/accounts/manage_list.html
+msgid "Enable"
+msgstr "இயக்கு"
+
+#: templates/accounts/manage_list.html
+msgid "Reset password"
+msgstr "கடவுச்சொல்லை மீட்டமை"
+
+#: templates/accounts/manage_list.html
+msgid "Reset password gives the account a new one-time password, shown once. Disabling ends the account's sessions at its next request. You cannot disable your own account or the last active administrator."
+msgstr "கடவுச்சொல்லை மீட்டமைத்தால் கணக்குக்குப் புதிய ஒருமுறை கடவுச்சொல் கிடைக்கும்; அது ஒரு முறை மட்டும் காட்டப்படும். முடக்கினால் அந்தக் கணக்கின் அமர்வுகள் அடுத்த கோரிக்கையில் முடியும். உங்கள் சொந்தக் கணக்கையோ செயலில் உள்ள கடைசி நிர்வாகியையோ முடக்க முடியாது."
+
+#: templates/accounts/manage_list.html
+msgid "No accounts yet."
+msgstr "இதுவரை கணக்குகள் இல்லை."
+
+#: templates/accounts/manage_password.html
+msgid "One-time password"
+msgstr "ஒருமுறை கடவுச்சொல்"
+
+#: templates/accounts/manage_password.html
+msgid "Account created"
+msgstr "கணக்கு உருவாக்கப்பட்டது"
+
+#: templates/accounts/manage_password.html
+msgid "Password reset"
+msgstr "கடவுச்சொல் மீட்டமைக்கப்பட்டது"
+
+#: templates/accounts/manage_password.html
+#, python-format
+msgid "The account %(name)s was created."
+msgstr "%(name)s கணக்கு உருவாக்கப்பட்டது."
+
+#: templates/accounts/manage_password.html
+#, python-format
+msgid "The password of %(name)s was replaced. Its other sessions have ended."
+msgstr "%(name)s கணக்கின் கடவுச்சொல் மாற்றப்பட்டது. அதன் பிற அமர்வுகள் முடிந்துவிட்டன."
+
+#: templates/accounts/manage_password.html
+msgid "This password is shown only once."
+msgstr "இந்தக் கடவுச்சொல் ஒரு முறை மட்டுமே காட்டப்படும்."
+
+#: templates/accounts/manage_password.html
+msgid "It is not stored anywhere in readable form and cannot be shown again. Give it to the account holder now; if it is lost, reset the password again."
+msgstr "இது படிக்கக்கூடிய வடிவில் எங்கும் சேமிக்கப்படுவதில்லை, மீண்டும் காட்டவும் முடியாது. இப்போதே கணக்கு உரிமையாளரிடம் கொடுக்கவும்; தொலைந்தால் கடவுச்சொல்லை மீண்டும் மீட்டமைக்கவும்."
+
+#: templates/audit/log.html templates/base.html
+msgid "Audit log"
+msgstr "தணிக்கைப் பதிவு"
+
+#: templates/audit/log.html
+msgid "Read-only record of sign-ins, uploads, matching runs, decisions and account changes, newest first. Entries cannot be changed or removed."
+msgstr "உள்நுழைவுகள், பதிவேற்றங்கள், பொருத்த ஓட்டங்கள், முடிவுகள், கணக்கு மாற்றங்கள் ஆகியவற்றின் படிக்க மட்டுமான பதிவு; புதியவை முதலில். பதிவுகளை மாற்றவோ நீக்கவோ முடியாது."
+
+#: templates/audit/log.html
+msgid "Some filters are not valid. Correct them and apply the filters again."
+msgstr "சில வடிகட்டிகள் சரியாக இல்லை. அவற்றைத் திருத்தி மீண்டும் பயன்படுத்தவும்."
+
+#: templates/audit/log.html
+msgid "Filter the audit log"
+msgstr "தணிக்கைப் பதிவை வடிகட்டு"
+
+#: templates/audit/log.html templates/reviews/queue.html
+msgid "Apply filters"
+msgstr "வடிகட்டிகளைப் பயன்படுத்து"
+
+#: templates/audit/log.html templates/reviews/queue.html
+msgid "Clear"
+msgstr "அழி"
+
+#: templates/audit/log.html
+#, python-format
+msgid "%(n)s entry matches these filters."
+msgid_plural "%(n)s entries match these filters."
+msgstr[0] "%(n)s பதிவு இந்த வடிகட்டிகளுக்குப் பொருந்துகிறது."
+msgstr[1] "%(n)s பதிவுகள் இந்த வடிகட்டிகளுக்குப் பொருந்துகின்றன."
+
+#: templates/audit/log.html
+msgid "Audit log entries, newest first"
+msgstr "தணிக்கைப் பதிவுகள், புதியவை முதலில்"
+
+#: templates/audit/log.html
+msgid "Time"
+msgstr "நேரம்"
+
+#: templates/audit/log.html
+msgid "Actor"
+msgstr "செயல்பட்டவர்"
+
+#: templates/audit/log.html
+msgid "Entity ID"
+msgstr "பொருள் அடையாள எண்"
+
+#: templates/audit/log.html
+msgid "Details (shortened)"
+msgstr "விவரங்கள் (சுருக்கமாக)"
+
+#: templates/audit/log.html
+msgid "hashed"
+msgstr "ஹாஷ் செய்யப்பட்டது"
+
+#: templates/audit/log.html
+msgid "Times are India Standard Time. Failed and throttled sign-ins store a keyed hash of the username, never the typed name or an address."
+msgstr "நேரங்கள் இந்திய நேரப்படி. தோல்வியடைந்த மற்றும் தடுக்கப்பட்ட உள்நுழைவுகள் பயனர்பெயரின் சாவியிட்ட ஹாஷை மட்டுமே சேமிக்கின்றன; தட்டச்சு செய்த பெயரையோ முகவரியையோ ஒருபோதும் சேமிப்பதில்லை."
+
+#: templates/audit/log.html
+msgid "Audit log pages"
+msgstr "தணிக்கைப் பதிவுப் பக்கங்கள்"
+
+#: templates/audit/log.html templates/reviews/queue.html
+msgid "Previous"
+msgstr "முந்தையது"
+
+#: templates/audit/log.html templates/reviews/queue.html
+#, python-format
+msgid "Page %(n)s of %(total)s"
+msgstr "பக்கம் %(n)s / %(total)s"
+
+#: templates/audit/log.html templates/reviews/queue.html
+msgid "Next"
+msgstr "அடுத்தது"
+
+#: templates/audit/log.html
+msgid "No audit entries match these filters."
+msgstr "இந்த வடிகட்டிகளுக்குப் பொருந்தும் தணிக்கைப் பதிவுகள் இல்லை."
+
+#: templates/audit/log.html templates/reviews/queue.html
+msgid "Clear the filters"
+msgstr "வடிகட்டிகளை அழி"
+
+#: templates/audit/log.html
+msgid "No audit entries yet."
+msgstr "இதுவரை தணிக்கைப் பதிவுகள் இல்லை."
 
 #: templates/base.html
 msgid "Skip to main content"
@@ -907,10 +1208,6 @@ msgstr "நிலை வாரியாக முடிவுகள்"
 msgid "Results by band, in review order"
 msgstr "பிரிவு வாரியாக முடிவுகள், மதிப்பாய்வு வரிசையில்"
 
-#: templates/matching/run_detail.html templates/reviews/case.html templates/reviews/queue.html
-msgid "Status"
-msgstr "நிலை"
-
 #: templates/matching/run_detail.html
 msgid "Total"
 msgstr "மொத்தம்"
@@ -930,10 +1227,6 @@ msgstr "பட்டியல் தொகுப்புகள்"
 #: templates/matching/runs.html
 msgid "Runs so far"
 msgstr "இதுவரை ஓட்டங்கள்"
-
-#: templates/matching/runs.html
-msgid "Action"
-msgstr "செயல்"
 
 #: templates/matching/runs.html
 #, python-format
@@ -985,10 +1278,6 @@ msgstr "%(n)s தோல்வியுற்ற முயற்சிகளு�
 #, python-format
 msgid "Please sign in to continue. Sessions end after %(m)s minutes without activity."
 msgstr "தொடர உள்நுழையவும். %(m)s நிமிடங்கள் செயல்பாடு இல்லாவிட்டால் அமர்வு முடிவடையும்."
-
-#: templates/registration/login.html
-msgid "Username"
-msgstr "பயனர் பெயர்"
 
 #: templates/registration/login.html
 msgid "Password"
@@ -1335,14 +1624,6 @@ msgid "Locality contains"
 msgstr "பகுதியில் உள்ளது"
 
 #: templates/reviews/queue.html
-msgid "Apply filters"
-msgstr "வடிகட்டிகளைப் பயன்படுத்து"
-
-#: templates/reviews/queue.html
-msgid "Clear"
-msgstr "அழி"
-
-#: templates/reviews/queue.html
 msgid "Cases per band for these filters"
 msgstr "இந்த வடிகட்டிகளுக்குப் பிரிவு வாரியாக வழக்குகள்"
 
@@ -1375,25 +1656,8 @@ msgid "Queue pages"
 msgstr "வரிசைப் பக்கங்கள்"
 
 #: templates/reviews/queue.html
-msgid "Previous"
-msgstr "முந்தையது"
-
-#: templates/reviews/queue.html
-#, python-format
-msgid "Page %(n)s of %(total)s"
-msgstr "பக்கம் %(n)s / %(total)s"
-
-#: templates/reviews/queue.html
-msgid "Next"
-msgstr "அடுத்தது"
-
-#: templates/reviews/queue.html
 msgid "No cases match these filters."
 msgstr "இந்த வடிகட்டிகளுக்கு எந்த வழக்கும் பொருந்தவில்லை."
-
-#: templates/reviews/queue.html
-msgid "Clear the filters"
-msgstr "வடிகட்டிகளை அழி"
 
 #: templates/reviews/queue.html
 msgid "No cases need review."

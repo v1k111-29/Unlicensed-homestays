@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% translate "Accounts" %} · {% translate "Verified Stays" %}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>{% translate "Accounts" %}</h1>
+  <p class="lede">{% translate "Officer and administrator accounts for all districts. Synthetic demo accounts only. Accounts are disabled, never deleted, so the audit log keeps its names." %}</p>
+</div>
+<p><a class="button" href="{% url 'account_create' %}">{% translate "Create an account" %}</a></p>
+
+{% if accounts %}
+<div class="table-wrap" tabindex="0" role="region" aria-labelledby="accounts-caption">
+  <table class="table">
+    <caption id="accounts-caption" class="visually-hidden">{% translate "Accounts" %}</caption>
+    <thead>
+      <tr>
+        <th scope="col">{% translate "Username" %}</th>
+        <th scope="col">{% translate "Role" %}</th>
+        <th scope="col">{% translate "District" %}</th>
+        <th scope="col">{% translate "Status" %}</th>
+        <th scope="col">{% translate "Last sign-in" %}</th>
+        <th scope="col">{% translate "Actions" %}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for a in accounts %}
+      <tr>
+        <th scope="row">{{ a.username }}{% if a.pk == user.pk %} <span class="muted">{% translate "(you)" %}</span>{% endif %}</th>
+        <td>{{ a.get_role_display }}</td>
+        <td>{% if a.district %}{{ a.district.name_en }}{% else %}{% translate "All districts" %}{% endif %}</td>
+        <td>{% if a.is_active %}{% translate "Active" %}{% else %}<strong>{% translate "Disabled" %}</strong>{% endif %}</td>
+        <td class="nowrap">{% if a.last_login %}{{ a.last_login|date:"Y-m-d H:i" }}{% else %}<span class="muted">{% translate "Never" %}</span>{% endif %}</td>
+        <td>
+          <div class="actions">
+            {% if a.is_active %}
+            {% if a.pk != user.pk %}
+            <form method="post" action="{% url 'account_disable' a.pk %}" class="inline">
+              {% csrf_token %}
+              <button type="submit" class="button button--secondary">{% translate "Disable" %}<span class="visually-hidden"> {{ a.username }}</span></button>
+            </form>
+            {% endif %}
+            {% else %}
+            <form method="post" action="{% url 'account_enable' a.pk %}" class="inline">
+              {% csrf_token %}
+              <button type="submit" class="button button--secondary">{% translate "Enable" %}<span class="visually-hidden"> {{ a.username }}</span></button>
+            </form>
+            {% endif %}
+            <form method="post" action="{% url 'account_reset_password' a.pk %}" class="inline">
+              {% csrf_token %}
+              <button type="submit" class="button button--secondary">{% translate "Reset password" %}<span class="visually-hidden"> {{ a.username }}</span></button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<p class="hint">{% translate "Reset password gives the account a new one-time password, shown once. Disabling ends the account's sessions at its next request. You cannot disable your own account or the last active administrator." %}</p>
+{% else %}
+<div class="empty-state">
+  <p>{% translate "No accounts yet." %}</p>
+  <p><a href="{% url 'account_create' %}">{% translate "Create an account" %}</a></p>
+</div>
+{% endif %}
+{% endblock %}

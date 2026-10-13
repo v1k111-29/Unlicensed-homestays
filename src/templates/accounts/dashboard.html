@@ -58,7 +58,10 @@
   <li><a href="{{ queue_url }}">{% translate "Open the review queue" %}</a></li>
   <li><a href="{{ upload_url }}">{% translate "Upload a listings CSV" %}</a></li>
   <li><a href="{{ runs_url }}">{% translate "Run matching and see run summaries" %}</a></li>
-  {% if is_admin %}<li><a href="{{ registry_url }}">{% translate "Upload a registry CSV" %}</a></li>{% endif %}
+  {% if is_admin %}<li><a href="{{ registry_url }}">{% translate "Upload a registry CSV" %}</a></li>
+  {% url 'audit_log' as audit_url %}{% url 'account_list' as accounts_url %}
+  {% if audit_url %}<li><a href="{{ audit_url }}">{% translate "Read the audit log" %}</a></li>{% endif %}
+  {% if accounts_url %}<li><a href="{{ accounts_url }}">{% translate "Manage accounts" %}</a></li>{% endif %}{% endif %}
 </ul>
 {% endif %}
 {% endblock %}
