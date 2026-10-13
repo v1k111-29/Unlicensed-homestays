@@ -9,32 +9,9 @@
 </head>
 <body>
   <a class="skip-link" href="#main">{% translate "Skip to main content" %}</a>
-  <header class="site-header">
-    <div class="wrap header-row">
-      {% url 'home' as home_url %}<p class="brand"><a href="{{ home_url|default:'/' }}">{% translate "Verified Stays" %}</a></p>
-      {% block nav %}
-      {% if user.is_authenticated %}
-      {% url 'dashboard' as dashboard_url %}{% url 'queue' as queue_url %}{% url 'upload_listings' as upload_url %}{% url 'runs' as runs_url %}{% url 'upload_registry' as registry_url %}
-      {% if queue_url or upload_url or runs_url %}
-      <nav class="site-nav" aria-label="{% translate 'Main' %}">
-        <ul>
-          <li><a href="{{ dashboard_url }}"{% if request.path == dashboard_url %} aria-current="page"{% endif %}>{% translate "Dashboard" %}</a></li>
-          {% if queue_url %}<li><a href="{{ queue_url }}"{% if request.path == queue_url %} aria-current="page"{% endif %}>{% translate "Review queue" %}</a></li>{% endif %}
-          {% if upload_url %}<li><a href="{{ upload_url }}"{% if request.path == upload_url %} aria-current="page"{% endif %}>{% translate "Upload listings" %}</a></li>{% endif %}
-          {% if runs_url %}<li><a href="{{ runs_url }}"{% if request.path == runs_url %} aria-current="page"{% endif %}>{% translate "Matching runs" %}</a></li>{% endif %}
-          {% if registry_url and user.role == "admin" %}<li><a href="{{ registry_url }}"{% if request.path == registry_url %} aria-current="page"{% endif %}>{% translate "Upload registry" %}</a></li>{% endif %}
-        </ul>
-      </nav>
-      {% endif %}
-      <nav class="site-nav" aria-label="{% translate 'Account' %}">
-        <span class="who">{{ user.get_username }}</span>
-        <form method="post" action="{% url 'logout' %}" class="inline">
-          {% csrf_token %}
-          <button type="submit" class="button-link">{% translate "Sign out" %}</button>
-        </form>
-      </nav>
-      {% endif %}
-      {% endblock %}
+  <div class="topbar">
+    <div class="wrap topbar__row">
+      <aside class="notice-bar" aria-label="{% translate 'Data notice' %}"><p>{% include "icons/_icon.html" with name="info" %}{% translate "Demonstration build. All data shown is synthetic." %}</p></aside>
       {% if language_links %}
       <nav class="site-nav lang-switch" aria-label="{% translate 'Language' %}">
         <ul>
@@ -42,19 +19,97 @@
         </ul>
       </nav>
       {% endif %}
+      {% if user.is_authenticated %}
+      <nav class="site-nav nav-account nav-account--top" aria-label="{% translate 'Account' %}">
+        <span class="who">{% include "icons/_icon.html" with name="user" %}{{ user.get_username }}</span>
+        <form method="post" action="{% url 'logout' %}" class="inline">
+          {% csrf_token %}
+          <button type="submit" class="button-link">{% translate "Sign out" %}</button>
+        </form>
+      </nav>
+      {% endif %}
+    </div>
+  </div>
+  <header class="site-header">
+    <div class="wrap header-row">
+      {% url 'home' as home_url %}<p class="brand"><a href="{{ home_url|default:'/' }}">{% include "icons/_mark.html" %}<span class="brand__names"><span class="brand__en" lang="en">{% language "en" %}{% translate "Verified Stays" %}{% endlanguage %}</span><span class="brand__ta" lang="ta">{% language "ta" %}{% translate "Verified Stays" %}{% endlanguage %}</span></span></a></p>
+      {% block nav %}
+      {% if user.is_authenticated %}
+      {% url 'dashboard' as dashboard_url %}{% url 'queue' as queue_url %}{% url 'upload_listings' as upload_url %}{% url 'runs' as runs_url %}{% url 'upload_registry' as registry_url %}
+      {% if queue_url or upload_url or runs_url %}
+      <nav class="site-nav nav-main" aria-label="{% translate 'Main' %}">
+        <ul>
+          <li><a href="{{ dashboard_url }}"{% if request.path == dashboard_url %} aria-current="page"{% endif %}>{% include "icons/_icon.html" with name="home" %}{% translate "Dashboard" %}</a></li>
+          {% if queue_url %}<li><a href="{{ queue_url }}"{% if request.path == queue_url %} aria-current="page"{% endif %}>{% include "icons/_icon.html" with name="queue" %}{% translate "Review queue" %}</a></li>{% endif %}
+          {% if upload_url %}<li><a href="{{ upload_url }}"{% if request.path == upload_url %} aria-current="page"{% endif %}>{% include "icons/_icon.html" with name="upload" %}{% translate "Upload listings" %}</a></li>{% endif %}
+          {% if runs_url %}<li><a href="{{ runs_url }}"{% if request.path == runs_url %} aria-current="page"{% endif %}>{% include "icons/_icon.html" with name="runs" %}{% translate "Matching runs" %}</a></li>{% endif %}
+          {% if registry_url and user.role == "admin" %}<li><a href="{{ registry_url }}"{% if request.path == registry_url %} aria-current="page"{% endif %}>{% include "icons/_icon.html" with name="registry" %}{% translate "Upload registry" %}</a></li>{% endif %}
+        </ul>
+      </nav>
+      {% endif %}
+      {% else %}
+      {% url 'login' as login_url %}{% url 'tourist_check' as check_url %}
+      {% if login_url or check_url %}
+      <nav class="site-nav nav-account" aria-label="{% translate 'Account' %}">
+        {% if login_url and request.path != login_url %}<a class="link-quiet" href="{{ login_url }}">{% translate "Officer sign in" %}</a>{% endif %}
+        {% if check_url %}<a class="button" href="{{ check_url }}#check">{% include "icons/_icon.html" with name="search" %}{% translate "Check a stay" %}</a>{% endif %}
+      </nav>
+      {% endif %}
+      {% endif %}
+      {% endblock %}
     </div>
   </header>
-  <aside class="notice-bar" aria-label="{% translate 'Data notice' %}"><p class="wrap">{% translate "Demonstration build. All data shown is synthetic." %}</p></aside>
-  <main id="main" class="wrap{% block main_class %}{% endblock %}" tabindex="-1">
+  <main id="main" class="{% block main_class %}wrap{% endblock %}" tabindex="-1">
     {% if messages %}
-    <ul class="messages" role="status">
+    <ul class="messages wrap" role="status">
       {% for message in messages %}<li class="message-{{ message.level_tag }}">{% if message.level_tag == "error" %}<strong>{% translate "Problem:" %}</strong> {% endif %}{{ message }}</li>{% endfor %}
     </ul>
     {% endif %}
     {% block content %}{% endblock %}
   </main>
   <footer class="site-footer">
-    <p class="wrap">{% translate "Tamil Nadu Tourism Innovation Challenge prototype." %}</p>
+    <div class="wrap">
+      {% url 'tourist_check' as check_url %}{% url 'login' as login_url %}{% url 'dashboard' as dashboard_url %}{% url 'queue' as queue_url %}
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <p class="brand__names"><span class="brand__en" lang="en">{% language "en" %}{% translate "Verified Stays" %}{% endlanguage %}</span><span class="brand__ta" lang="ta">{% language "ta" %}{% translate "Verified Stays" %}{% endlanguage %}</span></p>
+          <p class="footer-mission">{% translate "Helps visitors see whether a stay appears in a licence registry, and helps district officers decide which online listings to review first." %}</p>
+        </div>
+        {% if check_url %}
+        <div class="footer-group">
+          <h2>{% translate "Check a stay" %}</h2>
+          <ul>
+            <li><a href="{{ check_url }}#check">{% translate "Check the registry" %}</a></li>
+            <li><a href="{{ check_url }}#how-it-works">{% translate "How it works" %}</a></li>
+            <li><a href="{{ check_url }}#about-check">{% translate "About this check" %}</a></li>
+          </ul>
+        </div>
+        {% endif %}
+        {% if login_url or dashboard_url %}
+        <div class="footer-group">
+          <h2>{% translate "For officers" %}</h2>
+          <ul>
+            {% if user.is_authenticated %}
+            {% if dashboard_url %}<li><a href="{{ dashboard_url }}">{% translate "Dashboard" %}</a></li>{% endif %}
+            {% if queue_url %}<li><a href="{{ queue_url }}">{% translate "Review queue" %}</a></li>{% endif %}
+            {% elif login_url %}
+            <li><a href="{{ login_url }}">{% translate "Officer sign in" %}</a></li>
+            {% endif %}
+          </ul>
+          <p>{% translate "Results prioritise listings for officer review. They are not findings." %}</p>
+        </div>
+        {% endif %}
+        <div class="footer-group">
+          <h2>{% translate "About this prototype" %}</h2>
+          <p>{% translate "Tamil Nadu Tourism Innovation Challenge prototype." %}</p>
+          <p>{% translate "Not an official government service." %}</p>
+        </div>
+      </div>
+      <div class="footer-base">
+        <p>{% translate "Demonstration build. All data shown is synthetic." %}</p>
+        <p>{% translate "No real owners, phone numbers or businesses." %}</p>
+      </div>
+    </div>
   </footer>
 </body>
 </html>
