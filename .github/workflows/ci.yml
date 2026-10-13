@@ -3,6 +3,12 @@ on:
   push:
   pull_request:
 
+# The gitleaks action lists a pull request's commits, which needs pull-requests: read
+# (without it the step fails with 403 on pull_request events, not because of a leak).
+permissions:
+  contents: read
+  pull-requests: read
+
 jobs:
   checks:
     runs-on: ubuntu-latest
