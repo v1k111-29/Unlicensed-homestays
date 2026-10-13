@@ -42,7 +42,7 @@ def check(request: HttpRequest) -> HttpResponse:
                 service.record(result.outcome)
                 context["result"] = result
                 context["differences"] = [DIFFERENCE_TEXT[d] for d in result.differences]
-    # Page furniture (D92): which search mode the chips show, and real registry counts.
+    # Page furniture (D94): which search mode the chips show, and real registry counts.
     data = form.data if form.is_bound else {}
     by_name = not data.get("licence") and (data.get("name") or data.get("locality"))
     context["mode"] = "name" if by_name else "licence"

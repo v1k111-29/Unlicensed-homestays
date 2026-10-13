@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% translate "Create an account" %} · {% translate "Verified Stays" %}{% endblock %}
+{% block content %}
+<p class="breadcrumb"><a href="{% url 'account_list' %}">{% include "icons/_icon.html" with name="back" %}{% translate "Accounts" %}</a></p>
+<div class="page-head">
+  <div>
+    <p class="eyebrow">{% include "icons/_icon.html" with name="people" %}{% translate "Administration" %}</p>
+    <h1>{% translate "Create an account" %}</h1>
+  </div>
+  <p class="lede">{% translate "Synthetic demo accounts only; never a real person's name. The system creates a one-time password and shows it once on the next page." %}</p>
+</div>
+
+{% if form.errors %}
+<div class="alert alert--error" role="alert">
+  <p>{% translate "The account was not created. Correct the marked fields." %}</p>
+  {% for err in form.non_field_errors %}<p>{{ err }}</p>{% endfor %}
+</div>
+{% endif %}
+
+<form method="post" action="{% url 'account_create' %}" class="panel narrow" novalidate>
+  {% csrf_token %}
+  <div class="field">
+    <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+    <p class="hint" id="username-hint">{% translate "At most 64 characters: English letters, digits and @ . + - _ only. Must differ from every existing username, ignoring capitals." %}</p>
+    {% if form.username.errors %}<p class="field-error" id="username-error">{% for err in form.username.errors %}{{ err }} {% endfor %}</p>{% endif %}
+    <input type="text" name="{{ form.username.html_name }}" id="{{ form.username.id_for_label }}" value="{{ form.username.value|default:'' }}" required autocomplete="off" spellcheck="false" aria-describedby="username-hint{% if form.username.errors %} username-error{% endif %}"{% if form.username.errors %} aria-invalid="true"{% endif %}>
+  </div>
+  <div class="field">
+    <label for="{{ form.role.id_for_label }}">{{ form.role.label }}</label>
+    {% if form.role.errors %}<p class="field-error" id="role-error">{% for err in form.role.errors %}{{ err }} {% endfor %}</p>{% endif %}
+    <select name="{{ form.role.html_name }}" id="{{ form.role.id_for_label }}"{% if form.role.errors %} aria-invalid="true" aria-describedby="role-error"{% endif %}>
+      {% for value, label in form.role.field.choices %}<option value="{{ value }}"{% if value == form.role.value %} selected{% endif %}>{{ label }}</option>{% endfor %}
+    </select>
+  </div>
+  <div class="field">
+    <label for="{{ form.district.id_for_label }}">{{ form.district.label }}</label>
+    <p class="hint" id="district-hint">{% translate "Required for officers. Leave empty for administrators, who see all districts." %}</p>
+    {% if form.district.errors %}<p class="field-error" id="district-error">{% for err in form.district.errors %}{{ err }} {% endfor %}</p>{% endif %}
+    <select name="{{ form.district.html_name }}" id="{{ form.district.id_for_label }}" aria-describedby="district-hint{% if form.district.errors %} district-error{% endif %}"{% if form.district.errors %} aria-invalid="true"{% endif %}>
+      {% for value, label in form.district.field.choices %}<option value="{{ value }}"{% if value|stringformat:"s" == form.district.value|stringformat:"s" %} selected{% endif %}>{{ label }}</option>{% endfor %}
+    </select>
+  </div>
+  <div class="actions">
+    <button type="submit" class="button">{% include "icons/_icon.html" with name="user" %}{% translate "Create account" %}</button>
+    <a href="{% url 'account_list' %}">{% translate "Back to accounts" %}</a>
+  </div>
+</form>
+{% endblock %}

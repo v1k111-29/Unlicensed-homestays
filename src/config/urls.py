@@ -1,5 +1,6 @@
 """URL routes. Auth in M6; uploads and matching runs in M7; queue/cases in M8; tourist pages
-in M9; language prefix, home page and error handlers in M10. Every view is guarded by a
+in M9; language prefix, home page and error handlers in M10; admin audit-log and account
+screens after M12 (D92, D93). Every view is guarded by a
 capability or is on the explicit public allowlist (a test walks all routes). The Django admin
 site is not installed, so `admin/` paths are ordinary guarded views.
 
@@ -10,6 +11,8 @@ Routes that must not depend on the language (health checks in M11) go outside i1
 from django.conf.urls.i18n import i18n_patterns
 from django.urls import include, path, re_path
 
+from accounts import manage_views
+from audit import views as audit_views
 from config import health
 from config import views as site_views
 from ingest import views as ingest_views
@@ -57,6 +60,24 @@ urlpatterns += i18n_patterns(
         "admin/registry/cancel/",
         ingest_views.upload_registry_cancel,
         name="upload_registry_cancel",
+    ),
+    path("admin/audit/", audit_views.audit_log, name="audit_log"),
+    path("admin/accounts/", manage_views.account_list, name="account_list"),
+    path("admin/accounts/new/", manage_views.account_create, name="account_create"),
+    path(
+        "admin/accounts/<int:pk>/disable/",
+        manage_views.account_disable,
+        name="account_disable",
+    ),
+    path(
+        "admin/accounts/<int:pk>/enable/",
+        manage_views.account_enable,
+        name="account_enable",
+    ),
+    path(
+        "admin/accounts/<int:pk>/reset-password/",
+        manage_views.account_reset_password,
+        name="account_reset_password",
     ),
     prefix_default_language=False,
 )

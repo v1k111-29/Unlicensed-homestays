@@ -7,7 +7,7 @@ Helps Tamil Nadu district administrations prioritise possibly unlicensed homesta
 ## What it does
 - **Officer:** upload listings CSV → run matching → review a prioritised queue → record a decision → print an evidence page.
 - **Tourist:** enter a licence number or name + locality → get one of four neutral outcomes.
-- **Admin:** upload the registry, view the audit log.
+- **Admin:** upload the registry, read the audit log (read-only), manage officer and admin accounts.
 
 ## What it does not do
 It never declares a stay unlicensed. It does not scrape booking platforms. It does not use real personal data. See `non_essential_features.md`.

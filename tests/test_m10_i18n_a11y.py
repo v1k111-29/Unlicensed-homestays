@@ -65,6 +65,10 @@ CORE_TEMPLATES = [
     "templates/ingest/preview.html",
     "templates/matching/runs.html",
     "templates/matching/run_detail.html",
+    "templates/audit/log.html",
+    "templates/accounts/manage_list.html",
+    "templates/accounts/manage_create.html",
+    "templates/accounts/manage_password.html",
     "templates/403.html",
     "templates/404.html",
     "templates/500.html",
@@ -512,3 +516,47 @@ def test_officer_screens_accessible_with_states(lang, users, dev_set, english_se
     admin.force_login(users["admin"])
     _check_page(admin.get(u(lang, "/admin/registry/")), lang, english_sentences)
     _check_page(admin.get(u(lang, "/dashboard/")), lang, english_sentences)
+
+
+# ------------------------------------------------------------------ admin screens (D92, D93)
+
+
+@pytest_db
+@pytest.mark.parametrize("lang", ["en", "ta"])
+def test_admin_screens_accessible_with_states(lang, users, english_sentences) -> None:
+    from audit.models import AuditLog
+
+    admin = Client()
+    admin.force_login(users["admin"])
+
+    def page(path: str, status: int = 200, method: str = "get", **data) -> str:
+        response = getattr(admin, method)(u(lang, path), data or None)
+        assert response.status_code == status, (path, response.status_code)
+        return _check_page(response, lang, english_sentences)
+
+    # Audit log: rows, an empty filtered result and an invalid filter (error state).
+    assert AuditLog.objects.exists()  # force_login wrote a login row
+    html = page("/admin/audit/")
+    assert "audit-caption" in html
+    # Redesigned shell (D94): the nav marks the current admin page; icons are decorative only.
+    assert f'href="{u(lang, "/admin/audit/")}" aria-current="page"' in html
+    assert html.count("<svg") == html.count('aria-hidden="true" focusable="false"')
+    # Dashboard tiles for the two admin screens, each a real link with a heading.
+    dash = page("/dashboard/")
+    for path in ("/admin/audit/", "/admin/accounts/"):
+        assert f'<h3 class="tile__title"><a href="{u(lang, path)}">' in dash
+    assert "empty-state" in page("/admin/audit/", actor="zzz-nobody")
+    html = page("/admin/audit/", 400, date_from="not-a-date")
+    assert 'role="alert"' in html and 'aria-invalid="true"' in html
+
+    # Accounts: list, create form, refused create (error state), created, reset.
+    assert "accounts-caption" in page("/admin/accounts/")
+    page("/admin/accounts/new/")
+    html = page("/admin/accounts/new/", 400, "post", username="officer_NIL", role="officer")
+    assert 'role="alert"' in html and 'aria-invalid="true"' in html
+    page("/admin/accounts/new/", 200, "post", username=f"a11y_{lang}", role="admin")
+    page(f"/admin/accounts/{users['off_nil'].pk}/reset-password/", 200, "post")
+    # A disable refused for yourself comes back as an error message on the list.
+    response = admin.post(u(lang, f"/admin/accounts/{users['admin'].pk}/disable/"), follow=True)
+    html = _check_page(response, lang, english_sentences)
+    assert "message-error" in html

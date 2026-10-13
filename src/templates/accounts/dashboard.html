@@ -61,6 +61,24 @@
     <span class="tile__go" aria-hidden="true">{% translate "Open" %}{% include "icons/_icon.html" with name="arrow" %}</span>
   </div></li>
   {% endif %}
+  {% if is_admin %}{% url 'audit_log' as audit_url %}{% url 'account_list' as accounts_url %}
+  {% if audit_url %}
+  <li><div class="tile">
+    <span class="tile__icon">{% include "icons/_icon.html" with name="lock" %}</span>
+    <h3 class="tile__title"><a href="{{ audit_url }}">{% translate "Audit log" %}</a></h3>
+    <p>{% translate "Read who did what and when. Read-only, filterable by action, user and date." %}</p>
+    <span class="tile__go" aria-hidden="true">{% translate "Open" %}{% include "icons/_icon.html" with name="arrow" %}</span>
+  </div></li>
+  {% endif %}
+  {% if accounts_url %}
+  <li><div class="tile">
+    <span class="tile__icon">{% include "icons/_icon.html" with name="people" %}</span>
+    <h3 class="tile__title"><a href="{{ accounts_url }}">{% translate "Accounts" %}</a></h3>
+    <p>{% translate "Create officer and admin accounts, disable or enable them, reset passwords." %}</p>
+    <span class="tile__go" aria-hidden="true">{% translate "Open" %}{% include "icons/_icon.html" with name="arrow" %}</span>
+  </div></li>
+  {% endif %}
+  {% endif %}
 </ul>
 {% endif %}
 

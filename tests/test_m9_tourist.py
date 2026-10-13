@@ -356,7 +356,7 @@ def test_rate_limit_ignores_spoofed_forwarded_for_behind_proxy(registry, setting
     assert second.status_code == 429
 
 
-# ------------------------------------------------------------------ page furniture (D92)
+# ------------------------------------------------------------------ page furniture (D94)
 
 
 def test_registry_summary_counts_the_searched_registry_only(registry) -> None:

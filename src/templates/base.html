@@ -35,7 +35,7 @@
       {% url 'home' as home_url %}<p class="brand"><a href="{{ home_url|default:'/' }}">{% include "icons/_mark.html" %}<span class="brand__names"><span class="brand__en" lang="en">{% language "en" %}{% translate "Verified Stays" %}{% endlanguage %}</span><span class="brand__ta" lang="ta">{% language "ta" %}{% translate "Verified Stays" %}{% endlanguage %}</span></span></a></p>
       {% block nav %}
       {% if user.is_authenticated %}
-      {% url 'dashboard' as dashboard_url %}{% url 'queue' as queue_url %}{% url 'upload_listings' as upload_url %}{% url 'runs' as runs_url %}{% url 'upload_registry' as registry_url %}
+      {% url 'dashboard' as dashboard_url %}{% url 'queue' as queue_url %}{% url 'upload_listings' as upload_url %}{% url 'runs' as runs_url %}{% url 'upload_registry' as registry_url %}{% url 'audit_log' as audit_url %}{% url 'account_list' as accounts_url %}
       {% if queue_url or upload_url or runs_url %}
       <nav class="site-nav nav-main" aria-label="{% translate 'Main' %}">
         <ul>
@@ -44,6 +44,8 @@
           {% if upload_url %}<li><a href="{{ upload_url }}"{% if request.path == upload_url %} aria-current="page"{% endif %}>{% include "icons/_icon.html" with name="upload" %}{% translate "Upload listings" %}</a></li>{% endif %}
           {% if runs_url %}<li><a href="{{ runs_url }}"{% if request.path == runs_url %} aria-current="page"{% endif %}>{% include "icons/_icon.html" with name="runs" %}{% translate "Matching runs" %}</a></li>{% endif %}
           {% if registry_url and user.role == "admin" %}<li><a href="{{ registry_url }}"{% if request.path == registry_url %} aria-current="page"{% endif %}>{% include "icons/_icon.html" with name="registry" %}{% translate "Upload registry" %}</a></li>{% endif %}
+          {% if audit_url and user.role == "admin" %}<li><a href="{{ audit_url }}"{% if request.path == audit_url %} aria-current="page"{% endif %}>{% include "icons/_icon.html" with name="lock" %}{% translate "Audit log" %}</a></li>{% endif %}
+          {% if accounts_url and user.role == "admin" %}<li><a href="{{ accounts_url }}"{% if request.path == accounts_url %} aria-current="page"{% endif %}>{% include "icons/_icon.html" with name="people" %}{% translate "Accounts" %}</a></li>{% endif %}
         </ul>
       </nav>
       {% endif %}

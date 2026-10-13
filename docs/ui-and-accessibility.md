@@ -7,7 +7,7 @@
 ## Screens
 Tourist: Check (home) · Result · About/disclaimer · Report (stretch).
 Officer: Login · Dashboard · Upload · Queue · Case detail · Evidence.
-Admin: Registry upload · Audit log.
+Admin: Registry upload · Audit log (read-only, D93) · Accounts (list, create, one-time password, disable/enable, D92).
 
 ## Flows
 - Tourist: Check → Result (4 outcomes) → optional Report.
@@ -39,9 +39,11 @@ Verified [V] by automated tests without a browser (`tests/test_m10_i18n_a11y.py`
 - Every msgid in the code has a Tamil translation; no English UI sentence from the catalog appears on a Tamil page; placeholders survive translation; tourist pages set no cookie in either language.
 - Colour contrast of every token pair (D70, `tests/test_ui_stylesheet.py`).
 
+Admin screens (after M12): audit log (rows, empty filter result, invalid filter), accounts list, create form, refused create, one-time password page after create and reset, refused self-disable, in English and Tamil, with the same static checks [V].
+
 Not verified [A]:
 - No real browser was used: visible focus ring, actual tab order through the rendered layout, 200% zoom / reflow and Tamil wrapping at 360px width are designed for (brief §6, §14) but not observed.
-- D92 redesign: every core screen was rendered in headless Chrome at 1280px and 360px (public pages and the dashboard, queue, case and login also in Tamil) and the full-page screenshots were saved locally in `docs/screenshots/` (synthetic data; git-ignored, not in the repo). Tamil wrapping at 360px was observed there [V, by eye]; wide officer tables scroll horizontally inside their labelled region at 360px. Still not observed: keyboard focus order and focus visibility in a real browser, 200% zoom, screen-reader output, Safari/Firefox (the form-mode chips need CSS `:has()`; without it both field groups show).
+- D94 redesign: every core screen was rendered in headless Chrome at 1280px and 360px (public pages and the dashboard, queue, case and login also in Tamil) and the full-page screenshots were saved locally in `docs/screenshots/` (synthetic data; git-ignored, not in the repo). Tamil wrapping at 360px was observed there [V, by eye]; wide officer tables scroll horizontally inside their labelled region at 360px. Still not observed: keyboard focus order and focus visibility in a real browser, 200% zoom, screen-reader output, Safari/Firefox (the form-mode chips need CSS `:has()`; without it both field groups show).
 - No screen-reader test (NVDA / VoiceOver / TalkBack) has been done; the checklist item above stays open.
 - No automated rule engine (axe-core etc.) was run; the static checks cover structure only.
 - Tamil wording and terminology are unreviewed (Q38).

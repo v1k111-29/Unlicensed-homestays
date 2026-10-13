@@ -227,7 +227,7 @@ def check(q: Query, *, batch: UploadBatch | None = None) -> CheckResult:
 
 
 def registry_summary() -> dict[str, int] | None:
-    """Real counts for the public statistics strip (D92): entries and districts in the registry
+    """Real counts for the public statistics strip (D94): entries and districts in the registry
     tourists search. ``None`` when no registry is loaded, so the page hides the strip."""
     try:
         batch = current_registry_batch()

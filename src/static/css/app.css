@@ -1,4 +1,4 @@
-/* Verified Stays: the one shared stylesheet. Rules and rationale: docs/ui-design-brief.md (D70, D92).
+/* Verified Stays: the one shared stylesheet. Rules and rationale: docs/ui-design-brief.md (D70, D94).
    Hand-written, no framework. Tokens first; components use tokens only (no raw colours below
    the :root block, except pure black/white in the print block, the shadows, and three
    translucent tints of existing tokens: header (--color-bg), hero text plate (--color-surface),
@@ -40,7 +40,7 @@
   --color-footer-link: #f1d9a6;
   --color-focus-on-dark: #9cc8ff;
 
-  /* Type: installed system fonts only (no web-font download, no CDN; D92). */
+  /* Type: installed system fonts only (no web-font download, no CDN; D94). */
   --font-sans: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue",
     Roboto, "Noto Sans", "Noto Sans Tamil", "Nirmala UI", "Latha", "Tamil Sangam MN", Arial, sans-serif;
   --font-display: "Segoe UI Variable Display", "Segoe UI", system-ui, -apple-system, "Helvetica Neue",
@@ -523,7 +523,7 @@ textarea { min-height: 6rem; resize: vertical; }
 .metric-list dt { font-size: var(--text-sm); color: var(--color-text-muted); }
 .metric-list dd { margin: var(--space-1) 0 0; font-family: var(--font-display); font-size: var(--text-lg); font-weight: 700; font-variant-numeric: tabular-nums; }
 
-/* ---------------------------------------------------------------- tourist check (M9, D92) */
+/* ---------------------------------------------------------------- tourist check (M9, D94) */
 /* Hero band: tonal texture (static SVG drawn for this project), headline, form card. */
 .hero {
   background-color: var(--color-surface);

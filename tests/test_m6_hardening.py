@@ -241,6 +241,13 @@ def test_route_walk_covers_officer_admin_and_public_routes() -> None:
         "case_evidence",
         "evidence_detail",
         "upload_registry",
+        # admin screens (D92, D93)
+        "audit_log",
+        "account_list",
+        "account_create",
+        "account_disable",
+        "account_enable",
+        "account_reset_password",
     }
     public = {"tourist_check", "livez", "healthz"}
     assert guarded | public <= names, sorted((guarded | public) - names)

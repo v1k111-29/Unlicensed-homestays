@@ -1,0 +1,3 @@
+# False positive: the one-time password alphabet (public letters/digits), removed from the source in the next commit.
+# Not a secret.
+a091b9b9737f4395d8d381407148111fa4332713:src/accounts/services.py:generic-api-key:34
