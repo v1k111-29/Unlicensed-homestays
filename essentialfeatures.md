@@ -27,6 +27,7 @@ Everything here must work end-to-end in the demo build, except where marked *str
 ### O6. Admin: upload registry, view audit log — P1
 - Registry upload follows the same validation as O2.
 - Audit log read-only, filterable by user and date.
+- Status: built after M12 (D93): `/admin/audit/`, admin only, read-only, filters action / actor / entity / date range, 50 per page. Admin account management (`/admin/accounts/`, D92) was added alongside; it is not an MVP feature.
 
 ## Tourist
 ### T1. Check a stay — P0

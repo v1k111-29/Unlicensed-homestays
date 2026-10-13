@@ -12,7 +12,7 @@ Curated slice (~25 listings) in one district, covering every status. Fictional p
 4. Matching runs; prioritised queue appears.
 5. Officer opens a case, sees feature breakdown, marks suspected-unlicensed with a reason.
 6. Officer opens evidence page.
-7. (Cut: there is no audit-log screen; the audit log is stored append-only in the database and is named in the safeguards scene instead. Admin screen is roadmap.)
+7. Optional: admin opens the read-only audit log (`/admin/audit/`, D93) filtered to the decision. Kept optional; the safeguards scene names the audit log either way.
 
 ## 90-second video outline [E timing]
 | Time | Content |
@@ -20,7 +20,7 @@ Curated slice (~25 listings) in one district, covering every status. Fictional p
 | 0:00–0:10 | Problem: court direction to cross-check booking sites; sealed homestays; WhatsApp reporting [V from brief] |
 | 0:10–0:25 | Gap: existing tools target Western ordinances, none found for Indian addresses/Tamil [V from brief; not re-checked] |
 | 0:25–0:65 | Live demo (script above), tightly cut |
-| 0:65–0:80 | Safeguards: human review, neutral wording, append-only audit log (named, not shown) |
+| 0:65–0:80 | Safeguards: human review, neutral wording, append-only audit log (named; optional 1 s audit-log shot) |
 | 0:80–0:90 | Scalability + next step (pilot district, registry access) |
 Must include on screen: "Demonstration data — fictional."
 

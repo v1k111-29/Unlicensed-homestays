@@ -58,8 +58,8 @@
       <tr>
         <td class="nowrap">{{ e.ts|date:"Y-m-d H:i:s" }}</td>
         <td>{{ e.actor }}</td>
-        <td class="mono">{{ e.action }}</td>
-        <td class="mono">{{ e.entity }}</td>
+        <td class="mono nowrap">{{ e.action }}</td>
+        <td class="mono nowrap">{{ e.entity }}</td>
         <td>{% if e.entity_id %}{% if row.hashed %}<span class="muted">{% translate "hashed" %}</span> <span class="mono">{{ e.entity_id|truncatechars:13 }}</span>{% else %}<span class="mono">{{ e.entity_id }}</span>{% endif %}{% else %}-{% endif %}</td>
         <td class="mono">{{ row.meta|default:"-" }}</td>
       </tr>

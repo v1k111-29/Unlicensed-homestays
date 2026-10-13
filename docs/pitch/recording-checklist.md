@@ -22,7 +22,7 @@ $env:DEMO_OFFICER_PW = "<choose>"; $env:DEMO_ADMIN_PW = "<choose>"
 
 ## 3. Warm server (30 minutes before)
 - [ ] Open `/healthz` and wait for a success response (free tiers may sleep when idle [A, Q9]).
-- [ ] Load every page in the demo path once: `/ta/check/`, `/check/`, `/login/`, `/dashboard/`, `/officer/uploads/`, `/officer/runs/`, `/officer/queue/`, a case page, an evidence page [V: routes in `src/config/urls.py`]. There is no audit-log screen, so none is shown.
+- [ ] Load every page in the demo path once: `/ta/check/`, `/check/`, `/login/`, `/dashboard/`, `/officer/uploads/`, `/officer/runs/`, `/officer/queue/`, a case page, an evidence page [V: routes in `src/config/urls.py`]. If the optional audit shot is used, also load `/admin/audit/` signed in as the demo admin (D93).
 - [ ] Uptime ping is running so the server does not sleep between rehearsal and take.
 - [ ] Do the rehearsal run on a **separate** database or before the reset in section 6 (an upload of the same file is refused the second time).
 - [ ] Sign in **just before** recording: idle sessions expire after 30 minutes.

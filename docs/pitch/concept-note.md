@@ -22,7 +22,7 @@ No figures on the number of unregistered stays, officer time spent, or market si
 | User | Today [A] | With Verified Stays |
 |---|---|---|
 | District officer | Reads listings one by one and searches the registry by hand | Uploads a listings file and gets a ranked review queue with the reason for each position; decides each case and gets a printable evidence page |
-| District / state admin | No shared record of who checked what | Uploads the registry; every upload, run and decision is kept in an append-only audit log in the database (no screen to read it yet; roadmap) |
+| District / state admin | No shared record of who checked what | Uploads the registry; every upload, run and decision is kept in an append-only audit log, which the admin reads on a read-only, filterable screen; the admin also creates, disables and resets officer accounts [V: code and tests, D92-D93] |
 | Tourist | Cannot easily tell whether a stay is in the registry | Checks a stay by licence number, or name + locality, in English or Tamil; gets a neutral answer |
 
 ## 3. Solution
@@ -44,7 +44,7 @@ Officer-supplied data only: no scraping and no automated fetching of booking-sit
 4. **Score and explain.** Each candidate gets a 0–1 score from six features — licence number, name similarity, address similarity, distance, pincode, category — and each feature value is stored so the officer can see why [V: M4; weights tuned on the dev set only in M5].
 5. **Band and rank.** Each listing is placed in one band: *Matched*, *Needs review — high priority (licence details)*, *No match — needs review*, or *Needs review*. The queue puts licence mismatches first, then listings with no candidate, then ambiguous ones [V: M4].
 6. **Decide.** On the case page the officer chooses: confirm match, reject match, mark suspected unlicensed (written reason required), or dismiss. Confirmed pairs are not flagged again on later runs [V: M4 engine tests]. The case screen is built [V: M8].
-7. **Evidence and audit.** An evidence page shows the listing snapshot, candidates, scores, decision and a SHA-256 of the snapshot, and always says *"Supporting evidence for officer review, not a finding."* [V: M8]. Every state change writes an audit entry, stored append-only in the database; there is no screen for reading the audit log yet (roadmap) [V: M6, M8].
+7. **Evidence and audit.** An evidence page shows the listing snapshot, candidates, scores, decision and a SHA-256 of the snapshot, and always says *"Supporting evidence for officer review, not a finding."* [V: M8]. Every state change writes an audit entry, stored append-only in the database; administrators read it on a read-only screen with filters for action, user, entity and date [V: M6, M8, D93].
 
 Matching is deterministic: same inputs and same parameter version give the same output; the version is stored on every run [V: M4 tests].
 
@@ -57,7 +57,7 @@ Matching is deterministic: same inputs and same parameter version give the same 
 - **Neutral tourist wording.** "Not found" always carries: *"This does not mean the stay is illegal. The registry may be incomplete."* Tourist pages never show bands, scores or officer reasons; a stay in the registry is shown as "Found in the registry" [V: M9 tests].
 - **Confirmed-pair memory** stops the same listing being re-flagged after an officer confirms it [V: M4 engine].
 - **District scoping on the server** for every officer query; permission tests cover each data model [V: M6].
-- **Append-only audit log** stored in the database: the application refuses updates and deletes, and PostgreSQL triggers block UPDATE, DELETE and TRUNCATE [V: code and tests; trigger tests run in CI on PostgreSQL]. There is no audit-log screen yet; reading it needs database access (roadmap).
+- **Append-only audit log** stored in the database: the application refuses updates and deletes, and PostgreSQL triggers block UPDATE, DELETE and TRUNCATE [V: code and tests; trigger tests run in CI on PostgreSQL]. Admins read it on a read-only screen that has no edit or delete control [V: code and tests, D93].
 - **Officer decisions are kept** as labelled data for future tuning (roadmap), not used to retrain anything automatically.
 
 ## 6. Privacy and ethics
@@ -70,7 +70,7 @@ Matching is deterministic: same inputs and same parameter version give the same 
 
 ## 7. Prototype status and evaluation on synthetic data
 
-**Status [V, update before submission]:** matching engine, evaluation harness, accounts/roles/district scoping/audit log, listings/registry upload with matching runs, review queue, case and evidence screens, tourist check and Tamil interface strings (machine translation, unreviewed) are built, tested and merged on `main`; CI (including PostgreSQL) is green. Deployment is prepared but **nothing is deployed**: hosting accounts are pending. No audit-log screen exists. The video is not recorded.
+**Status [V, update before submission]:** matching engine, evaluation harness, accounts/roles/district scoping/audit log, listings/registry upload with matching runs, review queue, case and evidence screens, tourist check and Tamil interface strings (machine translation, unreviewed) are built, tested and merged on `main`; CI (including PostgreSQL) is green. Deployment is prepared but **nothing is deployed**: hosting accounts are pending. A read-only audit-log screen and admin account screens were added after M12 (D92, D93; tested locally, CI pending at the time of writing). The video is not recorded.
 
 **Data.** A seeded generator produces fictional registries and listings for 8 districts with known ground truth: a dev set (162 registry entries, 300 listings; used for tuning) and a test set (108 entries, 200 listings; different seed, fresh property names and different noise types; run once after tuning, never used for any choice) [V: M1, M5]. Listing types: clean, noisy, wrong or expired licence, no registry counterpart, and "hard negatives" (similar-looking but different stays).
 
@@ -100,7 +100,7 @@ Matching is deterministic: same inputs and same parameter version give the same 
 - Coordinates on booking platforms are often approximate [A]; the distance feature may help less on real data.
 - Listings whose true registry entry is in another district are not handled.
 - The test set has now been used; any further parameter change can only be checked on the saturated dev set unless a fresh held-out set is generated (Q26).
-- No host notification or appeal path yet; no 2FA; no screen for reading the audit log.
+- No host notification or appeal path yet; no 2FA; no forced password change after an admin reset (Q50).
 - Free hosting tiers may sleep when idle [A, Q9].
 - Built and tested by one developer; no external security review.
 
@@ -111,7 +111,7 @@ Matching is deterministic: same inputs and same parameter version give the same 
 **Scalability [A]:** the registry and listings are plain CSV contracts, so a real registry export can be plugged in without code changes; districts are independent units for scoping and matching runs; the stack is a single Docker image with PostgreSQL.
 
 **Roadmap [A]:**
-- **Phase 1:** confirm registry access; DPDP legal review; native-speaker Tamil review; 2FA; an admin screen for reading the audit log.
+- **Phase 1:** confirm registry access; DPDP legal review; native-speaker Tamil review; 2FA; forced password change at first sign-in (Q50).
 - **Phase 2:** pilot in one district with real data; WhatsApp intake via the official API; PDF evidence export; licensed geocoder.
 - **Phase 3:** tune matching on real officer decisions; optional photo similarity; multi-district rollout.
 

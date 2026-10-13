@@ -109,7 +109,7 @@ def test_nav_links_for_admins_only(users) -> None:
 
 
 def _entries(html: str) -> list[str]:
-    return re.findall(r'<td class="mono">([a-z_.]+)</td>\s*<td class="mono">', html)
+    return re.findall(r'<td class="mono nowrap">([a-z_.]+)</td>\s*<td class="mono nowrap">', html)
 
 
 def test_audit_log_newest_first_and_read_does_not_write(users) -> None:
@@ -167,11 +167,11 @@ def test_audit_log_pagination_keeps_filters(users) -> None:
     )
     client = _client(users["admin"])
     html = client.get(AUDIT, {"actor": "pager_bot"}).content.decode()
-    assert len(re.findall(r'<td class="mono">page_test</td>', html)) == 50
+    assert len(re.findall(r'<td class="mono nowrap">page_test</td>', html)) == 50
     assert "Page 1 of 3" in html
     assert 'href="?actor=pager_bot&amp;page=2"' in html
     html = client.get(AUDIT, {"actor": "pager_bot", "page": "3"}).content.decode()
-    assert len(re.findall(r'<td class="mono">page_test</td>', html)) == 20
+    assert len(re.findall(r'<td class="mono nowrap">page_test</td>', html)) == 20
     assert 'href="?actor=pager_bot&amp;page=2"' in html
 
 

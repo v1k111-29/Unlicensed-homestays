@@ -7,7 +7,7 @@
 ## Screens
 Tourist: Check (home) · Result · About/disclaimer · Report (stretch).
 Officer: Login · Dashboard · Upload · Queue · Case detail · Evidence.
-Admin: Registry upload · Audit log.
+Admin: Registry upload · Audit log (read-only, D93) · Accounts (list, create, one-time password, disable/enable, D92).
 
 ## Flows
 - Tourist: Check → Result (4 outcomes) → optional Report.
@@ -38,6 +38,8 @@ Verified [V] by automated tests without a browser (`tests/test_m10_i18n_a11y.py`
 - `lang` attribute follows the language; skip link is the first focusable element and targets `main#main`; landmarks (header, named navs, data-notice `aside`, main, footer); one `h1` and no skipped heading levels; unique ids and resolving `aria-*`/`label for` references; every control labelled, invalid fields carry `aria-invalid` + `aria-describedby`; radio groups in `fieldset` + `legend`; buttons, links and scrollable regions have names; tables have a caption or `aria-labelledby` and scoped headers; no positive `tabindex`; no inline styles or width attributes; status badges carry text; empty and error states present.
 - Every msgid in the code has a Tamil translation; no English UI sentence from the catalog appears on a Tamil page; placeholders survive translation; tourist pages set no cookie in either language.
 - Colour contrast of every token pair (D70, `tests/test_ui_stylesheet.py`).
+
+Admin screens (after M12): audit log (rows, empty filter result, invalid filter), accounts list, create form, refused create, one-time password page after create and reset, refused self-disable, in English and Tamil, with the same static checks [V].
 
 Not verified [A]:
 - No real browser was used: visible focus ring, actual tab order through the rendered layout, 200% zoom / reflow and Tamil wrapping at 360px width are designed for (brief §6, §14) but not observed.
