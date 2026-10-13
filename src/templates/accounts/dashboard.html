@@ -3,28 +3,76 @@
 {% block title %}{% translate "Dashboard" %} · {% translate "Verified Stays" %}{% endblock %}
 {% block content %}
 <div class="page-head">
-  <h1>{% translate "Dashboard" %}</h1>
+  <div>
+    <p class="eyebrow">{% include "icons/_icon.html" with name="user" %}{% translate "For officers" %}</p>
+    <h1>{% translate "Dashboard" %}</h1>
+  </div>
   <p class="lede">{% translate "Results prioritise listings for officer review. They are not findings." %}</p>
 </div>
-<dl class="facts">
-  <dt>{% translate "Signed in as" %}</dt>
-  <dd>{{ user.get_username }}</dd>
-  <dt>{% translate "Role" %}</dt>
-  <dd>{{ user.get_role_display }}</dd>
-  <dt>{% translate "District" %}</dt>
-  <dd>{% if is_admin %}{% translate "All districts" %}{% elif district %}{{ district.name_en }}{% if district.name_ta %} <span lang="ta">({{ district.name_ta }})</span>{% endif %}{% else %}{% translate "None assigned. Ask an administrator." %}{% endif %}</dd>
-</dl>
+
+<div class="panel profile-card">
+  <dl class="facts">
+    <dt>{% translate "Signed in as" %}</dt>
+    <dd>{{ user.get_username }}</dd>
+    <dt>{% translate "Role" %}</dt>
+    <dd>{{ user.get_role_display }}</dd>
+    <dt>{% translate "District" %}</dt>
+    <dd>{% if is_admin %}{% translate "All districts" %}{% elif district %}{{ district.name_en }}{% if district.name_ta %} <span lang="ta">({{ district.name_ta }})</span>{% endif %}{% else %}{% translate "None assigned. Ask an administrator." %}{% endif %}</dd>
+  </dl>
+</div>
 
 {% url 'queue' as queue_url %}{% url 'upload_listings' as upload_url %}{% url 'runs' as runs_url %}{% url 'upload_registry' as registry_url %}
+{% if queue_url %}
+<h2 id="areas-heading">{% translate "Work areas" %}</h2>
+<ul class="tiles" aria-labelledby="areas-heading">
+  <li><div class="tile">
+    <span class="tile__icon">{% include "icons/_icon.html" with name="queue" %}</span>
+    <h3 class="tile__title"><a href="{{ queue_url }}">{% translate "Review queue" %}</a></h3>
+    <p>{% translate "Open cases in review order, licence issues first." %}</p>
+    {% if counts %}<p class="tile__count">{{ counts.open }} <small>{% translate "Open cases" %}</small></p>{% endif %}
+    <span class="tile__go" aria-hidden="true">{% translate "Open" %}{% include "icons/_icon.html" with name="arrow" %}</span>
+  </div></li>
+  <li><div class="tile">
+    <span class="tile__icon">{% include "icons/_icon.html" with name="upload" %}</span>
+    <h3 class="tile__title"><a href="{{ upload_url }}">{% translate "Upload listings" %}</a></h3>
+    <p>{% translate "Check a listings CSV, preview it, then save it." %}</p>
+    {% if counts %}<p class="tile__count">{{ counts.listings }} <small>{% translate "Listings uploaded" %}</small></p>{% endif %}
+    <span class="tile__go" aria-hidden="true">{% translate "Open" %}{% include "icons/_icon.html" with name="arrow" %}</span>
+  </div></li>
+  <li><div class="tile">
+    <span class="tile__icon">{% include "icons/_icon.html" with name="runs" %}</span>
+    <h3 class="tile__title"><a href="{{ runs_url }}">{% translate "Matching runs" %}</a></h3>
+    <p>{% translate "Compare listings with the registry and read run summaries." %}</p>
+    {% if counts %}<p class="tile__count">{{ counts.with_result }} <small>{% translate "Listings with a matching result" %}</small></p>{% endif %}
+    <span class="tile__go" aria-hidden="true">{% translate "Open" %}{% include "icons/_icon.html" with name="arrow" %}</span>
+  </div></li>
+  <li><div class="tile">
+    <span class="tile__icon">{% include "icons/_icon.html" with name="evidence" %}</span>
+    <h3 class="tile__title"><a href="{{ queue_url }}?state=decided">{% translate "Evidence pages" %}</a></h3>
+    <p>{% translate "Printable snapshots, created from a case page. This link lists decided cases." %}</p>
+    {% if counts %}<p class="tile__count">{{ counts.evidence_packs }} <small>{% translate "Evidence pages created" %}</small></p>{% endif %}
+    <span class="tile__go" aria-hidden="true">{% translate "Open" %}{% include "icons/_icon.html" with name="arrow" %}</span>
+  </div></li>
+  {% if is_admin and registry_url %}
+  <li><div class="tile">
+    <span class="tile__icon">{% include "icons/_icon.html" with name="registry" %}</span>
+    <h3 class="tile__title"><a href="{{ registry_url }}">{% translate "Upload registry" %}</a></h3>
+    <p>{% translate "Load a new licence registry file. Earlier uploads are kept." %}</p>
+    <span class="tile__go" aria-hidden="true">{% translate "Open" %}{% include "icons/_icon.html" with name="arrow" %}</span>
+  </div></li>
+  {% endif %}
+</ul>
+{% endif %}
+
 {% if counts and queue_url %}
 <h2 id="counts-heading">{% if is_admin %}{% translate "All districts" %}{% else %}{% blocktranslate with district=district.name_en %}{{ district }} district{% endblocktranslate %}{% endif %}</h2>
-<dl class="facts">
-  <dt>{% translate "Listings uploaded" %}</dt><dd>{{ counts.listings }}</dd>
-  <dt>{% translate "Listings with a matching result" %}</dt><dd>{{ counts.with_result }}</dd>
-  <dt>{% translate "Open cases" %}</dt><dd><a href="{{ queue_url }}">{{ counts.open }}</a></dd>
-  <dt>{% translate "Decisions recorded" %}</dt><dd>{{ counts.decisions }}</dd>
-  <dt>{% translate "Confirmed listing / registry pairs" %}</dt><dd>{{ counts.confirmed_pairs }}</dd>
-  <dt>{% translate "Evidence pages created" %}</dt><dd>{{ counts.evidence_packs }}</dd>
+<dl class="metric-list" aria-labelledby="counts-heading">
+  <div><dt>{% translate "Listings uploaded" %}</dt><dd>{{ counts.listings }}</dd></div>
+  <div><dt>{% translate "Listings with a matching result" %}</dt><dd>{{ counts.with_result }}</dd></div>
+  <div><dt>{% translate "Open cases" %}</dt><dd><a href="{{ queue_url }}">{{ counts.open }}</a></dd></div>
+  <div><dt>{% translate "Decisions recorded" %}</dt><dd>{{ counts.decisions }}</dd></div>
+  <div><dt>{% translate "Confirmed listing / registry pairs" %}</dt><dd>{{ counts.confirmed_pairs }}</dd></div>
+  <div><dt>{% translate "Evidence pages created" %}</dt><dd>{{ counts.evidence_packs }}</dd></div>
 </dl>
 
 {% if counts.with_result %}
@@ -50,15 +98,5 @@
   <p><a href="{{ upload_url }}">{% translate "Upload listings" %}</a> · <a href="{{ runs_url }}">{% translate "Matching runs" %}</a></p>
 </div>
 {% endif %}
-{% endif %}
-
-{% if queue_url %}
-<h2>{% translate "Next steps" %}</h2>
-<ul class="link-list">
-  <li><a href="{{ queue_url }}">{% translate "Open the review queue" %}</a></li>
-  <li><a href="{{ upload_url }}">{% translate "Upload a listings CSV" %}</a></li>
-  <li><a href="{{ runs_url }}">{% translate "Run matching and see run summaries" %}</a></li>
-  {% if is_admin %}<li><a href="{{ registry_url }}">{% translate "Upload a registry CSV" %}</a></li>{% endif %}
-</ul>
 {% endif %}
 {% endblock %}

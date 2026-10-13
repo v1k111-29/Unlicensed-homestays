@@ -3,7 +3,7 @@
 {% block title %}{% translate "Evidence page" %} · {{ listing_snap.title }} · {% translate "Verified Stays" %}{% endblock %}
 {% block content %}
 <p class="evidence-statement">{% translate "Supporting evidence for officer review, not a finding." %}</p>
-<p class="breadcrumb no-print"><a href="{{ case_url }}">{% translate "Back to the case" %}</a></p>
+<p class="breadcrumb no-print"><a href="{{ case_url }}">{% include "icons/_icon.html" with name="back" %}{% translate "Back to the case" %}</a></p>
 <div class="page-head">
   <h1>{% blocktranslate with title=listing_snap.title %}Evidence page: {{ title }}{% endblocktranslate %}</h1>
   <p class="lede">{% translate "Synthetic demonstration data. Scores rank listings for review; they are not measured accuracy and not a decision." %}</p>

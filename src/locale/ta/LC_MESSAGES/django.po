@@ -189,7 +189,7 @@ msgstr "செயற்கைத் தரவுத் தொகுப்பு:
 msgid "Upload listings"
 msgstr "பட்டியல்களைப் பதிவேற்று"
 
-#: ingest/views.py templates/base.html
+#: ingest/views.py templates/accounts/dashboard.html templates/base.html
 msgid "Upload registry"
 msgstr "பதிவேட்டைப் பதிவேற்று"
 
@@ -287,7 +287,7 @@ msgstr "மேல் வரம்புக்கு மேல் மதிப்
 msgid "Score between the lower and upper thresholds"
 msgstr "கீழ், மேல் வரம்புகளுக்கு இடையிலான மதிப்பெண்"
 
-#: matching/labels.py templates/ingest/preview.html templates/reviews/case.html templates/reviews/evidence.html tourist/forms.py
+#: matching/labels.py templates/ingest/preview.html templates/reviews/case.html templates/reviews/evidence.html templates/tourist/check.html tourist/forms.py
 msgid "Licence number"
 msgstr "உரிம எண்"
 
@@ -526,7 +526,11 @@ msgstr "மீண்டும் நடந்தால், பிழை அட�
 msgid "Dashboard"
 msgstr "முகப்புப் பலகை"
 
-#: templates/accounts/dashboard.html templates/matching/run_detail.html
+#: templates/accounts/dashboard.html templates/base.html templates/registration/login.html
+msgid "For officers"
+msgstr "அலுவலர்களுக்கு"
+
+#: templates/accounts/dashboard.html templates/base.html templates/matching/run_detail.html templates/registration/login.html
 msgid "Results prioritise listings for officer review. They are not findings."
 msgstr "முடிவுகள் அலுவலர் மதிப்பாய்வுக்காகப் பட்டியல்களை முன்னுரிமைப்படுத்துகின்றன. அவை கண்டறிதல்கள் அல்ல."
 
@@ -551,21 +555,65 @@ msgid "None assigned. Ask an administrator."
 msgstr "எதுவும் ஒதுக்கப்படவில்லை. நிர்வாகியிடம் கேட்கவும்."
 
 #: templates/accounts/dashboard.html
-#, python-format
-msgid "%(district)s district"
-msgstr "%(district)s மாவட்டம்"
+msgid "Work areas"
+msgstr "பணிப் பகுதிகள்"
+
+#: templates/accounts/dashboard.html templates/base.html templates/reviews/case.html templates/reviews/queue.html
+msgid "Review queue"
+msgstr "மதிப்பாய்வு வரிசை"
+
+#: templates/accounts/dashboard.html
+msgid "Open cases in review order, licence issues first."
+msgstr "மதிப்பாய்வு வரிசையில் திறந்த வழக்குகள்; உரிமச் சிக்கல்கள் முதலில்."
+
+#: templates/accounts/dashboard.html
+msgid "Open cases"
+msgstr "திறந்த வழக்குகள்"
+
+#: templates/accounts/dashboard.html
+msgid "Open"
+msgstr "திற"
+
+#: templates/accounts/dashboard.html
+msgid "Check a listings CSV, preview it, then save it."
+msgstr "பட்டியல்கள் CSV கோப்பைச் சரிபார்த்து, முன்னோட்டம் பார்த்து, பின்னர் சேமிக்கவும்."
 
 #: templates/accounts/dashboard.html
 msgid "Listings uploaded"
 msgstr "பதிவேற்றப்பட்ட பட்டியல்கள்"
+
+#: templates/accounts/dashboard.html templates/base.html templates/matching/run_detail.html templates/matching/runs.html
+msgid "Matching runs"
+msgstr "பொருத்த ஓட்டங்கள்"
+
+#: templates/accounts/dashboard.html
+msgid "Compare listings with the registry and read run summaries."
+msgstr "பட்டியல்களைப் பதிவேட்டுடன் ஒப்பிட்டு, ஓட்டச் சுருக்கங்களைப் படிக்கவும்."
 
 #: templates/accounts/dashboard.html
 msgid "Listings with a matching result"
 msgstr "பொருத்த முடிவு உள்ள பட்டியல்கள்"
 
 #: templates/accounts/dashboard.html
-msgid "Open cases"
-msgstr "திறந்த வழக்குகள்"
+msgid "Evidence pages"
+msgstr "சான்றுப் பக்கங்கள்"
+
+#: templates/accounts/dashboard.html
+msgid "Printable snapshots, created from a case page. This link lists decided cases."
+msgstr "அச்சிடக்கூடிய பதிவுகள், வழக்குப் பக்கத்திலிருந்து உருவாக்கப்படுகின்றன. இந்த இணைப்பு முடிவு செய்யப்பட்ட வழக்குகளைக் காட்டுகிறது."
+
+#: templates/accounts/dashboard.html
+msgid "Evidence pages created"
+msgstr "உருவாக்கப்பட்ட சான்றுப் பக்கங்கள்"
+
+#: templates/accounts/dashboard.html
+msgid "Load a new licence registry file. Earlier uploads are kept."
+msgstr "புதிய உரிமப் பதிவேட்டுக் கோப்பைப் பதிவேற்றவும். முந்தைய பதிவேற்றங்கள் வைக்கப்படும்."
+
+#: templates/accounts/dashboard.html
+#, python-format
+msgid "%(district)s district"
+msgstr "%(district)s மாவட்டம்"
 
 #: templates/accounts/dashboard.html
 msgid "Decisions recorded"
@@ -574,10 +622,6 @@ msgstr "பதிவுசெய்யப்பட்ட முடிவுக�
 #: templates/accounts/dashboard.html
 msgid "Confirmed listing / registry pairs"
 msgstr "உறுதிப்படுத்தப்பட்ட பட்டியல் / பதிவேட்டு இணைகள்"
-
-#: templates/accounts/dashboard.html
-msgid "Evidence pages created"
-msgstr "உருவாக்கப்பட்ட சான்றுப் பக்கங்கள்"
 
 #: templates/accounts/dashboard.html
 msgid "Open cases by band, in review order"
@@ -591,53 +635,9 @@ msgstr "பிரிவு"
 msgid "No matching results yet. Upload a listings file, then run matching."
 msgstr "இன்னும் பொருத்த முடிவுகள் இல்லை. ஒரு பட்டியல் கோப்பைப் பதிவேற்றி, பின்னர் பொருத்தத்தை இயக்கவும்."
 
-#: templates/accounts/dashboard.html templates/base.html templates/matching/run_detail.html templates/matching/runs.html
-msgid "Matching runs"
-msgstr "பொருத்த ஓட்டங்கள்"
-
-#: templates/accounts/dashboard.html
-msgid "Next steps"
-msgstr "அடுத்த படிகள்"
-
-#: templates/accounts/dashboard.html templates/matching/run_detail.html
-msgid "Open the review queue"
-msgstr "மதிப்பாய்வு வரிசையைத் திற"
-
-#: templates/accounts/dashboard.html templates/matching/runs.html
-msgid "Upload a listings CSV"
-msgstr "பட்டியல் CSV-ஐப் பதிவேற்று"
-
-#: templates/accounts/dashboard.html
-msgid "Run matching and see run summaries"
-msgstr "பொருத்தத்தை இயக்கி ஓட்டச் சுருக்கங்களைப் பார்"
-
-#: templates/accounts/dashboard.html
-msgid "Upload a registry CSV"
-msgstr "பதிவேட்டு CSV-ஐப் பதிவேற்று"
-
 #: templates/base.html
 msgid "Skip to main content"
 msgstr "முதன்மை உள்ளடக்கத்துக்குச் செல்"
-
-#: templates/base.html
-msgid "Main"
-msgstr "முதன்மை"
-
-#: templates/base.html templates/reviews/case.html templates/reviews/queue.html
-msgid "Review queue"
-msgstr "மதிப்பாய்வு வரிசை"
-
-#: templates/base.html
-msgid "Account"
-msgstr "கணக்கு"
-
-#: templates/base.html
-msgid "Sign out"
-msgstr "வெளியேறு"
-
-#: templates/base.html
-msgid "Language"
-msgstr "மொழி"
 
 #: templates/base.html
 msgid "Data notice"
@@ -648,12 +648,64 @@ msgid "Demonstration build. All data shown is synthetic."
 msgstr "செயல்விளக்கப் பதிப்பு. காட்டப்படும் எல்லாத் தரவும் செயற்கையானவை."
 
 #: templates/base.html
+msgid "Language"
+msgstr "மொழி"
+
+#: templates/base.html
+msgid "Account"
+msgstr "கணக்கு"
+
+#: templates/base.html
+msgid "Sign out"
+msgstr "வெளியேறு"
+
+#: templates/base.html
+msgid "Main"
+msgstr "முதன்மை"
+
+#: templates/base.html templates/registration/login.html
+msgid "Officer sign in"
+msgstr "அலுவலர் உள்நுழைவு"
+
+#: templates/base.html templates/tourist/check.html
+msgid "Check a stay"
+msgstr "தங்குமிடத்தைச் சரிபார்க்கவும்"
+
+#: templates/base.html
 msgid "Problem:"
 msgstr "சிக்கல்:"
 
 #: templates/base.html
+msgid "Helps visitors see whether a stay appears in a licence registry, and helps district officers decide which online listings to review first."
+msgstr "ஒரு தங்குமிடம் உரிமப் பதிவேட்டில் உள்ளதா என்பதைப் பார்வையாளர்கள் அறிய உதவுகிறது; எந்த இணையப் பட்டியல்களை முதலில் மதிப்பாய்வு செய்வது என்று மாவட்ட அலுவலர்கள் முடிவு செய்யவும் உதவுகிறது."
+
+#: templates/base.html templates/tourist/check.html
+msgid "Check the registry"
+msgstr "பதிவேட்டில் சரிபார்"
+
+#: templates/base.html templates/tourist/check.html
+msgid "How it works"
+msgstr "இது எப்படி வேலை செய்கிறது"
+
+#: templates/base.html templates/tourist/check.html
+msgid "About this check"
+msgstr "இந்தச் சரிபார்ப்பு பற்றி"
+
+#: templates/base.html
+msgid "About this prototype"
+msgstr "இந்த முன்மாதிரி பற்றி"
+
+#: templates/base.html
 msgid "Tamil Nadu Tourism Innovation Challenge prototype."
 msgstr "தமிழ்நாடு சுற்றுலா புத்தாக்கச் சவால் முன்மாதிரி."
+
+#: templates/base.html
+msgid "Not an official government service."
+msgstr "இது அதிகாரப்பூர்வ அரசு சேவை அல்ல."
+
+#: templates/base.html
+msgid "No real owners, phone numbers or businesses."
+msgstr "உண்மையான உரிமையாளர்கள், தொலைபேசி எண்கள் அல்லது நிறுவனங்கள் இல்லை."
 
 #: templates/ingest/preview.html
 msgid "Check before saving"
@@ -864,6 +916,10 @@ msgid "Run %(id)s: %(district)s"
 msgstr "ஓட்டம் %(id)s: %(district)s"
 
 #: templates/matching/run_detail.html
+msgid "Open the review queue"
+msgstr "மதிப்பாய்வு வரிசையைத் திற"
+
+#: templates/matching/run_detail.html
 msgid "Listings checked"
 msgstr "சரிபார்க்கப்பட்ட பட்டியல்கள்"
 
@@ -949,6 +1005,10 @@ msgid "No listing batches yet."
 msgstr "இன்னும் பட்டியல் தொகுப்புகள் இல்லை."
 
 #: templates/matching/runs.html
+msgid "Upload a listings CSV"
+msgstr "பட்டியல் CSV-ஐப் பதிவேற்று"
+
+#: templates/matching/runs.html
 msgid "Recent runs"
 msgstr "சமீபத்திய ஓட்டங்கள்"
 
@@ -967,10 +1027,6 @@ msgstr "இன்னும் பொருத்த ஓட்டங்கள் 
 #: templates/registration/login.html
 msgid "Sign in"
 msgstr "உள்நுழை"
-
-#: templates/registration/login.html
-msgid "Officer sign in"
-msgstr "அலுவலர் உள்நுழைவு"
 
 #: templates/registration/login.html templates/tourist/check.html
 msgid "Please wait and try again."
@@ -995,8 +1051,24 @@ msgid "Password"
 msgstr "கடவுச்சொல்"
 
 #: templates/registration/login.html
+msgid "Who signs in here"
+msgstr "இங்கே யார் உள்நுழைகிறார்கள்"
+
+#: templates/registration/login.html
 msgid "For district officers and administrators. Tourists do not need an account."
 msgstr "மாவட்ட அலுவலர்களுக்கும் நிர்வாகிகளுக்கும் மட்டும். சுற்றுலாப் பயணிகளுக்குக் கணக்கு தேவையில்லை."
+
+#: templates/registration/login.html
+msgid "Officers see listings of their own district only."
+msgstr "அலுவலர்கள் தங்கள் மாவட்டத்தின் பட்டியல்களை மட்டுமே பார்க்கிறார்கள்."
+
+#: templates/registration/login.html
+msgid "Every decision is recorded in the audit log."
+msgstr "ஒவ்வொரு முடிவும் தணிக்கைப் பதிவில் பதிவு செய்யப்படுகிறது."
+
+#: templates/registration/login.html
+msgid "Check a stay without signing in"
+msgstr "உள்நுழையாமல் ஒரு தங்குமிடத்தைச் சரிபார்க்கவும்"
 
 #: templates/reviews/case.html
 msgid "Case"
@@ -1422,8 +1494,12 @@ msgid "Not valid"
 msgstr "செல்லுபடியாகாது"
 
 #: templates/tourist/check.html
-msgid "Check a stay"
-msgstr "தங்குமிடத்தைச் சரிபார்க்கவும்"
+msgid "For visitors"
+msgstr "பார்வையாளர்களுக்கு"
+
+#: templates/tourist/check.html
+msgid "Look it up before you book."
+msgstr "முன்பதிவு செய்வதற்கு முன் தேடிப் பாருங்கள்."
 
 #: templates/tourist/check.html
 msgid "See whether a homestay, cottage, guest house or lodge appears in the Tamil Nadu tourism licence registry."
@@ -1432,6 +1508,10 @@ msgstr "ஒரு வீட்டுத் தங்குமிடம், க�
 #: templates/tourist/check.html
 msgid "This demonstration uses a synthetic registry: every name and licence number is made up."
 msgstr "இந்தச் செயல்விளக்கம் செயற்கைப் பதிவேட்டைப் பயன்படுத்துகிறது: ஒவ்வொரு பெயரும் உரிம எண்ணும் கற்பனையானவை."
+
+#: templates/tourist/check.html
+msgid "Search the registry"
+msgstr "பதிவேட்டில் தேடவும்"
 
 #: templates/tourist/check.html
 msgid "Too many checks were made from this connection in a short time. Try again in a few minutes."
@@ -1450,6 +1530,14 @@ msgid "Please check the form."
 msgstr "படிவத்தைச் சரிபார்க்கவும்."
 
 #: templates/tourist/check.html
+msgid "Search by"
+msgstr "இதன் மூலம் தேடவும்"
+
+#: templates/tourist/check.html
+msgid "Name and place"
+msgstr "பெயர் மற்றும் இடம்"
+
+#: templates/tourist/check.html
 msgid "As written in the licence or on the booking page, for example SYN-NLG-12345-A."
 msgstr "உரிமத்தில் அல்லது முன்பதிவுப் பக்கத்தில் எழுதியுள்ளபடி, எடுத்துக்காட்டாக SYN-NLG-12345-A."
 
@@ -1464,10 +1552,6 @@ msgstr "ஆங்கிலம் அல்லது தமிழ்."
 #: templates/tourist/check.html
 msgid "Optional. Narrows the search when several stays have similar names."
 msgstr "விருப்பமானது. பல தங்குமிடங்களுக்கு ஒத்த பெயர்கள் இருக்கும்போது தேடலைக் குறைக்கும்."
-
-#: templates/tourist/check.html
-msgid "Check the registry"
-msgstr "பதிவேட்டில் சரிபார்"
 
 #: templates/tourist/check.html tourist/models.py
 msgid "Found in the registry"
@@ -1503,12 +1587,76 @@ msgid "Validity is shown as on %(day)s."
 msgstr "செல்லுபடி %(day)s தேதியின்படி காட்டப்படுகிறது."
 
 #: templates/tourist/check.html
-msgid "About this check"
-msgstr "இந்தச் சரிபார்ப்பு பற்றி"
+msgid "The registry in this demonstration"
+msgstr "இந்தச் செயல்விளக்கத்தில் உள்ள பதிவேடு"
+
+#: templates/tourist/check.html
+msgid "Registry entries (synthetic)"
+msgstr "பதிவேட்டுப் பதிவுகள் (செயற்கை)"
+
+#: templates/tourist/check.html
+msgid "Districts in the registry"
+msgstr "பதிவேட்டில் உள்ள மாவட்டங்கள்"
+
+#: templates/tourist/check.html
+msgid "Languages: English and Tamil"
+msgstr "மொழிகள்: ஆங்கிலம் மற்றும் தமிழ்"
+
+#: templates/tourist/check.html
+msgid "Counted from the current synthetic registry file. These numbers describe test data, not real stays."
+msgstr "தற்போதைய செயற்கைப் பதிவேட்டுக் கோப்பிலிருந்து எண்ணப்பட்டது. இந்த எண்கள் சோதனைத் தரவைக் குறிக்கின்றன, உண்மையான தங்குமிடங்களை அல்ல."
+
+#: templates/tourist/check.html
+msgid "One check, four short steps. No account and no cookies."
+msgstr "ஒரு சரிபார்ப்பு, நான்கு சிறிய படிகள். கணக்கும் இல்லை, குக்கீகளும் இல்லை."
+
+#: templates/tourist/check.html
+msgid "Enter what you know"
+msgstr "உங்களுக்குத் தெரிந்ததை உள்ளிடவும்"
+
+#: templates/tourist/check.html
+msgid "The licence number from the booking page, or the name of the stay and its town."
+msgstr "முன்பதிவுப் பக்கத்தில் உள்ள உரிம எண், அல்லது தங்குமிடத்தின் பெயரும் அதன் ஊரும்."
+
+#: templates/tourist/check.html
+msgid "We search the registry"
+msgstr "நாங்கள் பதிவேட்டில் தேடுகிறோம்"
+
+#: templates/tourist/check.html
+msgid "Your entry is compared with the registry entries, in English or Tamil spelling."
+msgstr "நீங்கள் உள்ளிட்டது பதிவேட்டுப் பதிவுகளுடன் ஆங்கில அல்லது தமிழ் எழுத்துக்கூட்டலில் ஒப்பிடப்படுகிறது."
+
+#: templates/tourist/check.html
+msgid "Read the answer"
+msgstr "பதிலைப் படிக்கவும்"
+
+#: templates/tourist/check.html
+msgid "Found, details differ, several possible matches, or not found, each in plain words."
+msgstr "உள்ளது, விவரங்கள் வேறுபடுகின்றன, பல சாத்தியமான பொருத்தங்கள், அல்லது காணப்படவில்லை: ஒவ்வொன்றும் எளிய சொற்களில்."
+
+#: templates/tourist/check.html
+msgid "Ask if unsure"
+msgstr "சந்தேகம் இருந்தால் கேளுங்கள்"
+
+#: templates/tourist/check.html
+msgid "If anything is unclear, ask the host or the district tourism office before you book."
+msgstr "ஏதேனும் தெளிவில்லை என்றால், முன்பதிவு செய்வதற்கு முன் விருந்தோம்புநரிடமோ மாவட்டச் சுற்றுலா அலுவலகத்திடமோ கேட்கவும்."
+
+#: templates/tourist/check.html
+msgid "What we keep"
+msgstr "நாங்கள் வைத்திருப்பவை"
 
 #: templates/tourist/check.html
 msgid "The answer only says whether the registry contains the stay. We store only the type of answer and the time of the check. What you type, your internet address and any other identifier are not stored in our database or logs; a short-lived in-memory counter limits repeated checks. This page sets no cookies."
 msgstr "பதிவேட்டில் அந்தத் தங்குமிடம் உள்ளதா என்பதை மட்டுமே பதில் சொல்கிறது. பதிலின் வகையையும் சரிபார்த்த நேரத்தையும் மட்டுமே சேமிக்கிறோம். நீங்கள் தட்டச்சு செய்வது, உங்கள் இணைய முகவரி, வேறு எந்த அடையாளமும் எங்கள் தரவுத்தளத்திலோ பதிவுக் கோப்புகளிலோ சேமிக்கப்படுவதில்லை; திரும்பத் திரும்பச் சரிபார்ப்பதைக் கட்டுப்படுத்த, சிறிது நேரம் மட்டும் நினைவகத்தில் இருக்கும் ஒரு எண்ணிக்கை பயன்படுகிறது. இந்தப் பக்கம் குக்கீகளை அமைப்பதில்லை."
+
+#: templates/tourist/check.html
+msgid "What a missing entry means"
+msgstr "பதிவு இல்லையென்றால் அதன் பொருள்"
+
+#: templates/tourist/check.html
+msgid "A stay that is not in the registry has not been judged by this check. Registries can be incomplete or out of date, so ask the district tourism office if you need to know more."
+msgstr "பதிவேட்டில் இல்லாத ஒரு தங்குமிடம் இந்தச் சரிபார்ப்பால் மதிப்பிடப்படவில்லை. பதிவேடுகள் முழுமையற்றதாகவோ பழையதாகவோ இருக்கலாம்; மேலும் அறிய மாவட்டச் சுற்றுலா அலுவலகத்திடம் கேட்கவும்."
 
 #: tourist/forms.py
 msgid "Name of the stay"

@@ -46,7 +46,7 @@
 </section>
 {% endif %}
 
-<form method="post" action="{{ page_url }}" enctype="multipart/form-data" novalidate>
+<form method="post" action="{{ page_url }}" enctype="multipart/form-data" class="panel" novalidate>
   {% csrf_token %}
   {% if form.non_field_errors %}<div class="alert alert--error" role="alert">{% for err in form.non_field_errors %}<p>{{ err }}</p>{% endfor %}</div>{% endif %}
   <div class="field">
@@ -67,7 +67,7 @@
     </select>
   </div>
   {% endif %}
-  <button type="submit" class="button">{% translate "Check file" %}</button>
+  <div class="actions"><button type="submit" class="button">{% include "icons/_icon.html" with name="upload" %}{% translate "Check file" %}</button></div>
 </form>
 
 <h2 id="recent-heading">{% translate "Recent uploads" %}</h2>

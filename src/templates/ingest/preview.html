@@ -9,6 +9,7 @@
   <p><strong>{% translate "Not saved yet." %}</strong> {% translate "The file passed all checks. Review the summary and the first rows, then save or cancel." %}</p>
 </div>
 
+<div class="panel">
 <dl class="facts">
   <dt>{% translate "File" %}</dt><dd>{{ source_name|default:"-" }}</dd>
   <dt>{% translate "Rows" %}</dt><dd>{{ row_count }}</dd>
@@ -20,6 +21,7 @@
   <dd><ul class="plain">{% for district, n in district_counts %}<li>{{ district.name_en }}: {{ n }}</li>{% endfor %}</ul></dd>
   <dt>{% translate "File fingerprint (SHA-256)" %}</dt><dd><code class="mono">{{ check.sha256 }}</code></dd>
 </dl>
+</div>
 
 <h2 id="sample-heading">{% blocktranslate count counter=sample|length with total=row_count %}First {{ counter }} row of {{ total }}{% plural %}First {{ counter }} rows of {{ total }}{% endblocktranslate %}</h2>
 <div class="table-wrap" tabindex="0" role="region" aria-labelledby="sample-heading">
