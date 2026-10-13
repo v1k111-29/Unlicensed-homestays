@@ -1,6 +1,6 @@
 # AGENTS.md — Instructions for AI coding agents and contributors
 
-> Project: **Verified Stays** · Status: modules M0–M12 built and merged on `main` (CI green); nothing deployed yet (hosting, backup and demo accounts are pending human setup); video not recorded
+> Project: **Verified Stays** · Status: modules M0–M12, the admin screens (account management, audit log; D92-D93) and the UI redesign (D94) built and merged on `main` (CI green); nothing deployed yet (hosting, backup and demo accounts are pending human setup); video not recorded
 > Labels used across all docs: **[V]** verified, **[E]** estimated, **[A]** assumed.
 
 ## 1. What this project is
@@ -16,6 +16,7 @@ A web tool that (a) helps Tamil Nadu district officers find listings that may be
 | `docs/architecture.md` | Architecture, data model, API, folders |
 | `docs/data-and-matching.md` | Pipeline, scoring, evaluation |
 | `docs/security-and-privacy.md` | Roles, audit, privacy rules |
+| `docs/ui-design-brief.md` | Binding UI rules: tokens, components, contrast table (tested) |
 | `docs/open-questions.md` | Unresolved items — do not guess these |
 
 ## 3. Non-negotiable rules (hard constraints)
@@ -40,7 +41,7 @@ A web tool that (a) helps Tamil Nadu district officers find listings that may be
 - Use parallel sub-agents only for independent tasks (e.g., writing tests vs. translating strings) and merge results through the human-reviewed branch.
 
 ## 5. Stack (see `docs/decisions.md` D4–D10 for rationale)
-- Python 3.11 [V: local .venv], Django 5.2 LTS (pin `<6`: Django 6 needs Python 3.12+ [V]), PostgreSQL, server-rendered templates + HTMX, `rapidfuzz`, `indic-transliteration` [A], WhiteNoise, Gunicorn, Docker.
+- Python 3.11 [V: local .venv], Django 5.2 LTS (pin `<6`: Django 6 needs Python 3.12+ [V]), PostgreSQL, server-rendered templates (HTMX allowed by D5 but not used; pages need no JavaScript), `rapidfuzz`, `indic-transliteration` [A], WhiteNoise, Gunicorn, Docker.
 - Hosting (proposed, pending budget discussion): Render free web service + Neon free Postgres; backups to Cloudflare R2 [A]. **Verify free-tier limits at signup.**
 - CI: GitHub Actions (ruff, pytest, pip-audit, gitleaks, eval gate, deploy on `main`).
 
@@ -54,7 +55,9 @@ verified-stays/
     config/                 # settings, urls, wsgi
     accounts/ registry/ listings/ matching/ reviews/ audit/ tourist/
     ingest/                 # CSV parsing/validation + loaders (plain package, not an app)
-    templates/ static/ locale/ta/
+    templates/              # icons/ = hand-written inline SVG set
+    static/                 # css/app.css (the only stylesheet), img/
+    locale/ta/
   tests/                    # unit, permissions, eval, smoke
   Dockerfile  .github/workflows/ (ci.yml, backup.yml)
 ```
@@ -83,6 +86,8 @@ Every `make <target>` in other docs means `python tasks.py <target>`.
 - Every state-changing action writes an audit entry via `audit.log(actor, action, entity, entity_id, meta)`.
 - All user-visible strings use Django `gettext` (`{% trans %}` / `_()`); never hard-code English or Tamil in templates or views.
 - No fixed-width layouts (Tamil text is longer). Status is never conveyed by colour alone.
+- UI follows `docs/ui-design-brief.md`. One stylesheet, `static/css/app.css`, tokens only; every new colour pair gets a row in the brief's contrast table (a test recomputes it).
+- Strict CSP (`config/security.py`): no inline scripts, `<style>` or `style=` attributes, no event handlers, no third-party URLs in templates (tested).
 - Matching is deterministic: same inputs + same parameter version = same outputs. Store the parameter version on each `match_run`.
 
 ## 9. Testing requirements
