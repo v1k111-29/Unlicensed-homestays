@@ -8,6 +8,7 @@ Append newest entries at the top. Each entry: module · done · partial · decis
 - Code/context only: `tourist.service.registry_summary()` and `mode`/`stats` in the tourist view (+4 tests). No view, URL, permission, audit or business-rule change. 40 new strings with machine Tamil (marked needs review); 3 strings removed.
 - Dev database: to screenshot officer pages, `demo_listings.csv` was uploaded as `demo_officer_nilgiris`, one matching run started and one evidence page created (synthetic, local app flows).
 - Screenshots: 44 JPEGs in `docs/screenshots/` (headless Chrome via a scratch CDP script). Local only: the folder is git-ignored by the human's choice.
+- Verified: `tasks.py lint` clean; `messages --check` up to date; SQLite scratch 704 passed, 4 skipped; PostgreSQL (Neon dev, `tasks.py test`) 708 passed. Neon teardown leaves `test_neondb` open by a pooled session; drop it before the next run.
 - Not observed: real-browser keyboard/focus walk, 200% zoom, screen reader, Safari/Firefox; upload preview page (needs a POST) not screenshotted.
 - Next: human review of the look; Tamil review of the new strings (Q3); push and CI.
 
