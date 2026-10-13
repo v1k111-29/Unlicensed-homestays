@@ -1,0 +1,15 @@
+# Gitleaks config (CI: gitleaks/gitleaks-action reads .gitleaks.toml). Extends the default rules.
+# These allowlist entries are false positives, not secrets:
+#  - vendored third-party agent skill docs and their lock file (content hashes, example URLs);
+#  - one old commit whose source briefly held a public password-alphabet literal
+#    (letters and digits, no secret); the literal is no longer in the source.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Third-party skill docs and a public alphabet literal"
+paths = [
+  '''^\.claude/skills/''',
+  '''^skills-lock\.json$''',
+]
+commits = ["a091b9b9737f4395d8d381407148111fa4332713"]
