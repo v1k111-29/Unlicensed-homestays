@@ -9,6 +9,7 @@ Only the result type and time are logged (``tourist.service.record``).
 
 from __future__ import annotations
 
+from django.conf import settings
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.views.decorators.cache import never_cache
@@ -41,4 +42,11 @@ def check(request: HttpRequest) -> HttpResponse:
                 service.record(result.outcome)
                 context["result"] = result
                 context["differences"] = [DIFFERENCE_TEXT[d] for d in result.differences]
+    # Page furniture (D94): which search mode the chips show, and real registry counts.
+    data = form.data if form.is_bound else {}
+    by_name = not data.get("licence") and (data.get("name") or data.get("locality"))
+    context["mode"] = "name" if by_name else "licence"
+    summary = None if context.get("unavailable") else service.registry_summary()
+    if summary:
+        context["stats"] = {**summary, "languages": len(settings.LANGUAGES)}
     return render(request, "tourist/check.html", context, status=status)

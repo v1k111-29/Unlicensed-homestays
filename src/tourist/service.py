@@ -226,6 +226,20 @@ def check(q: Query, *, batch: UploadBatch | None = None) -> CheckResult:
     return CheckResult(result.outcome, result.entries, result.differences, as_of)
 
 
+def registry_summary() -> dict[str, int] | None:
+    """Real counts for the public statistics strip (D94): entries and districts in the registry
+    tourists search. ``None`` when no registry is loaded, so the page hides the strip."""
+    try:
+        batch = current_registry_batch()
+    except RegistryUnavailable:
+        return None
+    rows = RegistryEntry.objects.filter(batch=batch)
+    entries = rows.count()
+    if not entries:
+        return None
+    return {"entries": entries, "districts": rows.values("district").distinct().count()}
+
+
 def record(outcome: str) -> None:
     """Log a completed check: result type and timestamp only (AGENTS.md rule 5)."""
     TouristCheck.objects.create(result=outcome)

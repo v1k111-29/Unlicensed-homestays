@@ -2,8 +2,12 @@
 {% load i18n %}
 {% block title %}{% translate "Create an account" %} · {% translate "Verified Stays" %}{% endblock %}
 {% block content %}
+<p class="breadcrumb"><a href="{% url 'account_list' %}">{% include "icons/_icon.html" with name="back" %}{% translate "Accounts" %}</a></p>
 <div class="page-head">
-  <h1>{% translate "Create an account" %}</h1>
+  <div>
+    <p class="eyebrow">{% include "icons/_icon.html" with name="people" %}{% translate "Administration" %}</p>
+    <h1>{% translate "Create an account" %}</h1>
+  </div>
   <p class="lede">{% translate "Synthetic demo accounts only; never a real person's name. The system creates a one-time password and shows it once on the next page." %}</p>
 </div>
 
@@ -14,7 +18,7 @@
 </div>
 {% endif %}
 
-<form method="post" action="{% url 'account_create' %}" class="narrow" novalidate>
+<form method="post" action="{% url 'account_create' %}" class="panel narrow" novalidate>
   {% csrf_token %}
   <div class="field">
     <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
@@ -38,7 +42,7 @@
     </select>
   </div>
   <div class="actions">
-    <button type="submit" class="button">{% translate "Create account" %}</button>
+    <button type="submit" class="button">{% include "icons/_icon.html" with name="user" %}{% translate "Create account" %}</button>
     <a href="{% url 'account_list' %}">{% translate "Back to accounts" %}</a>
   </div>
 </form>

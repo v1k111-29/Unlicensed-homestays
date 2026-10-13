@@ -2,8 +2,10 @@
 {% load i18n %}
 {% block title %}{% translate "Sign in" %} · {% translate "Verified Stays" %}{% endblock %}
 {% block content %}
-<section class="wrap--narrow">
-  <h1>{% translate "Officer sign in" %}</h1>
+<div class="auth-grid">
+<section class="auth-card" aria-labelledby="signin-heading">
+  <p class="eyebrow">{% include "icons/_icon.html" with name="lock" %}{% translate "For officers" %}</p>
+  <h1 id="signin-heading">{% translate "Officer sign in" %}</h1>
 
   {% if throttled %}
   <div class="alert alert--error" role="alert" id="form-errors">
@@ -37,10 +39,19 @@
     </div>
     <input type="hidden" name="next" value="{{ next }}">
     <div class="actions">
-      <button type="submit" class="button">{% translate "Sign in" %}</button>
+      <button type="submit" class="button button--large button--block">{% translate "Sign in" %}</button>
     </div>
   </form>
-
-  <p class="muted">{% translate "For district officers and administrators. Tourists do not need an account." %}</p>
 </section>
+<section class="auth-aside" aria-labelledby="signin-about">
+  <h2 id="signin-about">{% translate "Who signs in here" %}</h2>
+  <p class="muted">{% translate "For district officers and administrators. Tourists do not need an account." %}</p>
+  <ul>
+    <li>{% translate "Officers see listings of their own district only." %}</li>
+    <li>{% translate "Every decision is recorded in the audit log." %}</li>
+    <li>{% translate "Results prioritise listings for officer review. They are not findings." %}</li>
+  </ul>
+  {% url 'tourist_check' as check_url %}{% if check_url %}<p><a href="{{ check_url }}">{% include "icons/_icon.html" with name="search" %} {% translate "Check a stay without signing in" %}</a></p>{% endif %}
+</section>
+</div>
 {% endblock %}

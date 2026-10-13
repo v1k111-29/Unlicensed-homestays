@@ -354,3 +354,37 @@ def test_rate_limit_ignores_spoofed_forwarded_for_behind_proxy(registry, setting
     # A different client-supplied prefix does not give a fresh allowance.
     second = client.post(URL, data, HTTP_X_FORWARDED_FOR=f"2.2.2.2, {SECRET_IP}")
     assert second.status_code == 429
+
+
+# ------------------------------------------------------------------ page furniture (D94)
+
+
+def test_registry_summary_counts_the_searched_registry_only(registry) -> None:
+    # The reserved test set is never searched, so it is never counted either (rule 9).
+    test_batch = UploadBatch.objects.create(
+        type="registry", dataset="synthetic-test", file_sha256="t9" * 32, row_count=1
+    )
+    _entry(test_batch, registry["mad"], "SYN-MDU-99999-Z", "Held Out Stay", "Simmakkal")
+    assert service.registry_summary() == {"entries": 5, "districts": 2}
+
+
+def test_registry_summary_is_none_without_a_registry(db) -> None:
+    assert service.registry_summary() is None
+
+
+def test_stats_strip_shows_real_counts_and_hides_without_data(registry, db) -> None:
+    html = _text(Client().get(URL))
+    assert 'class="stats"' in html
+    assert re.search(r"Registry entries \(synthetic\)</dt><dd>5</dd>", html)
+    assert re.search(r"Districts in the registry</dt><dd>2</dd>", html)
+    RegistryEntry.objects.all().delete()
+    UploadBatch.objects.all().delete()
+    assert 'class="stats"' not in _text(Client().get(URL))
+
+
+def test_mode_chip_follows_the_submitted_fields(registry) -> None:
+    licence_first = _text(Client().get(URL))
+    assert re.search(r'id="mode-licence" checked', licence_first)
+    by_name = _text(_post(Client(), name="Kurinji Mist Homestay"))  # locality error
+    assert re.search(r'id="mode-name" checked', by_name)
+    assert 'aria-invalid="true"' in by_name

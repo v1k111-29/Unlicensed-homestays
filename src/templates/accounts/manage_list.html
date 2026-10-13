@@ -3,10 +3,13 @@
 {% block title %}{% translate "Accounts" %} · {% translate "Verified Stays" %}{% endblock %}
 {% block content %}
 <div class="page-head">
-  <h1>{% translate "Accounts" %}</h1>
+  <div>
+    <p class="eyebrow">{% include "icons/_icon.html" with name="people" %}{% translate "Administration" %}</p>
+    <h1>{% translate "Accounts" %}</h1>
+  </div>
   <p class="lede">{% translate "Officer and administrator accounts for all districts. Synthetic demo accounts only. Accounts are disabled, never deleted, so the audit log keeps its names." %}</p>
 </div>
-<p><a class="button" href="{% url 'account_create' %}">{% translate "Create an account" %}</a></p>
+<div class="actions"><a class="button" href="{% url 'account_create' %}">{% include "icons/_icon.html" with name="user" %}{% translate "Create an account" %}</a></div>
 
 {% if accounts %}
 <div class="table-wrap" tabindex="0" role="region" aria-labelledby="accounts-caption">
@@ -28,7 +31,7 @@
         <th scope="row">{{ a.username }}{% if a.pk == user.pk %} <span class="muted">{% translate "(you)" %}</span>{% endif %}</th>
         <td>{{ a.get_role_display }}</td>
         <td>{% if a.district %}{{ a.district.name_en }}{% else %}{% translate "All districts" %}{% endif %}</td>
-        <td>{% if a.is_active %}{% translate "Active" %}{% else %}<strong>{% translate "Disabled" %}</strong>{% endif %}</td>
+        <td class="nowrap">{% if a.is_active %}{% include "icons/_icon.html" with name="check" %} {% translate "Active" %}{% else %}<strong>{% include "icons/_icon.html" with name="lock" %} {% translate "Disabled" %}</strong>{% endif %}</td>
         <td class="nowrap">{% if a.last_login %}{{ a.last_login|date:"Y-m-d H:i" }}{% else %}<span class="muted">{% translate "Never" %}</span>{% endif %}</td>
         <td>
           <div class="actions">

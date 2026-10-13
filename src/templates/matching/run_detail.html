@@ -2,12 +2,13 @@
 {% load i18n %}
 {% block title %}{% blocktranslate with id=run.pk %}Run {{ id }}{% endblocktranslate %} · {% translate "Verified Stays" %}{% endblock %}
 {% block content %}
-<p class="no-print"><a href="{% url 'runs' %}">{% translate "Matching runs" %}</a></p>
+<p class="breadcrumb no-print"><a href="{% url 'runs' %}">{% include "icons/_icon.html" with name="back" %}{% translate "Matching runs" %}</a></p>
 <div class="page-head">
   <h1>{% blocktranslate with id=run.pk district=run.district.name_en %}Run {{ id }}: {{ district }}{% endblocktranslate %}</h1>
 </div>
 <p>{% translate "Results prioritise listings for officer review. They are not findings." %} <a href="{% url 'queue' %}">{% translate "Open the review queue" %}</a></p>
 
+<div class="panel">
 <dl class="facts">
   <dt>{% translate "District" %}</dt><dd>{{ run.district.name_en }}</dd>
   <dt>{% translate "Listings checked" %}</dt><dd>{{ total }}</dd>
@@ -19,12 +20,13 @@
   <dt>{% translate "Started by" %}</dt><dd>{% if run.created_by %}{{ run.created_by.get_username }}{% else %}{% translate "System" %}{% endif %}</dd>
   <dt>{% translate "Started" %}</dt><dd>{{ run.created_at|date:"Y-m-d H:i" }}</dd>
 </dl>
+</div>
 
 <h2>{% translate "Results by status" %}</h2>
 {% if total %}
-<dl class="facts">
+<dl class="metric-list">
   {% for s in status_totals %}
-  <dt>{{ s.label }}</dt><dd>{{ s.count }}</dd>
+  <div><dt>{{ s.label }}</dt><dd>{{ s.count }}</dd></div>
   {% endfor %}
 </dl>
 

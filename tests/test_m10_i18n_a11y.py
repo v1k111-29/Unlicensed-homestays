@@ -536,7 +536,15 @@ def test_admin_screens_accessible_with_states(lang, users, english_sentences) ->
 
     # Audit log: rows, an empty filtered result and an invalid filter (error state).
     assert AuditLog.objects.exists()  # force_login wrote a login row
-    assert "audit-caption" in page("/admin/audit/")
+    html = page("/admin/audit/")
+    assert "audit-caption" in html
+    # Redesigned shell (D94): the nav marks the current admin page; icons are decorative only.
+    assert f'href="{u(lang, "/admin/audit/")}" aria-current="page"' in html
+    assert html.count("<svg") == html.count('aria-hidden="true" focusable="false"')
+    # Dashboard tiles for the two admin screens, each a real link with a heading.
+    dash = page("/dashboard/")
+    for path in ("/admin/audit/", "/admin/accounts/"):
+        assert f'<h3 class="tile__title"><a href="{u(lang, path)}">' in dash
     assert "empty-state" in page("/admin/audit/", actor="zzz-nobody")
     html = page("/admin/audit/", 400, date_from="not-a-date")
     assert 'role="alert"' in html and 'aria-invalid="true"' in html

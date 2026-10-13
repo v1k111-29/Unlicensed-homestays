@@ -8,3 +8,5 @@ __pycache__/
 staticfiles/
 .claude/worktrees/
 .dev-accounts.txt
+# Local UI screenshots (D94); regenerated on demand, not kept in the repo
+docs/screenshots/

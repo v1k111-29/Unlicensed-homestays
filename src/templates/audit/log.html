@@ -3,7 +3,10 @@
 {% block title %}{% translate "Audit log" %} · {% translate "Verified Stays" %}{% endblock %}
 {% block content %}
 <div class="page-head">
-  <h1>{% translate "Audit log" %}</h1>
+  <div>
+    <p class="eyebrow">{% include "icons/_icon.html" with name="lock" %}{% translate "Administration" %}</p>
+    <h1>{% translate "Audit log" %}</h1>
+  </div>
   <p class="lede">{% translate "Read-only record of sign-ins, uploads, matching runs, decisions and account changes, newest first. Entries cannot be changed or removed." %}</p>
 </div>
 
@@ -30,7 +33,7 @@
   </div>
   {% endfor %}
   <div class="actions">
-    <button type="submit" class="button">{% translate "Apply filters" %}</button>
+    <button type="submit" class="button">{% include "icons/_icon.html" with name="search" %}{% translate "Apply filters" %}</button>
     <a href="{% url 'audit_log' %}">{% translate "Clear" %}</a>
   </div>
 </form>
@@ -71,9 +74,9 @@
 
 {% if page.paginator.num_pages > 1 %}
 <nav class="pagination" aria-label="{% translate 'Audit log pages' %}">
-  {% if page.has_previous %}<a href="?{% if page_query %}{{ page_query }}&amp;{% endif %}page={{ page.previous_page_number }}">{% translate "Previous" %}</a>{% endif %}
+  {% if page.has_previous %}<a href="?{% if page_query %}{{ page_query }}&amp;{% endif %}page={{ page.previous_page_number }}">{% include "icons/_icon.html" with name="back" %}{% translate "Previous" %}</a>{% endif %}
   <span aria-current="page">{% blocktranslate with n=page.number total=page.paginator.num_pages %}Page {{ n }} of {{ total }}{% endblocktranslate %}</span>
-  {% if page.has_next %}<a href="?{% if page_query %}{{ page_query }}&amp;{% endif %}page={{ page.next_page_number }}">{% translate "Next" %}</a>{% endif %}
+  {% if page.has_next %}<a href="?{% if page_query %}{{ page_query }}&amp;{% endif %}page={{ page.next_page_number }}">{% translate "Next" %}{% include "icons/_icon.html" with name="arrow" %}</a>{% endif %}
 </nav>
 {% endif %}
 {% elif not invalid %}

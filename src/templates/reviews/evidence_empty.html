@@ -2,7 +2,7 @@
 {% load i18n %}
 {% block title %}{% translate "Evidence page" %} · {% translate "Verified Stays" %}{% endblock %}
 {% block content %}
-<p class="breadcrumb"><a href="{% url 'case_detail' listing.pk %}">{% translate "Back to the case" %}</a></p>
+<p class="breadcrumb"><a href="{% url 'case_detail' listing.pk %}">{% include "icons/_icon.html" with name="back" %}{% translate "Back to the case" %}</a></p>
 <div class="page-head"><h1>{% translate "Evidence page" %}</h1></div>
 <p class="evidence-statement">{% translate "Supporting evidence for officer review, not a finding." %}</p>
 <div class="empty-state">

@@ -2,7 +2,7 @@
 {% load i18n %}
 {% block title %}{{ listing.title }} · {% translate "Case" %} · {% translate "Verified Stays" %}{% endblock %}
 {% block content %}
-<p class="breadcrumb"><a href="{% url 'queue' %}">{% translate "Review queue" %}</a></p>
+<p class="breadcrumb"><a href="{% url 'queue' %}">{% include "icons/_icon.html" with name="back" %}{% translate "Review queue" %}</a></p>
 <div class="page-head">
   <h1>{{ listing.title }}</h1>
   {% if result %}<p><span class="badge badge--{{ result.band }}">{{ band_label }}</span></p>{% endif %}

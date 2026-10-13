@@ -2,6 +2,8 @@
 {% load i18n %}
 {% block title %}{% translate "Page not found" %} · {% translate "Verified Stays" %}{% endblock %}
 {% block content %}
+<div class="status-page">
+<span class="status-page__icon">{% include "icons/_icon.html" with name="search" %}</span>
 <div class="page-head">
   <h1>{% translate "Page not found" %}</h1>
 </div>
@@ -9,4 +11,5 @@
   <p>{% translate "The page does not exist, or it is not available to your account." %}</p>
 </div>
 <p>{% url 'home' as home_url %}<a href="{{ home_url|default:'/' }}">{% translate "Go to the start page" %}</a></p>
+</div>
 {% endblock %}

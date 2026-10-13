@@ -43,6 +43,7 @@ Admin screens (after M12): audit log (rows, empty filter result, invalid filter)
 
 Not verified [A]:
 - No real browser was used: visible focus ring, actual tab order through the rendered layout, 200% zoom / reflow and Tamil wrapping at 360px width are designed for (brief §6, §14) but not observed.
+- D94 redesign: every core screen was rendered in headless Chrome at 1280px and 360px (public pages and the dashboard, queue, case and login also in Tamil) and the full-page screenshots were saved locally in `docs/screenshots/` (synthetic data; git-ignored, not in the repo). Tamil wrapping at 360px was observed there [V, by eye]; wide officer tables scroll horizontally inside their labelled region at 360px. Still not observed: keyboard focus order and focus visibility in a real browser, 200% zoom, screen-reader output, Safari/Firefox (the form-mode chips need CSS `:has()`; without it both field groups show).
 - No screen-reader test (NVDA / VoiceOver / TalkBack) has been done; the checklist item above stays open.
 - No automated rule engine (axe-core etc.) was run; the static checks cover structure only.
 - Tamil wording and terminology are unreviewed (Q38).
