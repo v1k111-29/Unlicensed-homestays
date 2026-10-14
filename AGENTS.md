@@ -21,7 +21,7 @@ A web tool that (a) helps Tamil Nadu district officers find listings that may be
 
 ## 3. Non-negotiable rules (hard constraints)
 1. **The system never declares a stay "unlicensed".** It only prioritises listings for human review. Only an officer can set `suspected_unlicensed`, and a written reason is mandatory.
-2. **Tourist-facing wording is neutral.** "Not found" must always carry: *"This does not mean the stay is illegal. The registry may be incomplete."* Never use the words "illegal", "fake" or "unlicensed" in tourist-facing text.
+2. **Tourist-facing wording is neutral.** "Not found" must always carry: *"This does not mean the stay is illegal. The registry may be incomplete."* Never use the words "illegal", "fake" or "unlicensed" in tourist-facing text. Only exception: that disclaimer itself, defined once in `src/tourist/wording.py`; templates may not contain the word (test-enforced, D95).
 3. **Synthetic data only.** No real owner names, phone numbers, Aadhaar-like IDs, or real business names. Synthetic names must be checked so they do not match real businesses. Label synthetic data as synthetic in the UI and docs.
 4. **No scraping** of booking platforms and no automated fetching of third-party listing pages. A URL may be stored as a reference string only.
 5. **No tourist IP addresses or identifiers stored.** Tourist checks log result type + timestamp only.
