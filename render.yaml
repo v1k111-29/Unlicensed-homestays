@@ -35,6 +35,15 @@ services:
         value: "1"
       - key: DJANGO_LOG_LEVEL
         value: INFO
+      # Demo sign-in hint on the login page (D96). Set in the dashboard, never in this file.
+      - key: DEMO_OFFICER_USERNAME
+        sync: false
+      - key: DEMO_OFFICER_PASSWORD
+        sync: false
+      - key: DEMO_ADMIN_USERNAME
+        sync: false
+      - key: DEMO_ADMIN_PASSWORD
+        sync: false
       # 512 MB free instance [A]: two Gunicorn workers. The tourist rate limit is per worker
       # (D88), so 2 workers allow up to 2 x 20 checks per address per 5 minutes.
       - key: WEB_CONCURRENCY

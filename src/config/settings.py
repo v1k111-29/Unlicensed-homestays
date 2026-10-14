@@ -210,6 +210,16 @@ CACHES = {
     },
 }
 
+# --- Demo sign-in hint (D96): the login page shows these accounts only when both values of a
+# pair are set, so evaluators of the synthetic demo can sign in. Environment only, never in
+# code (AGENTS.md rule 8). Leave unset for any deployment with real data. ---
+DEMO_LOGIN_ACCOUNTS = [
+    {"role": role, "username": username, "password": password}
+    for role in ("officer", "admin")
+    if (username := os.environ.get(f"DEMO_{role.upper()}_USERNAME", "").strip())
+    and (password := os.environ.get(f"DEMO_{role.upper()}_PASSWORD", ""))
+]
+
 # --- Logging (M11, D84): JSON lines on stdout, personal data scrubbed (config.logs). No
 # request objects, client addresses or form data are written. Gunicorn's access log stays off
 # (scripts/docker-start.sh), so the app writes no tourist addresses (AGENTS.md rule 5). ---
