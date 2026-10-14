@@ -12,6 +12,7 @@ from django.utils.translation import gettext as _
 
 import audit
 from accounts import throttle
+from accounts.models import User
 from accounts.permissions import Capability, authenticated_only, has_capability, is_admin
 from accounts.signals import ANONYMOUS_ACTOR
 
@@ -50,7 +51,32 @@ class LoginView(auth_views.LoginView):
         context = super().get_context_data(**kwargs)
         context["throttle"] = throttle.describe()
         context["idle_minutes"] = settings.SESSION_COOKIE_AGE // 60
+        context["demo_accounts"] = demo_accounts()
         return context
+
+
+def demo_accounts() -> list[dict[str, Any]]:
+    """Demo accounts to show on the login page (D96): only those configured in the
+    environment that exist and are active, with the officer's district."""
+    labels = {"officer": _("Officer"), "admin": _("Administrator")}
+    shown = []
+    for item in settings.DEMO_LOGIN_ACCOUNTS:
+        user = (
+            User.objects.filter(username=item["username"], is_active=True)
+            .select_related("district")
+            .first()
+        )
+        if user is None:
+            continue
+        shown.append(
+            {
+                "role": labels[item["role"]],
+                "district": user.district,
+                "username": item["username"],
+                "password": item["password"],
+            }
+        )
+    return shown
 
 
 class LogoutView(auth_views.LogoutView):

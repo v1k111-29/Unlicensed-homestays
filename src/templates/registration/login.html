@@ -22,6 +22,23 @@
   </div>
   {% endif %}
 
+  {% if demo_accounts %}
+  <div class="alert alert--info" id="demo-accounts">
+    <h2>{% translate "Demo accounts for evaluators" %}</h2>
+    <p>{% translate "This demonstration uses synthetic data only. Anyone with these details can sign in." %}</p>
+    {% for account in demo_accounts %}
+    <dl class="facts">
+      <dt>{% translate "Role" %}</dt>
+      <dd>{{ account.role }}{% if account.district %} · {{ account.district.name_en }}{% if account.district.name_ta %} <span lang="ta">({{ account.district.name_ta }})</span>{% endif %}{% endif %}</dd>
+      <dt>{% translate "Username" %}</dt>
+      <dd><code>{{ account.username }}</code></dd>
+      <dt>{% translate "Password" %}</dt>
+      <dd><code>{{ account.password }}</code></dd>
+    </dl>
+    {% endfor %}
+  </div>
+  {% endif %}
+
   <form method="post" action="{% url 'login' %}" novalidate>
     {% csrf_token %}
     <div class="field">
