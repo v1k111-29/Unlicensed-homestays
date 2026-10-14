@@ -16,6 +16,8 @@ District scoping is enforced in a shared queryset helper and covered by permissi
 ## 2. Authentication and sessions
 Django auth, argon2 hashing, secure/HttpOnly/SameSite cookies, CSRF on, login rate-limiting, session expiry. 2FA is on the roadmap.
 
+Demo sign-in hint (D96): when the `DEMO_*` variables are set, the login page shows the demo officer and admin credentials to anyone. Synthetic demo only: any visitor can then act as admin (disable accounts, reset passwords). Unset the variables for any real-data use and reset the demo passwords after judging.
+
 ## 3. Audit log
 Events: login (success/fail), upload, registry upload, match run, decision, evidence generation, user changes (`user_created` from the command; `account.create`, `account.disable`, `account.enable`, `account.reset_password` from the admin screen, D92). Fields: actor, action, entity, entity_id, meta, timestamp. Append-only via DB trigger; no code path updates or deletes.
 

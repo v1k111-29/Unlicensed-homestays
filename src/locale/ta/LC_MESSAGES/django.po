@@ -17,7 +17,7 @@ msgstr ""
 msgid "Username"
 msgstr "பயனர் பெயர்"
 
-#: accounts/manage_views.py templates/accounts/dashboard.html templates/accounts/manage_list.html templates/accounts/manage_password.html
+#: accounts/manage_views.py templates/accounts/dashboard.html templates/accounts/manage_list.html templates/accounts/manage_password.html templates/registration/login.html
 msgid "Role"
 msgstr "பங்கு"
 
@@ -55,7 +55,7 @@ msgstr "உங்கள் அமர்வு காலாவதியாகி�
 msgid "Admin"
 msgstr "நிர்வாகி"
 
-#: accounts/models.py templates/reviews/case.html templates/reviews/evidence.html
+#: accounts/models.py accounts/views.py templates/reviews/case.html templates/reviews/evidence.html
 msgid "Officer"
 msgstr "அலுவலர்"
 
@@ -91,6 +91,10 @@ msgstr "உங்கள் சொந்தக் கணக்கை நீங்
 #: accounts/services.py
 msgid "The last active administrator cannot be disabled."
 msgstr "செயலில் உள்ள கடைசி நிர்வாகியை முடக்க முடியாது."
+
+#: accounts/views.py
+msgid "Administrator"
+msgstr "நிர்வாகி"
 
 #: accounts/views.py
 msgid "You have been signed out."
@@ -1338,6 +1342,14 @@ msgstr "%(n)s தோல்வியுற்ற முயற்சிகளு�
 #, python-format
 msgid "Please sign in to continue. Sessions end after %(m)s minutes without activity."
 msgstr "தொடர உள்நுழையவும். %(m)s நிமிடங்கள் செயல்பாடு இல்லாவிட்டால் அமர்வு முடிவடையும்."
+
+#: templates/registration/login.html
+msgid "Demo accounts for evaluators"
+msgstr "மதிப்பீட்டாளர்களுக்கான மாதிரி கணக்குகள்"
+
+#: templates/registration/login.html
+msgid "This demonstration uses synthetic data only. Anyone with these details can sign in."
+msgstr "இந்த செயல்விளக்கம் செயற்கைத் தரவை மட்டுமே பயன்படுத்துகிறது. இந்த விவரங்கள் உள்ள எவரும் உள்நுழையலாம்."
 
 #: templates/registration/login.html
 msgid "Password"

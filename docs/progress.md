@@ -2,6 +2,13 @@
 
 Append newest entries at the top. Each entry: module · done · partial · decisions · problems · next step · stage definition-of-done status.
 
+## Demo sign-in hint (branch `demo-login-hint`, from `main`)
+- Asked by the human: show the demo id and password on the login page for evaluators. D96.
+- Done: `settings.DEMO_LOGIN_ACCOUNTS` from `DEMO_OFFICER_*` / `DEMO_ADMIN_*` env vars (off by default); `accounts.views.demo_accounts()` shows only configured, existing, active accounts with the officer's district; panel on `registration/login.html` (existing `alert--info` and `facts` styles, no new colour pair); `.env.example` and `render.yaml` (`sync: false`) document the variables; 3 new Tamil strings (machine translation, needs review).
+- Risk accepted by the human: admin credentials are public while the variables are set (security-and-privacy.md §2).
+- Verified: `tasks.py lint` clean; `messages --check` up to date; SQLite scratch 743 passed, 4 skipped (6 new tests); login page rendered against the dev database shows both accounts and the Nilgiris district. Local `.env` now carries the four variables (git-ignored).
+- Next: restart the dev server to pick up `.env`; set the four variables on Render at deploy; reset demo passwords after judging.
+
 ## UI redesign: merge of `main` (admin screens) into `ui-redesign`
 - Merged `main` `9e721b8` (admin screens, gitleaks CI fix) into the PR branch; no rebase. The redesign decision was D92 on this branch and D92 on `main` (account screens): the redesign is now **D94**; every redesign reference (brief, app.css, icons, tourist service/view, tests, .gitignore, ui-and-accessibility, the progress entry below) was renumbered. D92 (accounts) and D93 (audit) unchanged.
 - Admin screens moved onto the redesign components, no new CSS and no new colour pair (contrast table unchanged): nav links Audit log / Accounts with icons (admin only), dashboard tiles for both screens (replace main's "Next steps" link list), "Administration" eyebrow on all four admin pages, breadcrumb back to Accounts, create form and one-time password facts in `.panel`, icons on buttons, status column with check / lock icon next to the text. Behaviour, URLs, guards, audit calls unchanged.
