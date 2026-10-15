@@ -10,3 +10,14 @@ staticfiles/
 .dev-accounts.txt
 # Local UI screenshots (D94); regenerated on demand, not kept in the repo
 docs/screenshots/
+# Documentation is kept locally, not in the repository (human's choice). Kept tracked:
+# README.md, docs/ui-design-brief.md (contrast test reads it) and docs/eval-test-run.json
+# (single test-set run record; its presence blocks reruns, AGENTS.md rule 9).
+/*.md
+!/README.md
+docs/*
+!docs/ui-design-brief.md
+!docs/eval-test-run.json
+.claude/skills/
+skills-lock.json
+
