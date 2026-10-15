@@ -10,17 +10,14 @@ Helps Tamil Nadu district administrations prioritise possibly unlicensed homesta
 - **Admin:** upload the registry, read the audit log (read-only), manage officer and admin accounts.
 
 ## What it does not do
-It never declares a stay unlicensed. It does not scrape booking platforms. It does not use real personal data. See `non_essential_features.md`.
-
-## Documentation map
-See `AGENTS.md` §2. Start with `implementationsplan.md`.
+It never declares a stay unlicensed. It does not scrape booking platforms. It does not use real personal data.
 
 ## Quick start (Windows)
 Needs Python 3.11 in the repo `.venv` and a reachable PostgreSQL (local install or a free Neon database; `start.bat` prints the steps if none is found).
 ```
 start.bat
 ```
-It creates a local `.env`, migrates, loads the synthetic data once, creates local demo accounts (passwords in the git-ignored `.dev-accounts.txt`), starts the server and opens `http://127.0.0.1:8000/`. There is no separate client: the app is server-rendered. Hosting for the demo (free tiers): `docs/deploy-runbook.md`.
+It creates a local `.env`, migrates, loads the synthetic data once, creates local demo accounts (passwords in the git-ignored `.dev-accounts.txt`), starts the server and opens `http://127.0.0.1:8000/`. There is no separate client: the app is server-rendered.
 
 ## Licence and data notice
-Licence: **TBD** (see `docs/open-questions.md`). All data in this repository is synthetic and fictional.
+Licence: **TBD**. All data in this repository is synthetic and fictional.
