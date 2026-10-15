@@ -1,3 +1,8 @@
+"""URL routes for sign-in, sign-out and the signed-in landing page.
+
+Included from the project URL conf in `config.urls`.
+"""
+
 from django.urls import path
 
 from accounts import views

@@ -10,6 +10,12 @@ from django.utils.translation import gettext_lazy as _
 
 
 class TouristCheck(models.Model):
+    """One anonymous check log row: the outcome of a completed tourist check, and when.
+
+    Written by `tourist.service.record` only. The `Result` values are the four outcomes the
+    tourist can see.
+    """
+
     class Result(models.TextChoices):
         FOUND = "found", _("Found in the registry")
         DIFFERS = "differs", _("Details differ")

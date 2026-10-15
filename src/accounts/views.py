@@ -18,12 +18,17 @@ from accounts.signals import ANONYMOUS_ACTOR
 
 
 class LoginView(auth_views.LoginView):
+    """The sign-in page. Adds the login throttle in front of Django's own password check."""
+
     template_name = "registration/login.html"
     redirect_authenticated_user = True
 
     def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        """Handle a sign-in attempt, refusing it first if the throttle says the account or
+        address has too many recent failures."""
         username = request.POST.get("username", "")
-        # Count, password check and failure record happen inside one locked slot (D58).
+        # Count, password check and failure record happen inside one locked slot (D58), so two
+        # parallel attempts cannot both pass a count that was taken before either failed.
         with throttle.login_slot(request, username):
             scope = throttle.blocked_scope(request, username)
             if scope is None:
@@ -43,11 +48,14 @@ class LoginView(auth_views.LoginView):
         return self.render_to_response(context, status=429)
 
     def form_invalid(self, form: Any) -> HttpResponse:
+        """Count a failed attempt against the address, but only when both fields were filled in.
+        Blank submissions are not counted as guesses."""
         if form.data.get("username") and form.data.get("password"):
             throttle.record_ip_failure(self.request)
         return super().form_invalid(form)
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        """Add the throttle limits, idle timeout and demo accounts to the login page."""
         context = super().get_context_data(**kwargs)
         context["throttle"] = throttle.describe()
         context["idle_minutes"] = settings.SESSION_COOKIE_AGE // 60
@@ -59,6 +67,7 @@ def demo_accounts() -> list[dict[str, Any]]:
     """Demo accounts to show on the login page (D96): only those configured in the
     environment that exist and are active, with the officer's district."""
     labels = {"officer": _("Officer"), "admin": _("Administrator")}
+    # Only configured, active accounts are listed, so a disabled demo account is never shown.
     shown = []
     for item in settings.DEMO_LOGIN_ACCOUNTS:
         user = (
@@ -83,6 +92,7 @@ class LogoutView(auth_views.LogoutView):
     """POST only (Django default). Adds a short notice on the login page."""
 
     def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        """Sign out, then queue the notice so it shows on the next page."""
         response = super().post(request, *args, **kwargs)
         messages.info(request, _("You have been signed out."))
         return response

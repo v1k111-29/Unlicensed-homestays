@@ -2,6 +2,13 @@
 
 Column sets follow docs/data-and-matching.md §1 and the M1 generator (D35). District names are
 returned as text; the loader resolves them against the `District` table.
+
+Each ``parse_*`` function does the same three things:
+1. Read the file with ``read_csv``, which checks the header and the raw cells.
+2. Turn each row into a small dataclass (``RegistryRow``, ``ListingRow``, ...), using a
+   ``RowChecker`` to validate every field as it goes.
+3. Check the whole file for duplicates, then return a ``Parsed`` object. Its ``errors`` list
+   is sorted by line number, so the user sees the errors in file order.
 """
 
 from dataclasses import dataclass
@@ -12,6 +19,8 @@ from django.utils.translation import gettext as _
 
 from ingest.csvtools import CsvTable, LineError, RowChecker, read_csv
 
+# "Required" means the column must be present in the header. Whether each cell is filled in
+# is checked separately, per column, in the parse function.
 REGISTRY_REQUIRED = ["licence_no", "name", "locality", "district", "valid_to"]
 REGISTRY_OPTIONAL = [
     "address_en",
@@ -23,6 +32,7 @@ REGISTRY_OPTIONAL = [
     "valid_from",
     "status",
 ]
+# The allowed values for the choice columns. Anything else is an error for that row.
 REGISTRY_CATEGORIES = ["homestay", "cottage", "guest_house", "lodge"]
 REGISTRY_STATUSES = ["active", "expired", "suspended"]
 
@@ -41,11 +51,14 @@ LISTING_OPTIONAL = [
 
 GROUND_TRUTH_REQUIRED = ["listing_id", "true_registry_id", "type"]
 GROUND_TRUTH_OPTIONAL = ["noise"]
+# The five kinds of listing in the synthetic answer key (see synthetic-data-spec.md).
 GROUND_TRUTH_TYPES = ["clean", "noisy", "wrong_or_expired", "no_counterpart", "hard_negative"]
 
 
 @dataclass
 class RegistryRow:
+    """One validated row of a registry file, ready to become a ``RegistryEntry``."""
+
     line: int
     licence_no: str
     name: str
@@ -64,6 +77,12 @@ class RegistryRow:
 
 @dataclass
 class ListingRow:
+    """One validated row of a listings file, ready to become a ``Listing``.
+
+    ``raw`` keeps the whole original row as text, so nothing the officer typed is lost even
+    when it is not one of the named fields.
+    """
+
     line: int
     external_id: str
     platform: str
@@ -80,6 +99,8 @@ class ListingRow:
 
 @dataclass
 class GroundTruthRow:
+    """One validated label from the synthetic answer key."""
+
     line: int
     listing_id: str
     true_registry_id: str
@@ -89,17 +110,29 @@ class GroundTruthRow:
 
 @dataclass
 class Parsed:
+    """The result of parsing one file.
+
+    ``sha256`` fingerprints the raw bytes. ``rows`` holds the row objects, and ``errors``
+    lists every problem found. A file is safe to save only when ``ok`` is True.
+    """
+
     sha256: str
     rows: list
     errors: list[LineError]
 
     @property
     def ok(self) -> bool:
+        """True when the file had no errors at all."""
         return not self.errors
 
 
 def _duplicates(table: CsvTable, column: str, errors: list[LineError]) -> None:
-    first: dict[str, int] = {}
+    """Add an error for every row whose value in ``column`` was already seen above it.
+
+    Empty values are skipped, so several rows with no key do not count as duplicates.
+    Each error names the first line that had the value.
+    """
+    first: dict[str, int] = {}  # value -> line where it was first seen
     for line, row in table.rows:
         value = row.get(column, "")
         if not value:
@@ -113,6 +146,7 @@ def _duplicates(table: CsvTable, column: str, errors: list[LineError]) -> None:
 
 
 def parse_registry(data: bytes) -> Parsed:
+    """Parse a registry file (licensed properties). Returns rows and every error found."""
     table = read_csv(data, REGISTRY_REQUIRED, REGISTRY_OPTIONAL)
     errors = list(table.errors)
     rows: list[RegistryRow] = []
@@ -132,18 +166,26 @@ def parse_registry(data: bytes) -> Parsed:
             category=c.choice("category", REGISTRY_CATEGORIES),
             valid_from=c.date("valid_from"),
             valid_to=c.date("valid_to", required=True),
+            # An empty status means the entry is active. "or" applies this default only when
+            # the choice check returned an empty string.
             status=c.choice("status", REGISTRY_STATUSES) or "active",
             district=c.text("district", 100, required=True),
         )
+        # A licence cannot start after it ends. Both dates must be present to compare them.
         if entry.valid_from and entry.valid_to and entry.valid_from > entry.valid_to:
             c.error("valid_from", _("is after valid_to"))
         rows.append(entry)
     _duplicates(table, "licence_no", errors)
+    # Sort by line so the errors read in file order, not in the order the checks ran.
     return Parsed(table.sha256, rows, sorted(errors, key=lambda e: e.line))
 
 
 def parse_listings(data: bytes, require_district: bool) -> Parsed:
-    """`require_district` is True for admin and synthetic loads (D19)."""
+    """Parse a listings file (online homestay listings to be checked).
+
+    `require_district` is True for admin and synthetic loads (D19). Officer uploads may leave
+    the district empty, because the upload uses the officer's own district.
+    """
     table = read_csv(data, LISTING_REQUIRED, LISTING_OPTIONAL)
     errors = list(table.errors)
     rows: list[ListingRow] = []
@@ -163,7 +205,7 @@ def parse_listings(data: bytes, require_district: bool) -> Parsed:
                 lng=lng,
                 claimed_licence_no=c.text("claimed_licence_no", 64),
                 district=c.text("district", 100, required=require_district),
-                raw=dict(row),
+                raw=dict(row),  # a copy, so later changes to `row` cannot change this entry
             )
         )
     _duplicates(table, "listing_id", errors)
@@ -171,6 +213,11 @@ def parse_listings(data: bytes, require_district: bool) -> Parsed:
 
 
 def parse_ground_truth(data: bytes) -> Parsed:
+    """Parse the answer key that says which registry entry each synthetic listing belongs to.
+
+    A listing of type clean, noisy or wrong_or_expired must point at a registry entry. A
+    no_counterpart or hard_negative listing must not, because no real entry exists for it.
+    """
     table = read_csv(data, GROUND_TRUTH_REQUIRED, GROUND_TRUTH_OPTIONAL)
     errors = list(table.errors)
     rows: list[GroundTruthRow] = []
@@ -183,6 +230,7 @@ def parse_ground_truth(data: bytes) -> Parsed:
             type=c.choice("type", GROUND_TRUTH_TYPES, required=True),
             noise=c.text("noise", 100),
         )
+        # The pairing rule above, checked per row.
         needs_entry = truth.type in ("clean", "noisy", "wrong_or_expired")
         if needs_entry and not truth.true_registry_id:
             c.error("true_registry_id", _("required for type '%(type)s'") % {"type": truth.type})

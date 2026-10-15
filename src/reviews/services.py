@@ -1,19 +1,23 @@
 """Review queue, officer decisions and evidence packs (M8, essentialfeatures.md O3-O5).
 
-Business rules live here, not in views (AGENTS.md §8):
-- A "case" is a listing. Its current result is the result of the latest run that covered it.
+This module holds the business rules for the officer review workflow. Views in
+`reviews.views` call these functions; they never write rules of their own (AGENTS.md section 8).
+
+Key ideas, in plain words:
+- A "case" is a listing. Its current result is the result of the latest matching run that
+  covered it.
 - The queue lists current results only, ordered by priority, then lower score first (O3).
-- A case is "decided" when a review exists for its current run; a listing whose current band is
-  `matched_confirmed` is not open either (the pair was confirmed earlier and is not re-flagged,
-  O4). A new run on the same listing reopens the case.
-- Decisions are new `Review` rows (never updated). Only an active officer of the listing's
-  district may record `suspected_unlicensed`, and only with a written reason (AGENTS.md rule 1).
-  The system itself never records any decision.
+- A case is "decided" when a review exists for its current run. A listing whose current band is
+  `matched_confirmed` is not open either, because the pair was confirmed earlier and is not
+  flagged again (O4). A new run on the same listing reopens the case.
+- Decisions are new `Review` rows and are never updated. Only an active officer of the
+  listing's district may record `suspected_unlicensed`, and only with a written reason
+  (AGENTS.md rule 1). The system itself never records any decision.
 - Optimistic concurrency: the decision form carries the run id and the id of the latest review
-  it was rendered with. If either changed meanwhile, nothing is saved (`DecisionConflict`).
+  it was rendered with. If either changed in the meantime, nothing is saved (`DecisionConflict`).
 - Every decision and every evidence pack writes one audit entry.
 
-All reads start from `accounts.scoping.scoped()`; callers pass objects they fetched with
+All reads start from `accounts.scoping.scoped()`. Callers pass objects they fetched with
 `get_scoped_or_404()`. The district is checked again here before any write.
 """
 
@@ -43,12 +47,16 @@ from reviews.models import ConfirmedPair, EvidencePack, Review
 
 Decision = Review.Decision
 
+# Longest reason a reviewer may type. Longer text is rejected, not cut short.
 MAX_REASON = 2000
 # Exact O5 wording. Kept in English inside the stored snapshot (the hash must not depend on
 # the viewer's language); the page shows the translated version.
 EVIDENCE_STATEMENT = "Supporting evidence for officer review, not a finding."
+# Version of the snapshot layout. Bump it if the stored keys change.
 SNAPSHOT_SCHEMA = 1
 
+# The three queue views an officer can pick. "open" hides cases already decided on the
+# current run; "decided" shows the rest; "all" shows everything.
 STATE_OPEN = "open"
 STATE_DECIDED = "decided"
 STATE_ALL = "all"
@@ -56,11 +64,15 @@ STATES = (STATE_OPEN, STATE_DECIDED, STATE_ALL)
 
 
 class DecisionError(Exception):
-    """The decision cannot be saved as submitted (message is shown to the officer)."""
+    """The decision cannot be saved as submitted. The message is shown to the officer."""
 
 
 class DecisionConflict(Exception):
-    """Someone decided this case, or a new run replaced the result, after the form was shown."""
+    """Someone decided this case, or a new run replaced the result, after the form was shown.
+
+    `latest` is the review that now exists (or None), and `run_changed` says whether the
+    matching run changed. The view uses both to explain the conflict.
+    """
 
     def __init__(self, latest: Review | None, run_changed: bool) -> None:
         super().__init__("case changed since the form was shown")
@@ -72,10 +84,16 @@ class DecisionConflict(Exception):
 
 
 def current_results(user: Any) -> QuerySet[MatchResult]:
-    """The current result of every listing the user may see (latest run per listing)."""
+    """Return the current result of every listing the user may see.
+
+    The current result is the one from the newest run for that listing. Each row is also
+    annotated with the decision on that run (if any) and whether any review exists for it.
+    """
+    # The newest result for the same listing. Filtering on its pk keeps only one row per listing.
     latest = (
         MatchResult.objects.filter(listing=OuterRef("listing")).order_by("-run_id").values("pk")[:1]
     )
+    # Reviews written against the same run as this result.
     reviews_on_run = Review.objects.filter(listing=OuterRef("listing"), run=OuterRef("run"))
     return (
         scoped(MatchResult, user)
@@ -88,11 +106,18 @@ def current_results(user: Any) -> QuerySet[MatchResult]:
 
 
 def open_filter() -> Q:
+    """Return the filter that selects cases still waiting for an officer.
+
+    A case is open when no review exists for its current run and its band is not
+    `matched_confirmed`. Confirmed pairs are not flagged again (O4).
+    """
     return Q(decided=False) & ~Q(band=engine.MATCHED_CONFIRMED)
 
 
 @dataclass(frozen=True)
 class QueueFilters:
+    """The filters an officer chose on the queue page. Unknown values are dropped to defaults."""
+
     band: str = ""
     status: str = ""
     state: str = STATE_OPEN
@@ -100,6 +125,11 @@ class QueueFilters:
 
     @classmethod
     def from_query(cls, data: Any) -> QueueFilters:
+        """Build filters from request query data, ignoring any value that is not allowed.
+
+        Anything not on the allowed list falls back to "no filter" (or "open" for state), so a
+        hand-edited URL cannot ask for a value the page does not offer.
+        """
         band = data.get("band", "")
         status = data.get("status", "")
         state = data.get("state", STATE_OPEN)
@@ -107,13 +137,16 @@ class QueueFilters:
             band=band if band in MatchResult.Band.values else "",
             status=status if status in MatchResult.Status.values else "",
             state=state if state in STATES else STATE_OPEN,
+            # Collapse runs of spaces and cap the length, so the search stays short.
             locality=" ".join(data.get("locality", "").split())[:100],
         )
 
 
 def queue(user: Any, filters: QueueFilters) -> tuple[QuerySet[MatchResult], dict[str, int]]:
-    """Filtered, ordered queue plus counts per band for the same filters without the band
-    filter (so the officer sees what the band filter hides)."""
+    """Return the filtered, ordered queue and the count per band.
+
+    The band counts ignore the band filter, so the officer can see what that filter hides.
+    """
     qs = current_results(user)
     if filters.state == STATE_OPEN:
         qs = qs.filter(open_filter())
@@ -123,6 +156,7 @@ def queue(user: Any, filters: QueueFilters) -> tuple[QuerySet[MatchResult], dict
         qs = qs.filter(status=filters.status)
     if filters.locality:
         qs = qs.filter(listing__locality_text__icontains=filters.locality)
+    # Counts are taken before the band filter is applied (see the docstring above).
     band_counts = {
         row["band"]: row["n"] for row in qs.order_by().values("band").annotate(n=Count("id"))
     }
@@ -135,6 +169,7 @@ def queue(user: Any, filters: QueueFilters) -> tuple[QuerySet[MatchResult], dict
 
 
 def dashboard_counts(user: Any) -> dict[str, Any]:
+    """Return the headline numbers for the dashboard, limited to what the user may see."""
     results = current_results(user)
     by_band = {
         row["band"]: row["n"]
@@ -158,7 +193,7 @@ def dashboard_counts(user: Any) -> dict[str, Any]:
 
 
 def current_result(listing: Listing) -> MatchResult | None:
-    """Latest result for a listing the caller already fetched through scoping."""
+    """Return the latest result for a listing the caller already fetched through scoping."""
     return (
         MatchResult.objects.filter(listing=listing)
         .select_related("run", "run__registry_batch", "top_registry_entry")
@@ -168,6 +203,7 @@ def current_result(listing: Listing) -> MatchResult | None:
 
 
 def candidates_for(result: MatchResult) -> QuerySet[MatchCandidate]:
+    """Return the registry candidates the run scored for this listing, best rank first."""
     return (
         MatchCandidate.objects.filter(run_id=result.run_id, listing_id=result.listing_id)
         .select_related("registry_entry")
@@ -176,6 +212,7 @@ def candidates_for(result: MatchResult) -> QuerySet[MatchCandidate]:
 
 
 def latest_review(listing: Listing) -> Review | None:
+    """Return the newest review of a listing, or None if nobody has decided it yet."""
     return (
         Review.objects.filter(listing=listing)
         .select_related("reviewer", "registry_entry")
@@ -185,7 +222,11 @@ def latest_review(listing: Listing) -> Review | None:
 
 
 def allowed_decisions(user: Any) -> list[str]:
-    """Decisions the user may record. `suspected_unlicensed` is for officers only (rule 1)."""
+    """Return the decisions the user may record.
+
+    `suspected_unlicensed` is for officers only (rule 1). It is inserted at index 2, so it
+    sits between "reject match" and "dismiss" in the order shown on the form.
+    """
     values = [Decision.CONFIRM_MATCH, Decision.REJECT_MATCH, Decision.DISMISS]
     if is_officer(user):
         values.insert(2, Decision.SUSPECTED_UNLICENSED)
@@ -203,8 +244,13 @@ def decide(
     expected_run_id: int,
     expected_review_id: int,
 ) -> Review:
-    """Record one officer decision. Raises PermissionDenied, DecisionError or
-    DecisionConflict; nothing is saved in those cases."""
+    """Record one officer decision.
+
+    Raises PermissionDenied, DecisionError or DecisionConflict. In those cases nothing is saved.
+    The whole function runs in one transaction, so a failure leaves no partial rows behind.
+    """
+    # Checks run in this order: district first, then role, then input. Changing the order
+    # changes which error an officer sees first.
     if not can_act_in_district(user, listing.district_id):
         raise PermissionDenied("out_of_district")
     if decision not in Decision.values:
@@ -216,22 +262,27 @@ def decide(
         raise DecisionError(
             _("The reason is too long (at most %(n)d characters).") % {"n": MAX_REASON}
         )
+    # Rule 1: a suspicion must always come with a written reason.
     if decision == Decision.SUSPECTED_UNLICENSED and not reason:
         raise DecisionError(_("A written reason is required for this decision."))
 
-    # Serialise decisions on one listing (PostgreSQL row lock), then re-check the state the
-    # form was rendered with.
+    # Lock the listing row so two officers cannot decide it at the same time (PostgreSQL row
+    # lock). After the lock, re-read the state the form was rendered with.
     Listing.objects.select_for_update().filter(pk=listing.pk).first()
     result = current_result(listing)
     if result is None:
         raise DecisionError(_("This listing has not been through a matching run yet."))
     previous = latest_review(listing)
+    # If the run or the latest review changed since the form was shown, the officer must
+    # reload first. Saving now would decide on stale information.
     run_changed = result.run_id != expected_run_id
     if run_changed or (previous.pk if previous else 0) != expected_review_id:
         raise DecisionConflict(previous, run_changed)
 
     entry: RegistryEntry | None = None
     if decision in (Decision.CONFIRM_MATCH, Decision.REJECT_MATCH):
+        # A match decision must point at one of the candidates the run actually scored.
+        # Any other registry id is refused, so an officer cannot decide on an unseen entry.
         candidate = (
             candidates_for(result).filter(registry_entry_id=registry_entry_id).first()
             if registry_entry_id
@@ -241,6 +292,7 @@ def decide(
             raise DecisionError(_("Choose the registry entry this decision is about."))
         entry = candidate.registry_entry
 
+    # Reviews are only ever added, never edited. The new row supersedes the previous one.
     review = Review.objects.create(
         listing=listing,
         reviewer=user,
@@ -249,6 +301,8 @@ def decide(
         run=result.run,
         registry_entry=entry,
     )
+    # Keep the confirmed-pairs list in step with the decision. Confirmed pairs stop the same
+    # pair from being flagged again on later runs (O4).
     pair_change = ""
     if decision == Decision.CONFIRM_MATCH:
         _pair, created = ConfirmedPair.objects.get_or_create(listing=listing, registry_entry=entry)
@@ -258,6 +312,7 @@ def decide(
             listing=listing, registry_entry=entry
         ).delete()
         pair_change = "removed" if removed else ""
+    # Every decision is written to the audit log (AGENTS.md section 8).
     audit.log(
         user,
         "review.decide",
@@ -283,17 +338,23 @@ def decide(
 
 
 def _canonical(snapshot: dict) -> bytes:
+    """Return the snapshot as canonical JSON bytes.
+
+    Keys are sorted and there are no spaces, so the same data always gives the same bytes and
+    therefore the same hash.
+    """
     return json.dumps(
         snapshot, cls=DjangoJSONEncoder, sort_keys=True, separators=(",", ":"), ensure_ascii=False
     ).encode("utf-8")
 
 
 def snapshot_sha256(snapshot: dict) -> str:
-    """SHA-256 of the canonical JSON form (sorted keys, no spaces, UTF-8)."""
+    """Return the SHA-256 of the canonical JSON form (sorted keys, no spaces, UTF-8)."""
     return hashlib.sha256(_canonical(snapshot)).hexdigest()
 
 
 def _entry_dict(entry: RegistryEntry) -> dict:
+    """Return the fields of one registry entry that an evidence pack stores."""
     return {
         "id": entry.pk,
         "licence_no": entry.licence_no,
@@ -310,6 +371,11 @@ def _entry_dict(entry: RegistryEntry) -> dict:
 
 
 def build_snapshot(listing: Listing, user: Any) -> dict:
+    """Collect everything an evidence pack needs about one listing, as plain data.
+
+    The result has no run, result or decision block when those do not exist yet. The return
+    value is round-tripped through JSON so the stored copy is exactly what gets hashed.
+    """
     result = current_result(listing)
     batch = listing.batch
     snapshot: dict[str, Any] = {
@@ -344,6 +410,7 @@ def build_snapshot(listing: Listing, user: Any) -> dict:
         snapshot["run"] = {
             "id": run.pk,
             "params_version": run.params_version,
+            # The parameter fingerprint records which thresholds produced this result.
             "params_fingerprint": (run.thresholds or {}).get("fingerprint", ""),
             "as_of": run.as_of,
             "created_at": run.created_at.replace(microsecond=0),
@@ -386,6 +453,11 @@ def build_snapshot(listing: Listing, user: Any) -> dict:
 
 @transaction.atomic
 def create_evidence(listing: Listing, user: Any) -> EvidencePack:
+    """Store a new, hashed evidence pack for a listing and write an audit entry.
+
+    Each call creates a new pack; old packs are kept, so the record of what an officer saw
+    at a given time stays intact.
+    """
     if not can_act_in_district(user, listing.district_id):
         raise PermissionDenied("out_of_district")
     snapshot = build_snapshot(listing, user)

@@ -1,4 +1,8 @@
-"""Template context shared by every page (M10)."""
+"""Template context shared by every page (M10).
+
+Registered in `config.settings` (TEMPLATES). It adds `language_links`, which the header uses
+to build the English and Tamil switch, so every page gets the switch without each view adding it.
+"""
 
 from __future__ import annotations
 
@@ -25,6 +29,8 @@ POST_ONLY_FALLBACK = {
 def _same_page_in(request: HttpRequest, code: str) -> str:
     """The current page's URL in language ``code``; the home page when the current URL does
     not resolve (404 pages)."""
+    # Resolve the current URL to find which named page it is, so it can be rebuilt in another
+    # language. A URL that does not resolve gets None and falls through to the home page.
     try:
         match = resolve(request.path_info)
     except Resolver404:

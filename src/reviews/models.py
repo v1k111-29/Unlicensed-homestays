@@ -9,6 +9,7 @@ from matching.models import MatchRun
 from registry.models import RegistryEntry
 
 
+# Officer decisions on listings. The workflow rules are in `reviews.services`.
 class Review(models.Model):
     """An officer decision. Only an officer may mark `suspected_unlicensed`, and a written
     reason is mandatory (AGENTS.md rule 1; enforced here by a DB constraint and in
@@ -45,6 +46,11 @@ class Review(models.Model):
         indexes = [models.Index(fields=["listing", "-id"], name="review_listing_latest")]
 
     def save(self, *args, **kwargs) -> None:
+        """Refuse to save a review that mixes districts, then save as usual.
+
+        The district of the registry entry and of the run must match the listing (D63). This
+        stops an officer from linking a case to records of another district.
+        """
         if self.registry_entry_id is not None and (
             self.registry_entry.district_id != self.listing.district_id
         ):  # D63
@@ -66,12 +72,19 @@ class ConfirmedPair(models.Model):
         ]
 
     def save(self, *args, **kwargs) -> None:
+        """Refuse to save a pair whose registry entry is in another district (D63)."""
         if self.registry_entry.district_id != self.listing.district_id:  # D63
             raise ValidationError("registry entry district differs from the listing district")
         super().save(*args, **kwargs)
 
 
 class EvidencePack(models.Model):
+    """A stored, hashed copy of what an officer saw for one listing.
+
+    `snapshot` is the plain data at the time; `sha256` is its digest. If the two stop
+    matching, the stored pack has been changed. Packs are only added, never edited.
+    """
+
     listing = models.ForeignKey(Listing, on_delete=models.PROTECT, related_name="evidence")
     snapshot = models.JSONField()
     sha256 = models.CharField(max_length=64)

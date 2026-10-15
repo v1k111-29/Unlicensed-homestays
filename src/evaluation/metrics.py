@@ -3,6 +3,15 @@
 Pure functions over plain rows: easy to test on tiny hand-built cases. Ground truth enters
 here as ``Truth`` rows read by ``read_truth``; the matcher never sees it.
 
+Key terms:
+- A "listing" is one online homestay record. The "truth" says which registry entry it really
+  belongs to, if any.
+- A "band" is the matcher's verdict for a listing (for example matched, review or no match).
+  ``STATUS`` maps each band to a status.
+- A "metric" is a ratio: how many listings passed a test, out of how many were tested.
+- The "review queue" holds the listings an officer must look at: everything that is not
+  "Matched".
+
 Every number is a result on SYNTHETIC data only. It is not a real-world accuracy figure
 (AGENTS.md rule 10).
 """
@@ -11,7 +20,7 @@ from __future__ import annotations
 
 import csv
 from collections import Counter, defaultdict
-from collections.abc import Iterable, Mapping, Sequence
+from collections.abc import Callable, Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -27,7 +36,8 @@ TYPES = (CLEAN, NOISY, WRONG_OR_EXPIRED, NO_COUNTERPART, HARD_NEGATIVE)
 # Listings whose correct outcome is "Matched" to their true entry.
 POSITIVE_TYPES = (CLEAN, NOISY)
 
-# Reason codes added by gates beyond the §7 band table (Q21, D53).
+# Reason codes added by gates beyond the §7 band table (Q21, D53). A "gate" is an extra check
+# that can send a listing to review even when its band alone would have matched it.
 GATE_REASONS = (
     "several_similar",
     "name_differs",
@@ -38,6 +48,8 @@ GATE_REASONS = (
 
 @dataclass(frozen=True)
 class Truth:
+    """The answer key for one listing: its true registry entry (if any) and its noise tags."""
+
     listing_id: str
     true_registry_id: str | None
     type: str
@@ -59,10 +71,12 @@ class Row:
 
     @property
     def status(self) -> str:
+        """The status of this listing's band, such as "matched"."""
         return STATUS[self.band]
 
     @property
     def matched(self) -> bool:
+        """True when the engine marked this listing as matched to some entry."""
         return self.status == "matched"
 
     @property
@@ -72,6 +86,7 @@ class Row:
 
     @property
     def matched_correctly(self) -> bool:
+        """True when the listing is matched and the entry it matched is its true entry."""
         return (
             self.matched
             and self.true_registry_id is not None
@@ -81,14 +96,22 @@ class Row:
 
 @dataclass(frozen=True)
 class Ratio:
+    """A count out of a count, such as 3 of 4. Keeps both numbers so a report can show them.
+
+    When the denominator is 0 (no listing qualified), ``value`` is None instead of a division
+    error, and the metric counts as "not computable" (see gate.check_gate).
+    """
+
     num: int
     den: int
 
     @property
     def value(self) -> float | None:
+        """The ratio as a decimal, or None when the denominator is 0."""
         return None if self.den == 0 else self.num / self.den
 
     def __str__(self) -> str:
+        """For example "0.947 (18/19)", or "n/a (0/0)" when nothing qualified."""
         if self.den == 0:
             return "n/a (0/0)"
         return f"{self.value:.3f} ({self.num}/{self.den})"
@@ -97,14 +120,16 @@ class Ratio:
 def read_truth(path: Path | str) -> dict[str, Truth]:
     """Read ``ground_truth.csv``: listing_id, true_registry_id, type, noise (';'-joined)."""
     out: dict[str, Truth] = {}
+    # utf-8-sig drops a BOM if the file has one. newline="" lets the csv module handle line ends.
     with open(path, encoding="utf-8-sig", newline="") as fh:
         for r in csv.DictReader(fh):
             if r["type"] not in TYPES:
                 raise ValueError(f"{path}: unknown listing type {r['type']!r}")
+            # Noise tags are stored as one cell joined with ";". Empty pieces are dropped.
             noise = tuple(n for n in (r.get("noise") or "").split(";") if n)
             out[r["listing_id"]] = Truth(
                 listing_id=r["listing_id"],
-                true_registry_id=r["true_registry_id"] or None,
+                true_registry_id=r["true_registry_id"] or None,  # empty cell means no entry
                 type=r["type"],
                 noise=noise,
             )
@@ -133,13 +158,16 @@ def join(outcomes: Iterable[Outcome], truth: Mapping[str, Truth]) -> list[Row]:
                 candidate_ids=tuple(str(c.registry_id) for c in o.candidates),
             )
         )
+    # Every truth row must also have an outcome. Otherwise a listing would be left out of the
+    # metrics without anyone noticing.
     missing = set(truth) - seen
     if missing:
         raise ValueError(f"{len(missing)} truth rows have no outcome, e.g. {sorted(missing)[0]}")
     return rows
 
 
-def _ratio(rows: Sequence[Row], hit) -> Ratio:
+def _ratio(rows: Sequence[Row], hit: Callable[[Row], bool]) -> Ratio:
+    """Count the rows for which ``hit`` is True, out of all the rows given."""
     return Ratio(sum(1 for r in rows if hit(r)), len(rows))
 
 
@@ -160,6 +188,7 @@ def compute_metrics(rows: Sequence[Row]) -> dict[str, Ratio]:
     - blocking_recall: of listings with a true entry, share whose true entry was a candidate.
     - review_queue_share: share of all listings that reach the review queue (workload).
     """
+    # Group the rows by listing type once, so each per-type metric reads its own group.
     by_type: dict[str, list[Row]] = defaultdict(list)
     for r in rows:
         by_type[r.type].append(r)
@@ -210,7 +239,7 @@ def group_labels(row: Row) -> list[str]:
     return ["noisy (all)"] + [f"noisy:{n}" for n in row.noise]
 
 
-WRONG_ENTRY = "matched_wrong_entry"
+WRONG_ENTRY = "matched_wrong_entry"  # extra column: matched, but to the wrong registry entry
 CONFUSION_COLUMNS = (*BANDS, WRONG_ENTRY)
 
 
@@ -222,6 +251,8 @@ def confusion(rows: Sequence[Row]) -> dict[str, Counter]:
         col = WRONG_ENTRY if r.matched and not r.matched_correctly else r.band
         for label in group_labels(r):
             table[label][col] += 1
+    # The rows are listed in a fixed order, so the printed matrix reads the same on every run:
+    # clean, the noisy total, the noise templates in alphabetical order, then the other types.
     order = [CLEAN, "noisy (all)"]
     order += sorted(k for k in table if k.startswith("noisy:"))
     order += [WRONG_OR_EXPIRED, NO_COUNTERPART, HARD_NEGATIVE]

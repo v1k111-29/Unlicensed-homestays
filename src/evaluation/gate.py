@@ -1,5 +1,8 @@
 """CI eval gate: floors on DEV-set metrics (testing-and-evaluation.md §3, D55).
 
+A "floor" is the lowest value a metric may have and still pass. "Gate" means the check that
+stops a change from merging when a metric falls below its floor.
+
 Floors sit a little below the tuned dev baseline, so a code change that makes matching on
 the synthetic dev set clearly worse fails CI. They are regression guards on synthetic data,
 not accuracy targets or claims (AGENTS.md rule 10). Change them only together with a new
@@ -15,6 +18,7 @@ from evaluation.metrics import Ratio
 # metric name -> minimum value on the dev set (D55). Dev baseline with m5-tuned-1 is 1.000
 # for every metric below [V, synthetic]. Each floor leaves room for a few dev listings to
 # move (shown as "allows"), so harmless changes pass but a real regression fails.
+# The count next to each floor is the number of dev listings the metric is computed over.
 FLOORS: dict[str, float] = {
     "matched_precision": 0.98,  # 165 matched: allows 3 wrong entries (also the §3 target)
     "match_recall": 0.95,  # 165 clean + noisy: allows 8 to fall to review
@@ -33,6 +37,8 @@ def check_gate(metrics: Mapping[str, Ratio], floors: Mapping[str, float] = FLOOR
     failures = []
     for name, floor in floors.items():
         ratio = metrics.get(name)
+        # A missing or 0/0 metric counts as a failure. Otherwise an empty test set would pass
+        # silently.
         if ratio is None or ratio.value is None:
             failures.append(f"{name}: not computable (floor {floor:.3f})")
         elif ratio.value < floor:

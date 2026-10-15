@@ -28,6 +28,8 @@ from config.logs import scrub
 
 PAGE_SIZE = 50
 META_MAX = 160  # characters of the meta summary shown per row
+# Meta keys whose values are hidden on screen. The pattern is a safety net: it matches common
+# names for passwords, tokens, cookies and addresses, even when a new key is added later.
 _SECRET_KEY = re.compile(
     r"pass|secret|token|api_?key|cookie|session|csrf|auth|(^|_)ip(_|$)|addr", re.IGNORECASE
 )
@@ -36,6 +38,9 @@ HASHED_ENTITIES = {"username_hmac"}
 
 
 class AuditFilterForm(forms.Form):
+    """The filter fields above the audit table. Choices are filled in at request time from
+    the values already stored in the log."""
+
     action = forms.ChoiceField(label=_("Action"), required=False)
     actor = forms.CharField(label=_("Actor contains"), required=False, max_length=150)
     entity = forms.ChoiceField(label=_("Entity"), required=False)
@@ -43,6 +48,7 @@ class AuditFilterForm(forms.Form):
     date_to = forms.DateField(label=_("To date"), required=False, input_formats=["%Y-%m-%d"])
 
     def __init__(self, *args: Any, actions: list[str], entities: list[str], **kwargs: Any):
+        """Set the dropdown choices from the lists of actions and entities found in the log."""
         super().__init__(*args, **kwargs)
         self.fields["action"].choices = [("", _("All actions"))] + [(a, a) for a in actions]
         self.fields["entity"].choices = [("", _("All entities"))] + [(e, e) for e in entities]
@@ -50,6 +56,7 @@ class AuditFilterForm(forms.Form):
             self.fields[name].error_messages["invalid"] = _("Enter a date as YYYY-MM-DD.")
 
     def clean(self) -> dict[str, Any]:
+        """Reject a date range that ends before it starts."""
         data = super().clean()
         start, end = data.get("date_from"), data.get("date_to")
         if start and end and start > end:
@@ -58,10 +65,12 @@ class AuditFilterForm(forms.Form):
 
 
 def _distinct(field: str) -> list[str]:
+    """Every distinct value stored in one column, sorted, for the filter dropdowns."""
     return list(AuditLog.objects.order_by(field).values_list(field, flat=True).distinct())
 
 
 def _day_start(day: Any) -> datetime:
+    """Midnight at the start of `day`, in the project's time zone."""
     return timezone.make_aware(datetime.combine(day, time.min))
 
 
@@ -86,11 +95,14 @@ def meta_summary(meta: Any) -> str:
 @require_capability(Capability.VIEW_AUDIT)
 @require_GET
 def audit_log(request: HttpRequest) -> HttpResponse:
+    """The read-only audit screen: filter, paginate and show each row with a scrubbed summary.
+    An invalid filter shows no rows and returns status 400."""
     form = AuditFilterForm(
         request.GET or None, actions=_distinct("action"), entities=_distinct("entity")
     )
     qs = AuditLog.objects.all()  # model ordering: newest first (-ts, -id)
     query: dict[str, str] = {}
+    # Filters are applied only when the form is valid. An invalid form is handled below.
     if form.is_bound and form.is_valid():
         data = form.cleaned_data
         if data["action"]:
@@ -109,6 +121,7 @@ def audit_log(request: HttpRequest) -> HttpResponse:
             if v
         }
     invalid = form.is_bound and not form.is_valid()
+    # A filter that does not validate is not applied, so no rows are shown for it.
     if invalid:
         qs = qs.none()
     page = Paginator(qs, PAGE_SIZE).get_page(request.GET.get("page"))

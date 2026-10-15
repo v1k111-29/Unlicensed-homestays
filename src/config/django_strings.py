@@ -6,6 +6,8 @@ byte-identical to Django's. Nothing imports this module; it exists for extractio
 
 from django.utils.translation import gettext_noop
 
+# gettext_noop only marks these strings for extraction. It returns the text unchanged, so the
+# list is never read at run time.
 DJANGO_MESSAGES = [
     # django.contrib.auth.forms.AuthenticationForm (login page)
     gettext_noop(

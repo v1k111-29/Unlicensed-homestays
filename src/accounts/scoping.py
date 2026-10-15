@@ -9,6 +9,10 @@ Rules:
 - anyone else (anonymous, inactive, officer without district, unknown role): no rows.
 - A model that is not listed in DISTRICT_PATHS raises ImproperlyConfigured (fail closed),
   so a new district-bearing model cannot be queried until its path is declared here.
+
+Used by: the views and services that read district data. Key idea: every
+read goes through one function that adds the district filter, so a forgotten filter in one
+view cannot leak another district's rows.
 """
 
 from typing import Any, TypeVar
@@ -44,10 +48,12 @@ DISTRICT_PATHS: dict[str, str] = {
 
 
 def _key(model: type[Model]) -> str:
+    """The "app_label.ModelName" string used as the key in DISTRICT_PATHS."""
     return f"{model._meta.app_label}.{model.__name__}"
 
 
 def district_path(model: type[Model]) -> str:
+    """Return the lookup path from `model` to its district. Raises if the model is not listed."""
     try:
         return DISTRICT_PATHS[_key(model)]
     except KeyError:
@@ -59,7 +65,9 @@ def district_path(model: type[Model]) -> str:
 def scoped(source: type[M] | QuerySet[M], user: Any) -> QuerySet[M]:
     """Return `source` (a model class or queryset) limited to what `user` may see."""
     qs = source if isinstance(source, QuerySet) else source._default_manager.all()
-    path = district_path(qs.model)  # check first: unknown models fail even for admins
+    # Checked before the role test on purpose: an unlisted model must fail for every user,
+    # admins included, so the gap is found in development rather than in production.
+    path = district_path(qs.model)
     if is_admin(user):
         return qs
     if not is_officer(user):
@@ -76,6 +84,8 @@ def get_scoped_or_404(source: type[M] | QuerySet[M], request: HttpRequest, **loo
     try:
         return qs.get(**lookup)
     except qs.model.DoesNotExist:
+        # The object is not in scope. Look again without the district filter, only to decide
+        # whether to log a denial. The response is the same 404 either way.
         base = source if isinstance(source, QuerySet) else source._default_manager.all()
         if request.user.is_authenticated and base.filter(**lookup).exists():
             audit.log(
@@ -89,7 +99,8 @@ def get_scoped_or_404(source: type[M] | QuerySet[M], request: HttpRequest, **loo
 
 
 def can_act_in_district(user: Any, district: District | int | None) -> bool:
-    """For writes that name a district (e.g. an upload's target district, D30)."""
+    """For writes that name a district (e.g. an upload's target district, D30). Admins may
+    write to any district; officers only to their own. Accepts a District or its id."""
     if district is None:
         return False
     district_id = district if isinstance(district, int) else district.pk

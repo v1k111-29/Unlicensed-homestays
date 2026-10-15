@@ -4,6 +4,10 @@
 1. score margins: how far true pairs and false pairs sit from each threshold;
 2. a grid over the band thresholds with the dev metrics of every point.
 
+A "threshold" is a cut-off number: a pair scoring above it counts as a possible match.
+"Tuning" means choosing thresholds that give the best dev metrics. It must never be done on
+the test set, because then the test set stops being an honest check.
+
 How it was used for ``m5-tuned-1`` is recorded in docs/decisions.md (D55). Synthetic data
 only; nothing here is a real-world accuracy figure (AGENTS.md rule 10).
 """
@@ -26,6 +30,7 @@ DEV = DATA / "dev"  # the only set this module reads
 
 
 def dev_outcomes(params: MatchParams, gaz: Gazetteer) -> list[Outcome]:
+    """Run the matcher on the dev set only and return its raw outcomes."""
     return match(
         listing_records_from_csv(DEV / "listings.csv"),
         registry_records_from_csv(DEV / "registry.csv"),
@@ -36,15 +41,24 @@ def dev_outcomes(params: MatchParams, gaz: Gazetteer) -> list[Outcome]:
 
 
 def _fmt(values: list[float]) -> str:
+    """Summarise a list of numbers as "n=..., min=..., max=...", or "-" when it is empty."""
     if not values:
         return "-"
     return f"n={len(values)} min={min(values):.4f} max={max(values):.4f}"
 
 
 def margins(params: MatchParams, gaz: Gazetteer) -> dict[str, str]:
-    """Score / name values of true pairs and of the best false pair, split by path."""
+    """Score / name values of true pairs and of the best false pair, split by path.
+
+    A "path" is the way the matcher found a candidate: the score path (fuzzy name and
+    locality similarity) or the licence path (an exact licence number match).
+    """
+    # Keep every candidate, not only the first few the engine stores, so the margins see the
+    # whole field.
     wide = replace(params, max_stored_candidates=10_000)
     truth = _read_truth(DEV / "ground_truth.csv")
+    # Listings that already quote a licence number. The score-path numbers below skip them, so
+    # they only describe listings without a claimed licence.
     claims = {
         str(x.id): bool(x.claimed_licence_no)
         for x in listing_records_from_csv(DEV / "listings.csv")
@@ -67,6 +81,7 @@ def margins(params: MatchParams, gaz: Gazetteer) -> dict[str, str]:
             others = [c.score for c in cands if c is not true]
             out["score path, true pair: score"].append(true.score)
             out["score path, true pair: name"].append(true.features["name"])
+            # "Lead" is how far the true pair's score is above the next best candidate.
             out["score path, true pair: lead over 2nd"].append(
                 round(true.score - max(others, default=0.0), 4)
             )
@@ -76,7 +91,9 @@ def margins(params: MatchParams, gaz: Gazetteer) -> dict[str, str]:
                 out["score path, no-entry listings: name of best if >= T_low"].append(
                     cands[0].features["name"]
                 )
+        # The first candidate that was blocked by the licence path, if any.
         hit = next((c for c in cands if "licence" in c.blocked_by), None)
+        # A licence feature of exactly 1.0 means the licence number matched exactly.
         if hit is not None and hit.features["licence"] == 1.0:
             if t.type in POSITIVE_TYPES:
                 out["licence path, true pair (valid): name"].append(hit.features["name"])
@@ -85,6 +102,7 @@ def margins(params: MatchParams, gaz: Gazetteer) -> dict[str, str]:
     return {k: _fmt(v) for k, v in out.items()}
 
 
+# The threshold values to try. Each tuple is one axis of the grid.
 GRID = {
     "t_low": (0.65, 0.70, 0.75, 0.80),
     "t_high": (0.80, 0.85, 0.90, 0.95),
@@ -93,9 +111,14 @@ GRID = {
 
 
 def grid(params: MatchParams, gaz: Gazetteer) -> list[tuple[dict, dict]]:
+    """Run the matcher once per threshold combination and return each point's dev metrics.
+
+    A combination is skipped when t_low is not below t_high, because the bands would overlap.
+    """
     truth = _read_truth(DEV / "ground_truth.csv")
     rows = []
     keys = list(GRID)
+    # itertools.product gives every combination of the grid values, in a fixed order.
     for values in itertools.product(*(GRID[k] for k in keys)):
         point = dict(zip(keys, values, strict=True))
         if point["t_low"] >= point["t_high"]:
@@ -107,6 +130,10 @@ def grid(params: MatchParams, gaz: Gazetteer) -> list[tuple[dict, dict]]:
 
 
 def main() -> int:
+    """Print the margins and the grid for the params version given on the command line.
+
+    With no argument it uses the current version. Always returns 0.
+    """
     params = get_params(sys.argv[1] if len(sys.argv) > 1 else CURRENT_VERSION)
     gaz = Gazetteer.load()
     print(f"DEV set only (synthetic). params {params.version}")

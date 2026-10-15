@@ -5,6 +5,9 @@ POST + CSRF and writes one audit entry there. A generated password is put into t
 of that POST only: it is not stored in the session, a message, a URL, a log or the audit meta,
 and the response is marked `no-store`. There is no hard delete (audit rows name actors by text).
 Account management is admin-wide by design; the list still goes through `accounts.scoping`.
+
+Used by: the URL conf in `accounts.urls`. Each view is wrapped by `require_capability`
+(MANAGE_USERS, admin only) and by a method guard, so the checks run before any form data is read.
 """
 
 from __future__ import annotations
@@ -29,6 +32,8 @@ from accounts.scoping import get_scoped_or_404, scoped
 
 
 class AccountForm(forms.Form):
+    """The fields on the create-account page. Only the shape of each field is checked here."""
+
     # Length and character rules are checked by accounts.services (one place, D92).
     username = forms.CharField(
         label=gettext_lazy("Username"),
@@ -49,6 +54,7 @@ class AccountForm(forms.Form):
 
 
 def _no_store(response: HttpResponse) -> HttpResponse:
+    """Mark a response that shows a one-time password so browsers and proxies never cache it."""
     add_never_cache_headers(response)  # includes Cache-Control: no-store
     return response
 
@@ -56,6 +62,8 @@ def _no_store(response: HttpResponse) -> HttpResponse:
 @require_capability(Capability.MANAGE_USERS)
 @require_GET
 def account_list(request: HttpRequest) -> HttpResponse:
+    """List every account: active accounts first, admins before officers, then by username."""
+    # Sort keys, in order: active accounts first, then admins before officers, then username.
     accounts = (
         scoped(User, request.user)  # admin: every account (D92)
         .select_related("district")
@@ -74,12 +82,15 @@ def account_list(request: HttpRequest) -> HttpResponse:
 @require_capability(Capability.MANAGE_USERS)
 @require_http_methods(["GET", "POST"])
 def account_create(request: HttpRequest) -> HttpResponse:
+    """Show the create form (GET) or create the account (POST). A generated password is shown
+    once, on the response to a successful POST, and never stored."""
     if request.method == "GET":
         form = AccountForm(initial={"role": User.Role.OFFICER})
         return render(request, "accounts/manage_create.html", {"form": form})
     form = AccountForm(request.POST)
     if form.is_valid():
         data = form.cleaned_data
+        # The password is generated here, and only this response carries it to the admin.
         password = services.generate_password()
         try:
             user = services.create_account(
@@ -99,6 +110,9 @@ def account_create(request: HttpRequest) -> HttpResponse:
 
 
 def _set_active(request: HttpRequest, pk: int, active: bool) -> HttpResponse:
+    """Shared body of disable and enable. Rule errors (such as disabling yourself) become a
+    flash message; the admin is always redirected back to the list."""
+    # Look the account up first: a missing account gives 404 before anything is changed.
     target = get_scoped_or_404(User, request, pk=pk)
     try:
         services.set_active(request.user, target.pk, active)
@@ -119,20 +133,24 @@ def _set_active(request: HttpRequest, pk: int, active: bool) -> HttpResponse:
 @require_capability(Capability.MANAGE_USERS)
 @require_POST
 def account_disable(request: HttpRequest, pk: int) -> HttpResponse:
+    """Disable an account so it can no longer sign in."""
     return _set_active(request, pk, active=False)
 
 
 @require_capability(Capability.MANAGE_USERS)
 @require_POST
 def account_enable(request: HttpRequest, pk: int) -> HttpResponse:
+    """Re-enable a disabled account."""
     return _set_active(request, pk, active=True)
 
 
 @require_capability(Capability.MANAGE_USERS)
 @require_POST
 def account_reset_password(request: HttpRequest, pk: int) -> HttpResponse:
+    """Give the account a new one-time password and show it once."""
     target = get_scoped_or_404(User, request, pk=pk)
     user, password = services.reset_password(request.user, target.pk)
+    # Changing your own password would sign you out. Re-hash the session so the admin stays in.
     if user.pk == request.user.pk:
         update_session_auth_hash(request, user)  # keep the admin's own session
     context: dict[str, Any] = {"account": user, "password": password, "created": False}

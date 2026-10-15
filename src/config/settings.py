@@ -1,6 +1,11 @@
 """Django settings. All secrets and per-environment values come from environment variables.
 
 Required in production: DJANGO_SECRET_KEY, DATABASE_URL. See .env.example.
+
+Django reads this module through DJANGO_SETTINGS_MODULE. Most values are fixed here on purpose,
+so a reviewer can read the whole security setup in one file. DEBUG (from DJANGO_DEBUG) turns
+on local-development shortcuts. Each start-up check that refuses to run names the environment
+variable to set.
 """
 
 import os
@@ -15,6 +20,8 @@ REPO_ROOT = SRC_DIR.parent
 
 DEBUG = os.environ.get("DJANGO_DEBUG", "0") == "1"
 
+# The key signs sessions, CSRF tokens and the HMACs used for throttling and audit, so it must
+# be random and secret in production.
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "")
 if not SECRET_KEY:
     if not DEBUG:
@@ -34,6 +41,7 @@ def _env_list(name: str) -> list[str]:
     return [item.strip() for item in os.environ.get(name, "").split(",") if item.strip()]
 
 
+# Host names this site answers to. Django rejects requests for any other host name.
 ALLOWED_HOSTS = _env_list("DJANGO_ALLOWED_HOSTS")
 if DEBUG:
     ALLOWED_HOSTS += ["localhost", "127.0.0.1"]
@@ -99,6 +107,8 @@ _database_url = os.environ.get("DATABASE_URL", "")
 DATABASES = {"default": parse_database_url(_database_url)} if _database_url else {}
 
 AUTH_USER_MODEL = "accounts.User"
+# Django uses the first hasher for new passwords. PBKDF2 stays in the list so that existing
+# hashes still check; Django upgrades them when a user signs in.
 PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.Argon2PasswordHasher",
     "django.contrib.auth.hashers.PBKDF2PasswordHasher",
@@ -134,11 +144,14 @@ LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "dashboard"
 LOGOUT_REDIRECT_URL = "login"
 
+# HttpOnly keeps the session cookie away from page scripts. SameSite=Lax limits cross-site sends.
+# Secure (HTTPS only) is on everywhere except local DEBUG work.
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = "Lax"
 SESSION_COOKIE_SECURE = not DEBUG
 # Idle timeout: 30 minutes without a request ends the session; closing the browser ends it too.
 SESSION_COOKIE_AGE = 30 * 60
+# Saving on every request is what makes the idle timeout a true "no activity" timer.
 SESSION_SAVE_EVERY_REQUEST = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # Absolute lifetime: a session ends 8 hours after login however active it is (middleware).
@@ -189,9 +202,11 @@ if not CLIENT_IP_HEADER:
         "e.g. HTTP_X_FORWARDED_FOR (see .env.example)."
     )
 if not DEBUG:
+    # Origins the browser may send form posts from, so CSRF checks accept the hosted site.
     CSRF_TRUSTED_ORIGINS = _env_list("DJANGO_CSRF_TRUSTED_ORIGINS")
     if CLIENT_IP_HEADER != "REMOTE_ADDR":
         # Behind a TLS-terminating proxy that sets this header (and strips client copies).
+        # Without this, Django would see every request as plain HTTP, not HTTPS.
         SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 # "default": database cache, shared by all workers, so the login address limit is global
@@ -213,6 +228,7 @@ CACHES = {
 # --- Demo sign-in hint (D96): the login page shows these accounts only when both values of a
 # pair are set, so evaluators of the synthetic demo can sign in. Environment only, never in
 # code (AGENTS.md rule 8). Leave unset for any deployment with real data. ---
+# Each list entry is built only when both its username and password variables are set.
 DEMO_LOGIN_ACCOUNTS = [
     {"role": role, "username": username, "password": password}
     for role in ("officer", "admin")

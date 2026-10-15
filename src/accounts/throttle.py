@@ -34,11 +34,14 @@ USERNAME_KEY_LEN = 64
 
 
 def _conf() -> tuple[int, int]:
+    """Read the limit and window from settings. Returns (max failures, window in seconds)."""
     conf = settings.LOGIN_THROTTLE
     return int(conf["max_failures"]), int(conf["window_seconds"])
 
 
 def _hmac(purpose: str, value: str) -> str:
+    """Keyed hash of `value`. The `purpose` prefix keeps a username hash and an address hash
+    from ever matching each other, even if the two values happen to be equal."""
     message = f"{purpose}:{value}".encode()
     return hmac.new(settings.SECRET_KEY.encode(), message, hashlib.sha256).hexdigest()
 
@@ -73,10 +76,13 @@ def client_ip(request: HttpRequest) -> str:
 
 
 def _ip_cache_key(request: HttpRequest) -> str:
+    """Cache key for the failure counter of this request's client address (hashed, not raw)."""
     return f"login-fail-ip:{_hmac('login-ip', client_ip(request))}"
 
 
 def _lock_id(digest: str) -> int:
+    """Turn the first 16 hex characters of a digest into a signed 64-bit integer. That is the
+    form PostgreSQL advisory locks take."""
     return int.from_bytes(bytes.fromhex(digest[:16]), "big", signed=True)
 
 
@@ -86,6 +92,8 @@ def login_slot(request: HttpRequest, username: str) -> Iterator[None]:
     account and the address until it ends (sorted order, so two attempts cannot deadlock).
     Other databases (local SQLite checks) get the transaction only."""
     with transaction.atomic():
+        # Locks are taken in sorted order: two attempts that need the same pair of locks always
+        # take them in the same order, so they cannot wait on each other forever (deadlock).
         if connection.vendor == "postgresql":
             ids = {
                 _lock_id(username_digest(username)),
@@ -98,9 +106,12 @@ def login_slot(request: HttpRequest, username: str) -> Iterator[None]:
 
 
 def account_failures(username: str) -> int:
+    """Count failed logins for this username in the window, ignoring failures from before the
+    account's most recent successful login."""
     _, window = _conf()
     digest = username_digest(username)
     since = timezone.now() - timedelta(seconds=window)
+    # A successful login resets the count, so failures before it no longer block the account.
     last_success = (
         AuditLog.objects.filter(action="login", meta__username_hmac=digest, ts__gte=since)
         .order_by("-ts")
@@ -115,12 +126,16 @@ def account_failures(username: str) -> int:
 
 
 def ip_failures(request: HttpRequest) -> int:
+    """Failed-login count for this request's client address in the current window."""
     return int(cache.get(_ip_cache_key(request), 0))
 
 
 def record_ip_failure(request: HttpRequest) -> None:
+    """Add one failure to the address counter. The counter starts at 1 with the window as its
+    lifetime, and later failures only increase it, so the window does not slide on each try."""
     _, window = _conf()
     key = _ip_cache_key(request)
+    # add() only writes when the key is missing, so it is the atomic "start the window" step.
     if cache.add(key, 1, timeout=window):
         return
     try:
@@ -132,6 +147,7 @@ def record_ip_failure(request: HttpRequest) -> None:
 def blocked_scope(request: HttpRequest, username: str) -> str | None:
     """Return "account" or "ip" if this attempt must be refused, else None."""
     max_failures, _ = _conf()
+    # An empty username has no account to protect, so only the address limit applies to it.
     if username_key(username) and account_failures(username) >= max_failures:
         return "account"
     if ip_failures(request) >= max_failures:
@@ -140,5 +156,6 @@ def blocked_scope(request: HttpRequest, username: str) -> str | None:
 
 
 def describe() -> dict[str, Any]:
+    """The limits in plain form (window in whole minutes), for display to a person."""
     max_failures, window = _conf()
     return {"max_failures": max_failures, "window_minutes": window // 60}

@@ -7,6 +7,9 @@ AGENTS.md rule 9.
 DB-free: records come from the committed CSVs (``matching.records``) and outcomes from
 ``matching.engine.match``. Results are on SYNTHETIC data only; they do not predict
 real-world accuracy (AGENTS.md rule 10).
+
+The flow for one set is: read the listings and registry CSVs, run the matcher, read the
+answer key, join the two, then compute the metrics.
 """
 
 from __future__ import annotations
@@ -33,6 +36,8 @@ from matching.gazetteer import Gazetteer
 from matching.params import CURRENT_VERSION, MatchParams, get_params
 from matching.records import listing_records_from_csv, registry_records_from_csv
 
+# ROOT is the repository folder. This file sits in src/evaluation/, so index 2 of its parents
+# is the repository root.
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / "data" / "synthetic" / "out"
 SETS = ("dev", "test")
@@ -41,6 +46,8 @@ AS_OF = date(2026, 4, 1)
 # Committed record of the single test-set run (AGENTS.md rule 9). Its presence blocks reruns.
 TEST_RUN_RECORD = ROOT / "docs" / "eval-test-run.json"
 
+# Printed under every report and saved in the test-run record, so no one can copy the numbers
+# out without the warning.
 CAVEAT = (
     "SYNTHETIC DATA ONLY. These numbers show the method behaves as designed on fictional "
     "data; they do not predict real-world accuracy. Dev and test share districts and "
@@ -50,6 +57,8 @@ CAVEAT = (
 
 @dataclass(frozen=True)
 class Report:
+    """Everything one evaluation run produced: the set, the parameters, rows and metrics."""
+
     set_name: str
     params: MatchParams
     rows: list[Row]
@@ -63,7 +72,11 @@ def evaluate(
     data_dir: Path = DATA,
     gazetteer: Gazetteer | None = None,
 ) -> Report:
-    """Match one synthetic set and score it. Callers must guard the test set themselves."""
+    """Match one synthetic set and score it. Callers must guard the test set themselves.
+
+    ``params`` defaults to the current parameters. ``gazetteer`` (the list of known place
+    names) is loaded from disk when not given.
+    """
     if set_name not in SETS:
         raise ValueError(f"unknown set {set_name!r}")
     params = params or get_params()
@@ -78,6 +91,7 @@ def evaluate(
 
 
 def format_report(report: Report) -> str:
+    """Build the plain-text report that ``run_dev`` and ``run_test_set`` print."""
     p = report.params
     lines = [
         "=" * 78,
@@ -94,6 +108,7 @@ def format_report(report: Report) -> str:
     for name, n in workload(report.rows).items():
         lines.append(f"  {name:<30} {n}")
     lines += ["", "Confusion matrix (listing type / noise template x band):"]
+    # Short column titles, so the matrix fits in 78 characters.
     short = {
         "review_licence": "rev_lic",
         "no_candidate": "no_cand",
@@ -115,6 +130,7 @@ def format_report(report: Report) -> str:
 
 
 def metrics_json(report: Report) -> dict:
+    """The metrics as plain numbers, ready to save as JSON."""
     return {
         name: {"num": r.num, "den": r.den, "value": r.value} for name, r in report.metrics.items()
     }
@@ -124,6 +140,10 @@ def metrics_json(report: Report) -> dict:
 
 
 def run_dev(params_version: str = CURRENT_VERSION, *, gate: bool = True) -> int:
+    """Run the dev set, print the report, and apply the CI floors if ``gate`` is True.
+
+    Returns the exit code: 0 when the gate passes or is skipped, 1 when a floor is missed.
+    """
     report = evaluate("dev", get_params(params_version))
     print(format_report(report))
     if not gate:

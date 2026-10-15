@@ -1,9 +1,12 @@
-"""Officer review pages (M8, essentialfeatures.md O3-O5): queue, case detail, decision,
-evidence. Plain server-rendered pages and forms; no JavaScript.
+"""Officer review pages (M8, essentialfeatures.md O3-O5): queue, case detail, decision, evidence.
 
-Every view is guarded by `require_capability(DECIDE_CASES)`; every read goes through
-`accounts.scoping` (an object of another district gives 404 and an audit row). State changes
-are POST-only with CSRF; rules live in `reviews.services`.
+These are plain server-rendered pages and forms with no JavaScript. The URL routes that reach
+these views are defined in `config/urls.py`.
+
+Every view is guarded by `require_capability(DECIDE_CASES)`. Every read goes through
+`accounts.scoping`, so an object from another district gives a 404 and an audit row. State
+changes are POST-only and protected by CSRF. The business rules live in `reviews.services`;
+the views only read the request, call the service and choose the page to show.
 """
 
 from __future__ import annotations
@@ -29,10 +32,12 @@ from matching.models import MatchResult
 from reviews import services
 from reviews.models import ConfirmedPair, EvidencePack, Review
 
+# Number of queue rows shown on one page.
 PAGE_SIZE = 50
 
 
 def _band_label(band: str) -> str:
+    """Return the translated label for a band, or the raw value if the band is unknown."""
     return str(MatchResult.Band(band).label) if band in MatchResult.Band.values else band
 
 
@@ -42,6 +47,7 @@ def _band_label(band: str) -> str:
 @require_capability(Capability.DECIDE_CASES)
 @require_GET
 def queue(request: HttpRequest) -> HttpResponse:
+    """Show the review queue: filtered, paginated rows plus a count for each band."""
     filters = services.QueueFilters.from_query(request.GET)
     qs, band_counts = services.queue(request.user, filters)
     page = Paginator(qs, PAGE_SIZE).get_page(request.GET.get("page"))
@@ -54,6 +60,7 @@ def queue(request: HttpRequest) -> HttpResponse:
         }
         for r in page.object_list
     ]
+    # Keep only the filters that are set, so links to other bands keep the same filters.
     base_query = {
         k: v
         for k, v in {
@@ -66,6 +73,7 @@ def queue(request: HttpRequest) -> HttpResponse:
     }
 
     def band_link(band: str) -> str:
+        """Return the query string that filters the queue to one band."""
         return "?" + urlencode({**base_query, "band": band})
 
     band_summary = [
@@ -104,6 +112,11 @@ def queue(request: HttpRequest) -> HttpResponse:
 
 
 def _case_context(request: HttpRequest, listing: Listing, **extra: Any) -> dict[str, Any]:
+    """Build the template context for the case page.
+
+    `extra` lets the decision view add the submitted form, an error or a conflict. Those keys
+    replace the defaults below.
+    """
     result = services.current_result(listing)
     candidates = []
     if result is not None:
@@ -122,6 +135,7 @@ def _case_context(request: HttpRequest, listing: Listing, **extra: Any) -> dict[
     latest = services.latest_review(listing)
     decision_labels = dict(Review.Decision.choices)
     allowed = services.allowed_decisions(request.user)
+    # Empty form for a fresh page. The registry entry defaults to the top candidate.
     form = extra.pop("form", None) or {
         "decision": "",
         "reason": "",
@@ -145,9 +159,12 @@ def _case_context(request: HttpRequest, listing: Listing, **extra: Any) -> dict[
         "decision_options": [(v, decision_labels[v]) for v in allowed],
         "suspected_value": str(Review.Decision.SUSPECTED_UNLICENSED),
         "suspected_label": decision_labels[Review.Decision.SUSPECTED_UNLICENSED],
+        # The template shows the "suspected" option only when the user is allowed to pick it.
         "can_mark_suspected": str(Review.Decision.SUSPECTED_UNLICENSED) in allowed,
+        # These decisions need a registry entry to be chosen first.
         "needs_entry": [str(Review.Decision.CONFIRM_MATCH), str(Review.Decision.REJECT_MATCH)],
         "form": form,
+        # The version id the form carries back. The service checks it to catch conflicts.
         "version": latest.pk if latest else 0,
         "evidence_packs": scoped(EvidencePack, request.user)
         .filter(listing=listing)
@@ -161,11 +178,13 @@ def _case_context(request: HttpRequest, listing: Listing, **extra: Any) -> dict[
 @require_capability(Capability.DECIDE_CASES)
 @require_GET
 def case_detail(request: HttpRequest, pk: int) -> HttpResponse:
+    """Show one case: its current result, candidates, history and the decision form."""
     listing = get_scoped_or_404(Listing.objects.select_related("district", "batch"), request, pk=pk)
     return render(request, "reviews/case.html", _case_context(request, listing))
 
 
 def _int_or_none(value: str | None) -> int | None:
+    """Convert a form value to an int, or return None if it is missing or not a number."""
     try:
         return int(value or "")
     except ValueError:
@@ -175,6 +194,12 @@ def _int_or_none(value: str | None) -> int | None:
 @require_capability(Capability.DECIDE_CASES)
 @require_POST
 def case_decide(request: HttpRequest, pk: int) -> HttpResponse:
+    """Save an officer decision from the case form.
+
+    On success the user is redirected back to the case with a message. A conflict returns the
+    page with status 409 and an error returns it with status 400. The form values are kept so
+    the officer does not have to type them again.
+    """
     listing = get_scoped_or_404(Listing.objects.select_related("district", "batch"), request, pk=pk)
     form = {
         "decision": request.POST.get("decision", ""),
@@ -229,6 +254,10 @@ def case_evidence(request: HttpRequest, pk: int) -> HttpResponse:
 @require_capability(Capability.DECIDE_CASES)
 @require_GET
 def evidence_detail(request: HttpRequest, pk: int) -> HttpResponse:
+    """Show one stored evidence pack from its saved snapshot.
+
+    The page also recomputes the hash and shows whether it still matches the stored digest.
+    """
     pack = get_scoped_or_404(
         EvidencePack.objects.select_related("listing", "generated_by"), request, pk=pk
     )
@@ -254,6 +283,7 @@ def evidence_detail(request: HttpRequest, pk: int) -> HttpResponse:
             "candidates": candidates,
             "decision": decision,
             "decision_label": decision_labels.get(decision["decision"], "") if decision else "",
+            # False would mean the stored snapshot no longer matches its hash.
             "hash_ok": services.snapshot_sha256(snap) == pack.sha256,
             "case_url": reverse("case_detail", args=[pack.listing_id]),
         },
