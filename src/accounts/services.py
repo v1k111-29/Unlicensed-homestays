@@ -49,6 +49,8 @@ class AccountError(Exception):
 
 
 def generate_password() -> str:
+    """Build a one-time password such as "ABCDE-FGHJK-...". Uses `secrets`, not `random`, so the
+    output cannot be predicted from earlier output."""
     groups = (
         "".join(secrets.choice(_PASSWORD_ALPHABET) for _n in range(_PASSWORD_GROUP_LEN))
         for _g in range(_PASSWORD_GROUPS)
@@ -57,6 +59,7 @@ def generate_password() -> str:
 
 
 def _resolve_district(district: District | str | int | None) -> District | None:
+    """Turn a District, its id, or its English name into a District. Empty input gives None."""
     if district is None or district == "":
         return None
     if isinstance(district, District):
@@ -72,7 +75,11 @@ def _resolve_district(district: District | str | int | None) -> District | None:
 def check_account_fields(
     username: str, role: str, district: District | str | int | None
 ) -> tuple[str, str, District | None]:
-    """Validate the fields of a new account without saving. Returns cleaned values."""
+    """Validate the fields of a new account without saving. Returns cleaned values.
+
+    The checks run in a fixed order and stop at the first failure, so each error names one
+    field. The username is checked for existence after its format, so a malformed name
+    never reaches the database."""
     username = (username or "").strip()
     if not username:
         raise AccountError("username", _("Enter a username."))
@@ -115,11 +122,14 @@ def create_account(
     configured validators and stored hashed only; it is not written to the audit meta."""
     username, role, resolved = check_account_fields(username, role, district)
     user = User(username=username, role=role, district=resolved)
+    # Password rules are checked against the unsaved user so validators can compare the password
+    # with the username and other fields.
     try:
         validate_password(password, user)
     except ValidationError as exc:
         raise AccountError("password", "; ".join(exc.messages)) from None
     user.set_password(password)
+    # The save and its audit entry share one transaction: either both are stored or neither is.
     try:
         with transaction.atomic():
             user.save()
@@ -144,8 +154,11 @@ def set_active(actor: User, target_pk: int, active: bool) -> User:
     """Disable or enable an account. Refuses to disable yourself or the last active admin.
     Rows are locked so two admins cannot disable each other at the same time."""
     with transaction.atomic():
+        # select_for_update locks the target row until the transaction ends, so the admin count
+        # below cannot change under us.
         target = User.objects.select_for_update().get(pk=target_pk)
         if not active:
+            # Both guards stop an admin locking everyone out of the system.
             if target.pk == actor.pk:
                 raise AccountError("", _("You cannot disable your own account."))
             if target.role == User.Role.ADMIN and target.is_active:
@@ -175,6 +188,7 @@ def reset_password(actor: User, target_pk: int) -> tuple[User, str]:
     caller shows the password once and keeps it nowhere. Changing the password ends the
     account's other sessions (Django checks the password hash on each request)."""
     with transaction.atomic():
+        # Lock the row so a concurrent password change cannot interleave with this one.
         target = User.objects.select_for_update().get(pk=target_pk)
         password = generate_password()
         validate_password(password, target)

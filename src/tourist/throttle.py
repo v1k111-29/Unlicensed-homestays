@@ -24,11 +24,17 @@ CACHE_ALIAS = "tourist_throttle"
 
 
 def _conf() -> tuple[int, int]:
+    """Return (max checks, window in seconds) from the TOURIST_THROTTLE setting."""
     conf = settings.TOURIST_THROTTLE
     return int(conf["max_checks"]), int(conf["window_seconds"])
 
 
 def cache_key(request: HttpRequest) -> str:
+    """Return the cache key for this client address.
+
+    The address is hashed with HMAC and the app's secret key. The raw address never becomes a
+    cache key, so it cannot be read back out of the cache store.
+    """
     digest = hmac.new(
         settings.SECRET_KEY.encode(),
         f"tourist-ip:{client_ip(request)}".encode(),
@@ -38,10 +44,14 @@ def cache_key(request: HttpRequest) -> str:
 
 
 def allow(request: HttpRequest) -> bool:
-    """Count this check; False when the address has used up its checks for the window."""
+    """Count this check; False when the address has used up its checks for the window.
+
+    The first check in a window starts the counter. Later checks add one until the limit.
+    """
     max_checks, window = _conf()
     cache = caches[CACHE_ALIAS]
     key = cache_key(request)
+    # add() only stores the key if it is new, so it is the first check of this window.
     if cache.add(key, 1, timeout=window):
         return True
     count = int(cache.get(key, 0))

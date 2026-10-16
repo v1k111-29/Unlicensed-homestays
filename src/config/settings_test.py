@@ -1,4 +1,9 @@
-"""Test settings: a fixed non-secret key so tests run without a .env. Never use in production."""
+"""Test settings: a fixed non-secret key so tests run without a .env. Never use in production.
+
+Imports the normal settings and then changes only what tests need (plain static storage and
+a fixed test host). Each `setdefault` below keeps any value already set in the environment, so
+a developer's own variables still take effect in tests.
+"""
 
 import os
 

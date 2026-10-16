@@ -7,6 +7,10 @@ The role matrix lives here and nowhere else. Views protect themselves with
 
 Capabilities come from `User.role` only. `is_superuser`/`is_staff` grant nothing here, and the
 Django admin site is not installed, so there is no second path around this matrix.
+
+Used by: protected views (through the decorator or mixin below) and the audit helpers.
+Key idea: one table maps each role to its capabilities, so a permission change is an edit in
+one place and a test can check the whole matrix at once.
 """
 
 from collections.abc import Callable
@@ -24,6 +28,9 @@ from accounts.models import User
 
 
 class Capability(StrEnum):
+    """One named action a user may be allowed to perform. The string values are written into
+    audit meta on a denial, so changing them would change the recorded history."""
+
     TOURIST_CHECK = "tourist_check"
     UPLOAD_LISTINGS = "upload_listings"
     RUN_MATCHING = "run_matching"
@@ -52,6 +59,8 @@ ANONYMOUS_CAPABILITIES: frozenset[Capability] = frozenset({Capability.TOURIST_CH
 
 
 def is_admin(user: Any) -> bool:
+    """An active, signed-in administrator. Administrators see every district."""
+    # The active check comes first so a disabled admin account loses access at once.
     return bool(getattr(user, "is_authenticated", False) and user.is_active) and (
         user.role == User.Role.ADMIN
     )
@@ -67,6 +76,8 @@ def is_officer(user: Any) -> bool:
 
 
 def capabilities_for(user: Any) -> frozenset[Capability]:
+    """The full set of capabilities this user holds. Anything not recognised gets an empty set,
+    so the default is to deny."""
     if not getattr(user, "is_authenticated", False):
         return ANONYMOUS_CAPABILITIES
     if is_admin(user) or is_officer(user):
@@ -75,6 +86,7 @@ def capabilities_for(user: Any) -> frozenset[Capability]:
 
 
 def has_capability(user: Any, capability: Capability) -> bool:
+    """True if `user` holds `capability`. Use this for checks inside a view body."""
     return capability in capabilities_for(user)
 
 
@@ -97,6 +109,8 @@ def _check(request: HttpRequest, capability: Capability) -> HttpResponse | None:
     or return None when access is allowed."""
     if has_capability(request.user, capability):
         return None
+    # Anonymous visitors are sent to log in rather than shown 403, so they can sign in and
+    # come back. Only a signed-in user who lacks the capability is audited and refused.
     if not request.user.is_authenticated:
         return redirect_to_login(request.get_full_path())
     deny(request, "missing_capability", capability=str(capability))
@@ -104,9 +118,12 @@ def _check(request: HttpRequest, capability: Capability) -> HttpResponse | None:
 
 
 def require_capability(capability: Capability) -> Callable:
-    """Decorator for function views."""
+    """Decorator for function views. Wraps the view so the capability is checked before the
+    view body runs. `access_guard` is a marker the URL-guard test reads to confirm the view
+    is protected."""
 
     def decorator(view: Callable[..., HttpResponse]) -> Callable[..., HttpResponse]:
+        # @wraps keeps the original view's name and docstring on the wrapper.
         @wraps(view)
         def wrapped(request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
             response = _check(request, capability)
@@ -129,11 +146,15 @@ def authenticated_only(view: Callable[..., HttpResponse]) -> Callable[..., HttpR
 
 
 class CapabilityRequiredMixin:
-    """Mixin for class-based views. Set `required_capability` on the view."""
+    """Mixin for class-based views. Set `required_capability` on the view. The check runs in
+    `dispatch`, before any GET or POST handler, so no handler can run without it."""
 
     required_capability: Capability | None = None
 
     def dispatch(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        """Check the capability, then hand the request to the normal Django dispatch."""
+        # Failing loudly here stops a developer from forgetting to set the capability: the
+        # view would otherwise be open to everyone.
         if self.required_capability is None:
             raise TypeError(f"{type(self).__name__} must set required_capability")
         response = _check(request, self.required_capability)

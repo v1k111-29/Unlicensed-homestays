@@ -1,5 +1,8 @@
 """Translation catalog tool, standard library + Django only (M10, D77).
 
+Called by `python tasks.py messages` (and its `--check` form in CI). It is a plain Python
+replacement for GNU gettext, so the Tamil catalog builds the same way on Windows and Linux.
+
 GNU gettext (xgettext/msgmerge/msgfmt) is not installed on the Windows dev machine, so
 Django's ``makemessages``/``compilemessages`` cannot run there. This module does the same
 three jobs in pure Python, identically on every machine:
@@ -69,6 +72,8 @@ HEADER_FIELDS = {
 
 @dataclass
 class Entry:
+    """One translatable string: the English text, its translation(s) and where it is used."""
+
     msgid: str
     msgid_plural: str | None = None
     msgctxt: str | None = None
@@ -79,18 +84,23 @@ class Entry:
 
     @property
     def key(self) -> tuple[str | None, str]:
+        """The identity of this entry: context plus English text. Two entries with the same key
+        are the same message."""
         return (self.msgctxt, self.msgid)
 
     @property
     def is_format(self) -> bool:
+        """True if the text contains a %-placeholder, so the .po file gets a python-format flag."""
         return bool(FORMAT_RE.search(self.msgid + (self.msgid_plural or "")))
 
     @property
     def translations(self) -> list[str]:
+        """The translated text: one string, or one per plural form."""
         return self.msgstr_plural if self.msgid_plural else [self.msgstr]
 
     @property
     def translated(self) -> bool:
+        """True only when every form has a non-empty translation."""
         return all(t for t in self.translations) and bool(self.translations)
 
 
@@ -98,6 +108,8 @@ class Entry:
 
 
 def _string_args(call: ast.Call) -> list[str | None]:
+    """The positional arguments of a call: the text for string literals, None for anything
+    else (a variable or an expression cannot be translated, so it is skipped later)."""
     out: list[str | None] = []
     for arg in call.args:
         if isinstance(arg, ast.Constant) and isinstance(arg.value, str):
@@ -108,6 +120,7 @@ def _string_args(call: ast.Call) -> list[str | None]:
 
 
 def _calls_in(tree: ast.AST) -> list[tuple[str, list[str | None]]]:
+    """Every call in a Python file whose name is one of the gettext keywords."""
     found = []
     for node in ast.walk(tree):
         if not isinstance(node, ast.Call):
@@ -120,6 +133,8 @@ def _calls_in(tree: ast.AST) -> list[tuple[str, list[str | None]]]:
 
 
 def _entry_from_call(name: str, args: list[str | None]) -> Entry | None:
+    """Build an Entry from one gettext call, or return None if the call cannot be translated
+    (for example, its text is a variable)."""
     ctx_i, id_i, pl_i = KEYWORDS[name]
     try:
         msgid = args[id_i]
@@ -136,6 +151,8 @@ def _template_calls(text: str, origin: str) -> list[tuple[str, list[str | None]]
     """Run Django's templatize, then pick the gettext calls out of its output (placeholder
     text plus Python-style calls, not a valid module) by scanning each call to its closing
     parenthesis, skipping over string literals, and parsing that slice with ``ast``."""
+    # The scan is needed because the templatize output is not valid Python as a whole, so ast
+    # cannot parse it directly. Each call is cut out on its own and parsed as one expression.
     from django.utils.translation.template import templatize
 
     code = templatize(text, origin=origin)
@@ -165,6 +182,8 @@ def _template_calls(text: str, origin: str) -> list[tuple[str, list[str | None]]
 
 
 def _source_files() -> list[Path]:
+    """Templates and Python files that may hold translatable text. Skips migrations, locale,
+    static and cache folders, plus this file, which names the gettext functions itself."""
     files = []
     # Sorted by POSIX path string so the .po order is the same on Windows and Linux.
     for path in sorted(SRC.rglob("*"), key=lambda p: p.relative_to(SRC).as_posix()):
@@ -179,7 +198,9 @@ def _source_files() -> list[Path]:
 
 
 def extract() -> list[Entry]:
-    """All translatable msgids in ``src/``, in first-seen order (sorted file walk)."""
+    """All translatable msgids in ``src/``, in first-seen order (sorted file walk).
+
+    The same msgid used in several files is one entry whose refs list every file."""
     entries: dict[tuple[str | None, str], Entry] = {}
     for path in _source_files():
         rel = path.relative_to(SRC).as_posix()
@@ -204,10 +225,13 @@ def extract() -> list[Entry]:
 
 
 def _unquote(s: str) -> str:
+    """Read a quoted .po string such as "text\\n" and return its real value."""
     return ast.literal_eval(s)
 
 
 def _quote(s: str) -> str:
+    """Write a value as a quoted .po string, escaping backslashes, quotes and newlines."""
+    # Backslashes are escaped first, so the escapes added afterwards are not escaped again.
     escaped = (
         s.replace("\\", "\\\\")
         .replace('"', '\\"')
@@ -290,6 +314,7 @@ def parse_po(text: str) -> tuple[dict[str, str], list[Entry]]:
 
 
 def write_po(lang: str, entries: list[Entry]) -> str:
+    """The full text of a .po file: header, then one block per entry."""
     out = [HEADER_COMMENT, 'msgid ""', 'msgstr ""']
     out += [_quote(f"{k}: {v}\n") for k, v in HEADER_FIELDS[lang]]
     for e in entries:
@@ -313,6 +338,8 @@ def write_po(lang: str, entries: list[Entry]) -> str:
 
 
 def merge(extracted: list[Entry], existing: list[Entry]) -> list[Entry]:
+    """Keep the translations already in the .po for strings that still exist in the code.
+    Strings no longer in the code are dropped; new strings start with an empty translation."""
     old = {e.key: e for e in existing}
     merged = []
     for e in extracted:
@@ -368,20 +395,25 @@ def compile_mo(header: list[tuple[str, str]], entries: list[Entry]) -> bytes:
 
 
 def po_path(lang: str) -> Path:
+    """Where the .po file for `lang` lives (the standard Django locale folder)."""
     return SRC / "locale" / lang / "LC_MESSAGES" / f"{DOMAIN}.po"
 
 
 def load(lang: str) -> list[Entry]:
+    """The entries of the existing .po file, or an empty list if it does not exist yet."""
     path = po_path(lang)
     return parse_po(path.read_text(encoding="utf-8"))[1] if path.is_file() else []
 
 
 def build(lang: str) -> tuple[str, bytes, list[Entry]]:
+    """Produce the new .po text, the compiled .mo bytes and the merged entries, without writing
+    anything. `check` compares these with the files on disk."""
     merged = merge(extract(), load(lang))
     return write_po(lang, merged), compile_mo(HEADER_FIELDS[lang], merged), merged
 
 
 def update() -> int:
+    """Write the .po and .mo files for every language and print a short summary. Returns 0."""
     for lang in LANGUAGES:
         old_keys = {e.key for e in load(lang)}
         po, mo, merged = build(lang)
@@ -399,6 +431,8 @@ def update() -> int:
 
 
 def check() -> int:
+    """Fail (return 1) if a generated file is out of date or a Tamil string is missing.
+    Used by `python tasks.py messages --check` in CI."""
     problems = []
     for lang in LANGUAGES:
         po, mo, merged = build(lang)
@@ -414,6 +448,7 @@ def check() -> int:
 
 
 def main(argv: list[str]) -> int:
+    """Run the command named in argv[1]. Returns 2 for a wrong command name."""
     commands = {"update": update, "check": check}
     if len(argv) != 2 or argv[1] not in commands:
         print("Usage: python -m config.catalog <update|check>")

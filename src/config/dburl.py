@@ -10,6 +10,9 @@ POSTGRES_SCHEMES = {"postgres", "postgresql"}
 
 
 def parse_database_url(url: str) -> dict:
+    """Turn a DATABASE_URL string into the dict Django expects in DATABASES["default"].
+    Raises ValueError for a wrong scheme or a missing database name."""
+    # urlsplit does not decode the password, so the decoding is done per field below.
     parts = urlsplit(url)
     if parts.scheme not in POSTGRES_SCHEMES:
         raise ValueError(

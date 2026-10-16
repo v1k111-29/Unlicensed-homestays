@@ -1,5 +1,12 @@
 """Run matching on a listings batch and store the results (data-and-matching.md §5-7).
 
+What this file is for: it is the one place where a matching run touches the database. It
+checks who is allowed to run it, builds plain records from the database rows, calls the
+pure engine, and saves the outcome.
+
+Who calls it: ``matching.views`` (the officer and admin screens) and the management or
+loading commands that run matching for synthetic sets.
+
 Django glue only: records are built from the database, ``matching.engine.match`` does the
 work, and the outcome is written to ``match_runs`` / ``match_candidates`` /
 ``match_results`` in one transaction with one audit entry.
@@ -37,10 +44,13 @@ class MatchingError(ValueError):
     """The run cannot start (wrong batch type, no registry to match against, ...)."""
 
 
+# The gazetteer is loaded once and reused, because reading the CSV files is slow.
+# ``None`` means "not loaded yet".
 _gazetteer: Gazetteer | None = None
 
 
 def default_gazetteer() -> Gazetteer:
+    """Return the shared gazetteer, loading the CSV files on the first call only."""
     global _gazetteer
     if _gazetteer is None:
         _gazetteer = Gazetteer.load()
@@ -63,6 +73,7 @@ def current_registry_batch(listing_batch: UploadBatch) -> UploadBatch:
 
 
 def default_as_of(listing_batch: UploadBatch) -> date:
+    """The date licence validity is judged on. Synthetic sets use a fixed date (see D54)."""
     if listing_batch.dataset.startswith("synthetic-"):
         return SYNTHETIC_AS_OF
     return timezone.localdate()
@@ -71,8 +82,11 @@ def default_as_of(listing_batch: UploadBatch) -> date:
 def _check_scope(actor: Any, listings: list[Listing]) -> None:
     """District scoping, server side (AGENTS.md rule 7): an officer may only run matching
     on listings of their own district."""
+    # Admins see every district, so they skip the check. Anything that is not a User (for
+    # example a "system:..." string from a command) is also not restricted here.
     if not isinstance(actor, User) or actor.role == User.Role.ADMIN:
         return
+    # An officer with no district may run nothing at all.
     if actor.district_id is None or any(x.district_id != actor.district_id for x in listings):
         raise PermissionDenied("listings outside the officer's district")
 
@@ -85,10 +99,12 @@ def _check_district(actor: Any, district: District) -> None:
 
 
 def _f(value: Any) -> float | None:
+    """Convert a database number (possibly ``Decimal``) to ``float``, keeping ``None``."""
     return None if value is None else float(value)
 
 
 def _registry_record(e: RegistryEntry) -> RegistryRecord:
+    """Copy one registry database row into the plain record the engine reads."""
     return RegistryRecord(
         id=e.pk,
         licence_no=e.licence_no,
@@ -108,6 +124,7 @@ def _registry_record(e: RegistryEntry) -> RegistryRecord:
 
 
 def _listing_record(x: Listing) -> ListingRecord:
+    """Copy one listing database row into the plain record the engine reads."""
     return ListingRecord(
         id=x.pk,
         title=x.title,
@@ -143,12 +160,14 @@ def run_matching(
     batch needs it (or use ``run_matching_per_district``). ``actor`` is a ``User`` or a
     ``"system:<tool>"`` string (audit actor).
     """
+    # Check the inputs first. Each check stops the run before anything is written.
     if listing_batch.type != UploadBatch.Type.LISTINGS:
         raise MatchingError("listing_batch must be a listings batch")
     if registry_batch is None:
         registry_batch = current_registry_batch(listing_batch)
     elif registry_batch.type != UploadBatch.Type.REGISTRY:
         raise MatchingError("registry_batch must be a registry batch")
+    # Real and synthetic data must never be matched against each other (Q15).
     if registry_batch.dataset != listing_batch.dataset:
         raise MatchingError("listings and registry come from different datasets (Q15)")
 
@@ -156,6 +175,7 @@ def run_matching(
         Listing.objects.filter(batch=listing_batch).select_related("district").order_by("id")
     )
     _check_scope(actor, all_listings)
+    # With no district given, pick the batch's own district, or the one district it covers.
     if district is None:
         present = {x.district_id for x in all_listings}
         if len(present) > 1:
@@ -177,6 +197,7 @@ def run_matching(
         .select_related("district")
         .order_by("id")
     )
+    # Officers' earlier confirmations: listing id -> list of confirmed registry entry ids.
     confirmed: dict[int, list[int]] = {}
     for listing_id, entry_id in (
         ConfirmedPair.objects.filter(listing__in=listings)
@@ -185,6 +206,7 @@ def run_matching(
     ):
         confirmed.setdefault(listing_id, []).append(entry_id)
 
+    # The pure engine does all the matching work. Nothing is saved yet.
     outcomes = engine.match(
         [_listing_record(x) for x in listings],
         [_registry_record(e) for e in entries],
@@ -194,10 +216,13 @@ def run_matching(
         confirmed=confirmed,
     )
 
+    # Lookup tables from id to database object, so each outcome can be linked back to rows.
     listing_by_id = {x.pk: x for x in listings}
     entry_by_id = {e.pk: e for e in entries}
     user = actor if isinstance(actor, User) else None
+    # How many listings landed in each band. Stored in the audit entry.
     counts = {band: 0 for band in engine.BANDS}
+    # Everything is written in one transaction, so a failure leaves no half-saved run.
     with transaction.atomic():
         run = MatchRun.objects.create(
             district=district,
@@ -241,6 +266,7 @@ def run_matching(
                     priority=o.priority,
                 )
             )
+        # bulk_create writes many rows in one query each. batch_size caps the rows per query.
         MatchCandidate.objects.bulk_create(candidates, batch_size=1000)
         MatchResult.objects.bulk_create(results, batch_size=1000)
         # Automatic "Matched" results are audit-logged (§7) through this one run entry.

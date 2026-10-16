@@ -20,6 +20,8 @@ from matching import views as matching_views
 from reviews import views as review_views
 from tourist import views as tourist_views
 
+# Routes outside the language prefix. A test walks every route, so each new route must be either
+# guarded by a capability or added to the public allowlist.
 urlpatterns = [
     # Public (allowlisted). Normally answered by config.health.HealthCheckMiddleware first (D81).
     path("livez", health.livez, name="livez"),
@@ -27,6 +29,8 @@ urlpatterns = [
     # public (allowlisted): /en/... redirects to the unprefixed English page
     re_path(r"^en/(?P<rest>.*)$", site_views.english_prefix, name="english_prefix"),
 ]
+# Pages under i18n_patterns get the language prefix (/ta/...). The guard on each view is in its
+# own module, not here.
 urlpatterns += i18n_patterns(
     path("", site_views.home, name="home"),  # public (allowlisted): redirect only
     path("", include("accounts.urls")),

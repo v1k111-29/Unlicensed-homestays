@@ -15,6 +15,7 @@ class DistrictChoiceField(forms.ModelChoiceField):
     the English name after it (data displayed as stored; M10)."""
 
     def label_from_instance(self, obj: District) -> str:
+        """Return the label for one district in the current page language."""
         if get_language() == "ta" and obj.name_ta:
             return f"{obj.name_ta} ({obj.name_en})"
         return obj.name_en
@@ -35,6 +36,11 @@ class CheckForm(forms.Form):
     )
 
     def clean(self) -> dict[str, Any]:
+        """Check that the fields given are enough to search with.
+
+        A licence number is always enough. Otherwise a name needs a locality, and a locality
+        needs a name. With none of these, the form is rejected.
+        """
         data = super().clean()
         licence, name, locality = (data.get(k, "") or "" for k in ("licence", "name", "locality"))
         if licence:
@@ -51,6 +57,7 @@ class CheckForm(forms.Form):
         return data
 
     def query(self) -> Query:
+        """Turn the cleaned form values into a Query for the service layer."""
         d = self.cleaned_data
         district = d.get("district")
         return Query(

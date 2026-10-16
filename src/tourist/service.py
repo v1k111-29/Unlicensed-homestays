@@ -1,7 +1,8 @@
 """Tourist check (essentialfeatures.md T1): look a stay up in the registry.
 
-Thin layer over the M3 normaliser and the M4 feature functions (``matching.features``); the
-view only handles HTTP. The service:
+This module is a thin layer over the matching code. It reuses the normaliser from M3 and the
+feature functions from ``matching.features``. The view in ``tourist.views`` only handles HTTP;
+all the checking logic is here. The service:
 
 - reads the registry only (never listings, match results or ``GroundTruth``);
 - is deterministic: same registry batch + same params version + same query = same answer;
@@ -11,6 +12,9 @@ view only handles HTTP. The service:
 
 Outcomes (ui-design-brief.md §10): found, differs (details differ or not valid on the date
 checked), several (more than one plausible entry), not_found.
+
+Reading order for a newcomer: ``check`` is the entry point. It calls ``_licence_path`` when a
+licence number is given, and ``_name_path`` when only a name and locality are given.
 """
 
 from __future__ import annotations
@@ -38,15 +42,19 @@ from tourist.models import TouristCheck
 
 Result = TouristCheck.Result
 
-MAX_SHOWN = 5  # entries listed for "several possible matches"
+# Most entries listed when the answer is "several possible matches". Keeps the page short.
+MAX_SHOWN = 5
 
 
 class RegistryUnavailable(Exception):
-    """No registry has been loaded yet."""
+    """Raised when no registry has been loaded yet, so no check can be answered."""
 
 
 @dataclass(frozen=True)
 class Query:
+    """What the tourist typed: a licence number, or a name and locality, plus an optional
+    district. Empty strings mean "not given"."""
+
     licence: str = ""
     name: str = ""
     locality: str = ""
@@ -55,7 +63,11 @@ class Query:
 
 @dataclass(frozen=True)
 class PublicEntry:
-    """The only registry fields a tourist may see (security-and-privacy.md §3)."""
+    """The only registry fields a tourist may see (security-and-privacy.md §3).
+
+    Anything else on a registry row (licence numbers of other entries, addresses,
+    coordinates, internal ids) is deliberately left out of this class.
+    """
 
     name: str
     locality: str
@@ -68,6 +80,13 @@ class PublicEntry:
 
 @dataclass(frozen=True)
 class CheckResult:
+    """The answer to one check.
+
+    `outcome` is one of the TouristCheck.Result values. `differences` lists the keys of
+    `wording.DIFFERENCE_TEXT` that explain a "differs" answer. `as_of` is the date the
+    validity was checked against.
+    """
+
     outcome: str  # TouristCheck.Result value
     entries: tuple[PublicEntry, ...] = ()
     differences: tuple[str, ...] = ()  # keys of wording.DIFFERENCE_TEXT
@@ -75,7 +94,11 @@ class CheckResult:
 
 
 def current_registry_batch() -> UploadBatch:
-    """Newest registry batch that tourists may search (Q17 default: newest is current)."""
+    """Return the newest registry batch that tourists may search (Q17 default: newest is current).
+
+    Reserved datasets (for example demo or test data) are skipped. Raises RegistryUnavailable
+    when no batch qualifies.
+    """
     batch = (
         UploadBatch.objects.filter(type=UploadBatch.Type.REGISTRY)
         .exclude(dataset__in=RESERVED_DATASETS)
@@ -94,18 +117,28 @@ _MAX_CACHED = 4
 
 
 def _prepared_registry(batch: UploadBatch, params: MatchParams) -> tuple[PreparedRegistry, ...]:
+    """Return the prepared registry rows for a batch, building and caching them on first use.
+
+    The cache is capped at `_MAX_CACHED` batches. When it is full, the oldest entry is
+    dropped first.
+    """
     # Primary keys can be reused after a rollback, so the key also carries hash and time.
     key = (batch.pk, batch.file_sha256, batch.created_at.isoformat(), params.version)
     if key not in _prepared:
         gaz = default_gazetteer()
         rows = RegistryEntry.objects.filter(batch=batch).select_related("district").order_by("pk")
         _prepared[key] = tuple(prepare_registry(registry_record(e), gaz, params) for e in rows)
+        # Evict the oldest cached batch (dicts keep insertion order).
         while len(_prepared) > _MAX_CACHED:
             _prepared.pop(next(iter(_prepared)))
     return _prepared[key]
 
 
 def _public(reg: PreparedRegistry, as_of: date) -> PublicEntry:
+    """Turn a prepared registry row into the public view a tourist may see.
+
+    Unknown category or status codes are shown as they are rather than hidden.
+    """
     r = reg.rec
     category = RegistryEntry.Category(r.category).label if r.category else ""
     try:
@@ -124,16 +157,30 @@ def _public(reg: PreparedRegistry, as_of: date) -> PublicEntry:
 
 
 def _rank_key(score: float, name: float, reg: PreparedRegistry) -> tuple:
+    """Sort key for candidates: best score first, then best name, then a fixed tie-break.
+
+    The licence number and the id break exact ties, so the order is the same on every run
+    (the matching must be deterministic).
+    """
     return (-score, -name, reg.rec.licence_no, str(reg.rec.id))
 
 
 def _listing(q: Query, district: str) -> ListingRecord:
+    """Build the listing-side record the matcher compares against registry rows.
+
+    Id 0 is a placeholder: a tourist query is not a stored listing.
+    """
     return ListingRecord(id=0, title=q.name, locality_text=q.locality, district=district)
 
 
 def _licence_path(
     q: Query, hits: list[PreparedRegistry], params: MatchParams, as_of: date
 ) -> CheckResult:
+    """Answer a query whose licence number is in the registry.
+
+    Checks the validity date, and the name and locality if the tourist gave them. Several hits
+    (the same licence in two districts) give "several" so the tourist can choose.
+    """
     if len(hits) > 1:  # same licence number in two districts: let the tourist choose
         hits.sort(key=lambda r: (r.rec.district, r.rec.name))
         return CheckResult(Result.SEVERAL, tuple(_public(r, as_of) for r in hits[:MAX_SHOWN]))
@@ -147,6 +194,7 @@ def _licence_path(
             diffs.append("name")
         if q.locality:
             value, method = address_feature(lst, reg)
+            # A locality that is "the same locality" counts as agreeing, even with no score.
             if method != "same_locality" and (value is None or value < params.licence_name_min):
                 diffs.append("locality")
     outcome = Result.DIFFERS if diffs else Result.FOUND
@@ -156,6 +204,13 @@ def _licence_path(
 def _name_path(
     q: Query, entries: tuple[PreparedRegistry, ...], params: MatchParams, as_of: date
 ) -> CheckResult:
+    """Answer a query with no licence match, by scoring every registry row on name and place.
+
+    Entries are scored district by district. A single clearly best entry gives "found" or
+    "differs". Several close entries give "several". A single plausible entry that is not
+    confident enough also gives "differs". No entry above the lowest threshold gives
+    "not found".
+    """
     gaz = default_gazetteer()
     districts = sorted({e.rec.district for e in entries})
     scored: list[tuple[float, float, str, PreparedRegistry]] = []
@@ -174,6 +229,8 @@ def _name_path(
     strong = [s for s in scored if s[0] >= params.t_high and s[1] >= params.score_name_min]
     near = [s for s in scored if s[0] >= params.t_low and s[1] >= params.licence_name_min]
     if strong:
+        # Entries whose score is within the ambiguity margin of the best one are "close".
+        # One close entry means a clear answer. Two or more mean the tourist must choose.
         close = [s for s in strong if strong[0][0] - s[0] < params.ambiguity_margin]
         if len(close) == 1:
             reg = close[0][3]
@@ -190,7 +247,8 @@ def _name_path(
             diffs_list.append("name")
         if method != "same_locality":
             diffs_list.append("locality")
-        if not diffs_list:  # between thresholds without a named difference: still unsure
+        # Between the two thresholds with no named difference: say the name is the doubt.
+        if not diffs_list:
             diffs_list.append("name")
         return CheckResult(Result.DIFFERS, (_public(reg, as_of),), tuple(diffs_list))
     if near:
@@ -199,7 +257,12 @@ def _name_path(
 
 
 def check(q: Query, *, batch: UploadBatch | None = None) -> CheckResult:
-    """Answer one tourist query. Raises ``RegistryUnavailable`` when no registry exists."""
+    """Answer one tourist query. Raises ``RegistryUnavailable`` when no registry exists.
+
+    A licence number is tried first. If it is not in the registry but a name and locality were
+    also given, the name-and-place search runs. If that search finds a match, it is reported as
+    "differs", because the licence number itself did not match.
+    """
     batch = batch or current_registry_batch()
     params = get_params(CURRENT_VERSION)
     as_of = default_as_of(batch)
@@ -217,6 +280,7 @@ def check(q: Query, *, batch: UploadBatch | None = None) -> CheckResult:
         elif q.name and q.locality:
             by_name = _name_path(q, entries, params, as_of)
             if by_name.outcome in (Result.FOUND, Result.DIFFERS):
+                # The licence was not found, so "licence" becomes the first difference shown.
                 diffs = ("licence", *(d for d in by_name.differences if d != "licence"))
                 result = CheckResult(Result.DIFFERS, by_name.entries, diffs)
             else:
@@ -227,8 +291,11 @@ def check(q: Query, *, batch: UploadBatch | None = None) -> CheckResult:
 
 
 def registry_summary() -> dict[str, int] | None:
-    """Real counts for the public statistics strip (D94): entries and districts in the registry
-    tourists search. ``None`` when no registry is loaded, so the page hides the strip."""
+    """Return real counts for the public statistics strip (D94).
+
+    The counts are the entries and districts in the registry that tourists search. Returns
+    None when no registry is loaded, so the page hides the strip.
+    """
     try:
         batch = current_registry_batch()
     except RegistryUnavailable:
@@ -241,5 +308,9 @@ def registry_summary() -> dict[str, int] | None:
 
 
 def record(outcome: str) -> None:
-    """Log a completed check: result type and timestamp only (AGENTS.md rule 5)."""
+    """Log a completed check: result type and timestamp only (AGENTS.md rule 5).
+
+    Nothing else is stored. No query text, no client address and no session id, so the log
+    cannot be used to find out who searched for what.
+    """
     TouristCheck.objects.create(result=outcome)

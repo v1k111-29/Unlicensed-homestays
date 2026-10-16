@@ -26,6 +26,8 @@ ALLOWED_METHODS = ("GET", "HEAD")
 
 
 def _response(status: str, code: int) -> HttpResponse:
+    """A small JSON answer. The headers stop caches from storing it and browsers from guessing
+    its type."""
     response = JsonResponse({"status": status}, status=code)
     response["Cache-Control"] = "no-store"
     response["X-Content-Type-Options"] = "nosniff"
@@ -33,20 +35,24 @@ def _response(status: str, code: int) -> HttpResponse:
 
 
 def _method_not_allowed() -> HttpResponse:
+    """A 405 reply that lists the methods this path accepts."""
     response = HttpResponse(status=405)
     response["Allow"] = ", ".join(ALLOWED_METHODS)
     return response
 
 
 def livez(request: HttpRequest) -> HttpResponse:
+    """Liveness probe: answers 200 as long as the process runs. Never touches the database."""
     if request.method not in ALLOWED_METHODS:
         return _method_not_allowed()
     return _response("ok", 200)
 
 
 def healthz(request: HttpRequest) -> HttpResponse:
+    """Readiness probe: answers 200 only if a trivial database query succeeds, else 503."""
     if request.method not in ALLOWED_METHODS:
         return _method_not_allowed()
+    # The database is checked here, not in livez, so frequent probes do not wake the database.
     try:
         with connection.cursor() as cursor:
             cursor.execute("SELECT 1")
@@ -58,6 +64,8 @@ def healthz(request: HttpRequest) -> HttpResponse:
     return _response("ok", 200)
 
 
+# Exact paths only. Anything else (including the same path with a trailing slash) goes on
+# through the normal middleware chain.
 HEALTH_PATHS: dict[str, Callable[[HttpRequest], HttpResponse]] = {
     "/livez": livez,
     "/healthz": healthz,
@@ -68,9 +76,11 @@ class HealthCheckMiddleware:
     """Answer the two health paths before anything else runs (see module docstring)."""
 
     def __init__(self, get_response: Callable[[HttpRequest], HttpResponse]) -> None:
+        """Store the next handler in the middleware chain."""
         self.get_response = get_response
 
     def __call__(self, request: HttpRequest) -> HttpResponse:
+        """Answer a health path directly, or pass every other request down the chain."""
         view = HEALTH_PATHS.get(request.path_info)
         if view is not None:
             return view(request)

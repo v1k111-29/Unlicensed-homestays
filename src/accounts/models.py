@@ -15,11 +15,17 @@ class District(models.Model):
         ordering = ["name_en"]
 
     def __str__(self) -> str:
+        """The English name, used in admin screens and messages."""
         return self.name_en
 
 
 class User(AbstractUser):
+    """A signed-in account. The role decides what the user may do (see accounts.permissions),
+    and an officer's district decides which records they may see (see accounts.scoping)."""
+
     class Role(models.TextChoices):
+        """The two roles. The stored values are used in the role matrix and the database."""
+
         ADMIN = "admin", _("Admin")
         OFFICER = "officer", _("Officer")
 
@@ -30,6 +36,8 @@ class User(AbstractUser):
 
     class Meta:
         constraints = [
+            # The database itself refuses an officer without a district, even if the code
+            # forgets to check. Administrators have no district.
             models.CheckConstraint(
                 condition=Q(role="admin") | Q(district__isnull=False),
                 name="officer_has_district",

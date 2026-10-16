@@ -19,6 +19,8 @@ import logging
 import re
 from datetime import UTC, datetime
 
+# Patterns below find personal data inside log text. Each one is a best-effort match, not a
+# full validator: it is meant to catch common shapes, not to prove that a value is valid.
 _IPV4 = re.compile(r"(?<![\d.])(?:\d{1,3}\.){3}\d{1,3}(?![\d.])")
 _HEX = r"[0-9A-Fa-f]{1,4}"
 _IPV6 = re.compile(
@@ -36,7 +38,10 @@ _PHONE = re.compile(r"(?<!\d)(?:\+?91[\s-]?|0)?[6-9]\d{9}(?!\d)")
 
 
 def scrub(text: str) -> str:
-    """Replace personal data and secrets in ``text`` with placeholders."""
+    """Replace personal data and secrets in ``text`` with placeholders.
+
+    The substitutions run in a fixed order, one pattern after another. Each one replaces only
+    the matched value and keeps the surrounding text."""
     text = _URL_CREDENTIALS.sub(r"\1[redacted]@", text)
     text = _SECRET_VALUE.sub(r"\1\2[redacted]", text)
     text = _EMAIL.sub("[email]", text)
@@ -49,6 +54,9 @@ class ScrubFilter(logging.Filter):
     """Scrubs the formatted message in place (for any handler, not only ``JsonFormatter``)."""
 
     def filter(self, record: logging.LogRecord) -> bool:
+        """Scrub the record and always let it through (this filter never drops a log line)."""
+        # Message and arguments are merged first, then the args are cleared, so the scrubbed text
+        # is not formatted a second time.
         record.msg = scrub(record.getMessage())
         record.args = None
         return True
@@ -58,6 +66,9 @@ class JsonFormatter(logging.Formatter):
     """One JSON object per line with a fixed field set; every string is scrubbed."""
 
     def format(self, record: logging.LogRecord) -> str:
+        """Build the fixed-field dictionary for one record and return it as one JSON line."""
+        # Only these fields are copied. The request object is never copied, so addresses and
+        # form data cannot reach the output by accident.
         entry: dict[str, object] = {
             "ts": datetime.fromtimestamp(record.created, tz=UTC).isoformat(timespec="seconds"),
             "level": record.levelname,
